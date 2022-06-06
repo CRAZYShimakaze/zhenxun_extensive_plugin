@@ -28,6 +28,9 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": ["原神角色卡"],
 }
+__plugin_cd_limit__ = {
+    "rst": "正在查询中，请当前请求完成...",
+}
 
 char_card = on_command("原神角色卡", priority=15, block=True)
 
