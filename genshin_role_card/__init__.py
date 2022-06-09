@@ -28,7 +28,7 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": ["原神角色卡"],
 }
-__plugin_cd_limit__ = {
+__plugin_block_limit__ = {
     "rst": "正在查询中，请当前请求完成...",
 }
 
@@ -43,16 +43,20 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     msg = arg.extract_plain_text().strip()
     try:
         msg = int(msg)
-        await char_card.send("开始获取角色信息,预计需要30秒...")
-        alc_img = await get_alc_image(CARD_PATH, str(msg))
-        if alc_img:
-            mes = alc_img + f"\nUID({str(msg)})的角色卡片"
-            await char_card.send(mes)
-            logger.info(
-                f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
-                f" 发送原神角色卡")
-        else:
-            await char_card.send(
-                f"获取UID({str(msg)})角色信息失败,请检查是否已开放橱窗详细信息权限或稍后再试!")
     except:
         await char_card.send("请输入正确uid...")
+        return
+    await char_card.send("开始获取角色信息,预计需要30秒...")
+    try:
+        alc_img = await get_alc_image(CARD_PATH, str(msg))
+    except Exception as e:
+        logger.info(f"{e}")
+        return
+    if alc_img:
+        mes = alc_img + f"\nUID({str(msg)})的角色卡片"
+        await char_card.send(mes)
+        logger.info(
+            f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
+            f" 发送原神角色卡")
+    else:
+        await char_card.send(f"获取UID({str(msg)})角色信息失败,请检查是否已开放橱窗信息权限!")
