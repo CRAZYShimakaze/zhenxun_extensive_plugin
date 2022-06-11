@@ -10,4 +10,14 @@ zhenxun_bot 原神角色卡片插件
 
 ## 效果图
 
-![This is an image](https://s3.bmp.ovh/imgs/2022/06/04/84198dfc61d87196.png)
+![This is an image](https://s3.bmp.ovh/imgs/2022/06/09/3a1c316ad6022c7a.png)
+
+### 更新
+
+**2022/6/9**[v0.2]
+
+1. 修改卡片界面为中文
+
+**2022/6/5**[v0.1]
+
+1. 初版
