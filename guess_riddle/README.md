@@ -1,5 +1,8 @@
-# guess riddle
+# guess_riddle
 zhenxun_bot 猜成语赚金币插件
+
+(根据猜对时剩余次数获得相应金币奖励,使用提示时也会消耗金币。
+奖励金币数可在__init__.py里的bounce_coin变量内修改。)
 
 你有十次的机会猜一个四字词语；
 
