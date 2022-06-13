@@ -69,7 +69,7 @@ timers: Dict[str, TimerHandle] = {}
 
 handle = on_shell_command("handle", parser=parser, block=True, priority=6)
 bounce_coin = [10, 10, 10, 10, 10, 10, 9, 8, 7, 2, 1]
-hint_cost = [10, 9, 8, 7, 6, 5, 4, 3, 2, 0, 0]
+hint_cost = [9, 8, 7, 6, 5, 4, 3, 2, 0, 0]
 
 
 @handle.handle()
@@ -195,14 +195,19 @@ async def handle_handle(matcher: Matcher, event: MessageEvent,
         #     await send(image=game.draw_hint())
         # else:
         #     await send("猜错7次后才可以提示哦!")
-        cost_coin = hint_cost[len(game.guessed_idiom)]
-        have_gold = await BagUser.get_gold(event.user_id, event.group_id)
-        if have_gold < cost_coin:
-            await send(f"当前提示需要金币{cost_coin},你的金币不够!")
+        if isinstance(event, GroupMessageEvent):
+            cost_coin = hint_cost[len(game.guessed_idiom)]
+            have_gold = await BagUser.get_gold(event.user_id, event.group_id)
+            if have_gold < cost_coin:
+                await send(f"当前提示需要{cost_coin}金币,你的金币不够!")
+                return
+            else:
+                image = game.draw_hint()
+                await BagUser.spend_gold(event.user_id, event.group_id,
+                                         cost_coin)
+                await send(f"扣除{cost_coin}金币获取提示...", image)
         else:
-            image = game.draw_hint()
-            await BagUser.spend_gold(event.user_id, event.group_id, cost_coin)
-            await send(f"扣除金币{cost_coin}获取提示...", image)
+            await send(image)
     idiom = options.idiom
     if not match_idiom(idiom):
         await send()
