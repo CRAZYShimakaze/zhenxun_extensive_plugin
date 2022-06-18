@@ -115,7 +115,7 @@ def shortcut(cmd: str, argv: List[str] = [], **kwargs):
         await handle_handle(matcher, event, argv + args)
 
 
-shortcut("猜成语", rule=to_me())
+shortcut("猜成语")
 shortcut("提示", ["--hint"], aliases={"给个提示"}, rule=game_running)
 shortcut("结束", ["--stop"], aliases={"停止游戏", "结束游戏"}, rule=game_running)
 
