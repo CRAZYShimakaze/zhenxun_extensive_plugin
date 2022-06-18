@@ -241,9 +241,8 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent,
             msg = ""
             if game.state == GameState.WIN:
                 if isinstance(event, GroupMessageEvent):
-                    await BagUser.add_gold(starter, event.group_id,
-                                           options.row * options.col)
-                    msg = f"恭喜你获得游戏胜利！奖励你{options.row * options.col}金币！"
+                    await BagUser.add_gold(starter_id, event.group_id, 10)
+                    msg = f"恭喜你获得游戏胜利！奖励你10金币！"
                 else:
                     msg = "恭喜你获得游戏胜利！"
             elif game.state == GameState.FAIL:
