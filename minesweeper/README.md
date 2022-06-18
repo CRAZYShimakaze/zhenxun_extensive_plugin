@@ -1,8 +1,10 @@
-# work
-zhenxun_bot 扫雷插件
-
-扫雷游戏，移植自[MeetWq](https://github.com/noneplugin/nonebot-plugin-minesweeper)，默认完成游戏时奖励10金币
-
+# minesweeper
+zhenxun_bot 扫雷游戏
+移植自[MeetWq](https://github.com/noneplugin/nonebot-plugin-minesweeper)，默认完成游戏时奖励10金币
+## 安装
+```
+pip install nonebot_plugin_minesweeper
+```
 ## 使用
 - 扫雷 开始游戏；
 - 扫雷初级 / 扫雷中级 / 扫雷高级 可开始不同难度的游戏；
