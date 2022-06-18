@@ -16,13 +16,15 @@ zhenxun_bot 猜成语赚金币插件
 
 可发送“结束”结束游戏；可发送“提示”查看提示。
 
-参考自[zhenxun_plugin_handle](https://github.com/yajiwa/zhenxun_plugin_handle)
+参考自[yajiwa](https://github.com/yajiwa/zhenxun_plugin_handle)
 ## 使用
-- @机器人+猜成语
+- 猜成语
 - 提示
 - 结束游戏
 ### 更新
+**2022/6/18**[v0.2]
 
+1. 修改为开始游戏时无需@真寻
 **2022/6/11**[v0.1]
 
 1. 初版
