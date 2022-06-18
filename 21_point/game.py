@@ -218,7 +218,7 @@ async def count_score(game: Deck, player_win: int):
 
     winner_point += winner_dif_point
     loser_point += loser_dif_point
-    await BagUser.spend_gold(loser, game.group, loser_dif_point)
+    await BagUser.spend_gold(loser, game.group, -loser_dif_point)
     await BagUser.add_gold(winner, game.group, winner_dif_point)
 
     words = f"{winner_name}获胜\n{winner_name}获得{game.point}金币！并且获得{winner_bonus}金币奖励\n" \
