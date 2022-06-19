@@ -87,8 +87,8 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
         if event.user_id == cal_player[event.group_id]['player']:
             cost_time = int(time.time() - cal_player[event.group_id]["time"])
             if cost_time > 60:
-                await submit.finish(f"你用时{cost_time}秒,算得太慢了,请重新申请吧！",
-                                    at_sender=True)
+                await submit.send(f"你用时{cost_time}秒,算得太慢了,请重新申请吧！",
+                                  at_sender=True)
             else:
                 msg = arg.extract_plain_text().strip().split()
                 await submit.send(f"哼哼哼,检查结果ing...")
@@ -113,8 +113,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                         message=
                         f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{cnt}金币,工资太低不需要交税!",
                         at_sender=True)
-                cal_player = {}
-                return
+            cal_player[event.group_id] = {}
         else:
             await submit.finish(
                 random.choice([
@@ -132,7 +131,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     global cal_player
     try:
         if cal_player[event.group_id]['player']:
-            cal_player = {}
+            cal_player[event.group_id] = {}
             await submit.finish("游戏已结束!")
     except:
         pass
