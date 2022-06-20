@@ -23,18 +23,18 @@ async def get_alc_image(path: Path, uid: str,
     browser = await get_browser()
     page = await browser.new_page()
     try:
-        await page.goto(url, timeout=0)
+        await page.goto(url, timeout=300000)
         await page.set_viewport_size({"width": 2560, "height": 1080})
         await page.evaluate(
             "document.getElementsByClassName('Dropdown-list')[0].children[13].dispatchEvent(new Event('click'));"
         )
         if chara == 'none':
-            await page.wait_for_load_state("networkidle")
+            await page.wait_for_load_state("networkidle", timeout=300000)
             await page.locator('div.Card').screenshot(path=path / f"{uid}.png")
             await page.close()
             #await browser.close()
             return image(path / f"{uid}.png")
-        html = await page.inner_html(".CharacterList")
+        html = await page.inner_html(".CharacterList", timeout=300000)
         soup = BeautifulSoup(html, "html.parser")
         styles = [figure["style"] for figure in soup.find_all("figure")]
         #print(styles)
@@ -48,7 +48,12 @@ async def get_alc_image(path: Path, uid: str,
         if index == -1 or not chara_src:
             return
         await page.locator(f'div.avatar.svelte-188i0pk >> nth={index}').click()
-        await page.wait_for_load_state("networkidle", timeout=0)
+        # Click [placeholder="Custom\ text\.\.\."]
+        await page.click("[placeholder=\"Custom\\ text\\.\\.\\.\"]")
+        # Fill [placeholder="Custom\ text\.\.\."]
+        await page.fill("[placeholder=\"Custom\\ text\\.\\.\\.\"]",
+                        f"UID({uid})")
+        await page.wait_for_load_state("networkidle", timeout=300000)
         await page.locator('div.Card').screenshot(path=path / f"{uid}.png")
         await page.close()
         #await browser.close()

@@ -91,7 +91,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         return
     if alc_img:
         mes = alc_img + f"\nUID({str(uid)})的角色卡片"
-        await char_card.send(mes,at_sender=True)
+        await char_card.send(mes, at_sender=True)
         logger.info(
             f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
             f" 发送原神角色卡")
