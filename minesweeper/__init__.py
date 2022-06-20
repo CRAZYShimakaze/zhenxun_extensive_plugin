@@ -138,7 +138,6 @@ shortcut("查看游戏", ["--show"],
          rule=game_running)
 shortcut("结束扫雷", ["--stop"], rule=game_running)
 
-starter_id = -1
 
 
 async def stop_game(matcher: Matcher, cid: str):
@@ -160,7 +159,6 @@ def set_timeout(matcher: Matcher, cid: str, timeout: float = 600):
 
 async def handle_minesweeper(matcher: Matcher, event: MessageEvent,
                              argv: List[str]):
-    global starter_id
 
     async def send(message: Optional[str] = None,
                    image: Optional[BytesIO] = None) -> NoReturn:
@@ -195,8 +193,8 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent,
         if options.col < 8 or options.col > 30:
             await send("列数应在8~30之间")
 
-        if options.num < 10 or options.num > options.row * options.col:
-            await send("地雷数应不少于10且不多于行数*列数")
+        if options.num < 10 or options.num > options.row * options.col * 3 // 4:
+            await send("地雷数应不少于10且不多于行数*列数的3/4")
 
         if options.skin not in skin_list:
             await send("支持的皮肤：" + ", ".join(skin_list))
@@ -241,7 +239,7 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent,
             msg = ""
             if game.state == GameState.WIN:
                 if isinstance(event, GroupMessageEvent):
-                    await BagUser.add_gold(starter_id, event.group_id, 10)
+                    await BagUser.add_gold(event.user_id, event.group_id, 10)
                     msg = f"恭喜你获得游戏胜利！奖励你10金币！"
                 else:
                     msg = "恭喜你获得游戏胜利！"
