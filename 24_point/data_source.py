@@ -21,9 +21,9 @@ class Draw_Handle:
         self.font_color = "#000000"  # 文字颜色
         self.font_size_char = 60
 
-    def get_tff(self):
+    async def get_tff(self):
         font_size_char = 90  # 汉字字体大小
-        self.font_char = load_font("Consolas.ttf", font_size_char)
+        self.font_char = await load_font("Consolas.ttf", font_size_char)
 
     def draw_block(self,
                    color: str,

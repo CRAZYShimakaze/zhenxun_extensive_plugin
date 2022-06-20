@@ -5,10 +5,20 @@ from PIL.Image import Image as IMG
 from configs.path_config import FONT_PATH
 from PIL import ImageFont
 from PIL.ImageFont import FreeTypeFont
+from utils.http_utils import AsyncHttpx
 
 
-def load_font(name: str, fontsize: int) -> FreeTypeFont:
+async def load_font(name: str, fontsize: int) -> FreeTypeFont:
     tff_path = FONT_PATH / name
+    if not tff_path.exists():
+        try:
+            url = "https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{}".format(
+                name)
+            await AsyncHttpx.download_file(url, tff_path)
+        except:
+            url = "https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{}".format(
+                name)
+            await AsyncHttpx.download_file(url, tff_path)
     return ImageFont.truetype(str(tff_path), fontsize, encoding="utf-8")
 
 

@@ -54,7 +54,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     else:
         question[event.group_id], answer[event.group_id] = random_question()
         handle = Draw_Handle()
-        handle.get_tff()
+        await handle.get_tff()
         handle.question = question[event.group_id]
         pic = MessageSegment.image(handle.draw())
         await bot.send(event, f"发送'解答'+答案,使用+-*/算出24(可使用括号):\n" + pic)
