@@ -77,13 +77,13 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     if len(msg) == 2:
         if msg[1] in characters:
             chara = characters[msg[1]]
-            await char_card.send("开始获取角色信息,预计需要30秒...")
+            await char_card.send("开始获取角色信息,预计需要60秒...")
         else:
             await char_card.send("请输入正确五星角色名...")
             return
     else:
         chara = 'none'
-        await char_card.send("未指定角色,默认橱窗第一位,预计需要30秒...")
+        await char_card.send("未指定角色,默认橱窗第一位,预计需要60秒...")
     try:
         alc_img = await get_alc_image(CARD_PATH, str(uid), chara)
     except Exception as e:
