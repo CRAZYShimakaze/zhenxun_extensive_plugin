@@ -34,7 +34,7 @@ grade = on_command("原神角色评级", priority=15, block=True)
 
 @equip.handle()
 async def hf(bot: Bot, ev: Event):
-    address_list = "https://s3.bmp.ovh/imgs/2022/06/04/14c1872b9c991383.png"
+    address_list = "https://s3.bmp.ovh/imgs/2022/06/29/4d3604c520931661.jpg"
     try:
         choose = address_list
         img = await AsyncHttpx().get(choose)
@@ -45,7 +45,7 @@ async def hf(bot: Bot, ev: Event):
 
 @grade.handle()
 async def hf(bot: Bot, ev: Event):
-    address_list = "https://s3.bmp.ovh/imgs/2022/06/04/4cfe79ce21237663.png"
+    address_list = "https://s3.bmp.ovh/imgs/2022/06/29/a14321fa76effc6e.jpg"
     try:
         choose = address_list
         img = await AsyncHttpx().get(choose)
