@@ -33,7 +33,6 @@ __plugin_settings__ = {
 }
 
 char_card = on_command("原神角色卡", priority=15, block=True)
-
 characters = {
     '钟离': 'zhongli',
     '神里绫华': 'ayaka',
@@ -83,72 +82,78 @@ characters = {
     '辛焱': 'xinyan',
     '久岐忍': 'shinobu',
     '五郎': 'gorou',
-    '菲谢尔': 'fischl'
+    '菲谢尔': 'fischl',
+    '鹿野院平藏': 'heizou',
 }
 char_occupy = False
 
 
 @char_card.handle()
 async def _(event: MessageEvent, arg: Message = CommandArg()):
-    global char_cache, char_occupy
-    if char_occupy:
-        await char_card.finish("当前正有角色正在查询,请稍后再试...")
-    #char_occupy = True
-    msg = arg.extract_plain_text().strip().split()
-    #print(msg)
+    global char_occupy
     try:
-        uid = int(msg[0])
-    except:
-        await char_card.send("请输入正确uid...")
-        char_occupy = False
-        return
-    if len(msg) == 2:
-        if msg[1] in characters:
-            chara = characters[msg[1]]
-            await char_card.send("开始获取角色信息...")
-        else:
-            await char_card.send("请输入正确角色名...")
+        if char_occupy:
+            await char_card.finish("当前正有角色正在查询,请稍后再试...")
+        char_occupy = True
+        msg = arg.extract_plain_text().strip().split()
+        #print(msg)
+        try:
+            uid = int(msg[0])
+        except:
+            await char_card.send("请输入正确uid...")
             char_occupy = False
             return
-    else:
-        chara = 'none'
-        await char_card.send("未指定角色,默认橱窗第一位...")
-    char_list, page = await get_char_list(str(uid))
-    logger.info(f"角色获取完成！{char_list}")
-    if char_list != None:
-        char_hanzi = []
-        char_lower = [item.lower() for item in char_list]
-        for item in characters.keys():
-            for tar in char_lower:
-                if characters[item] in tar:
-                    char_hanzi.append(item)
-                    break
-    else:
+        if len(msg) == 2:
+            if msg[1] in characters:
+                chara = characters[msg[1]]
+                await char_card.send("开始获取角色信息...")
+            else:
+                await char_card.send("请输入正确角色名...")
+                char_occupy = False
+                return
+        else:
+            chara = 'none'
+            await char_card.send("未指定角色,默认橱窗第一位...")
+        char_list, page = await get_char_list(str(uid))
+        logger.info(f"角色获取完成！{char_list}")
+        if char_list != None:
+            char_hanzi = []
+            char_lower = [item.lower() for item in char_list]
+            for item in characters.keys():
+                for tar in char_lower:
+                    if characters[item] in tar:
+                        char_hanzi.append(item)
+                        break
+        else:
+            char_occupy = False
+            await char_card.send(f"获取UID({str(uid)})角色信息超时,请检查是否已开放详细信息权限！",
+                                 at_sender=True)
+            return
+        alc_img = await get_alc_image(str(uid), chara, page, char_list)
+        logger.info(f"角色卡获取完成！")
+        if alc_img:
+            mes = alc_img + f"\n可查询角色:{','.join(char_hanzi)}"
+            await char_card.send(mes, at_sender=True)
+            char_occupy = False
+            logger.info(
+                f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
+                f" 发送原神角色卡")
+        else:
+            await char_card.send(
+                f"获取UID({str(uid)})角色信息失败,请检查是否已放入指定角色!\n可查询角色:{','.join(char_hanzi)}",
+                at_sender=True)
+            char_occupy = False
+        #try:
+        #    version = await check_update()
+        #    if float(version) > __plugin_version__ and version != '':
+        #        logger.info(
+        #            f"[genshin_role_card]发现插件版本更新{version}!请前往github项目获取更新！")
+        #except Exception as e:
+        #    logger.warning(f"{e}")
+    except Exception as e:
         char_occupy = False
-        await char_card.send(f"获取UID({str(uid)})角色信息超时,请检查是否已开放详细信息权限！",
-                             at_sender=True)
-        return
-    alc_img = await get_alc_image(str(uid), chara, page, char_list)
-    logger.info(f"角色卡获取完成！")
-    if alc_img:
-        mes = alc_img + f"\n可查询角色:{','.join(char_hanzi)}"
-        await char_card.send(mes, at_sender=True)
-        char_occupy = False
-        logger.info(
-            f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
-            f" 发送原神角色卡")
-    else:
-        await char_card.send(
-            f"获取UID({str(uid)})角色信息失败,请检查是否已放入指定角色!\n可查询角色:{','.join(char_hanzi)}",
-            at_sender=True)
-        char_occupy = False
-    #try:
-    #    version = await check_update()
-    #    if float(version) > __plugin_version__ and version != '':
-    #        logger.info(
-    #            f"[genshin_role_card]发现插件版本更新{version}!请前往github项目获取更新！")
-    #except Exception as e:
-    #    logger.warning(f"{e}")
+        #await char_card.send(f"获取UID({str(uid)})角色信息失败!", at_sender=True)
+        print(e)
 
 
 async def check_update() -> str:
