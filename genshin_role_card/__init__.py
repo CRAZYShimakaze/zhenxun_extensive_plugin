@@ -83,7 +83,7 @@ characters = {
     '久岐忍': 'shinobu',
     '五郎': 'gorou',
     '菲谢尔': 'fischl',
-    '鹿野院平藏': 'heizou',
+    '鹿野院平藏': 'heizo',
 }
 char_occupy = False
 
