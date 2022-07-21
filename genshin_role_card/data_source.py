@@ -27,6 +27,11 @@ async def get_char_list(uid: str):
         logger.info(f"打开网页...")
         await page_genshin.goto(url, timeout=100000)
         logger.info(f"网页打开完成！{str(time.time()-s)}s")
+        visible = await page_genshin.locator('div.Message.svelte-m8zp9l'
+                                             ).is_visible()
+        if visible:
+            logger.info(f"未开详细信息权限!")
+            return None, None
         s = time.time()
         await page_genshin.set_viewport_size({"width": 2560, "height": 1080})
         html = await page_genshin.inner_html(".CharacterList", timeout=100000)

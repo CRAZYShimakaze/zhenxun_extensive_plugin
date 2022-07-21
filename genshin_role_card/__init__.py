@@ -65,7 +65,7 @@ characters = {
     '班尼特': 'bennett',
     '九条裟罗': 'sara',
     '砂糖': 'sucrose',
-    '诺艾尔': 'noelle',
+    '诺艾尔': 'noel',
     '迪奥娜': 'diona',
     '芭芭拉': 'barbara',
     '早柚': 'sayu',
