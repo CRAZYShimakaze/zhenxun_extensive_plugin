@@ -140,7 +140,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                     ex_moneys = 0
                     ex_message = ""
                     if cnt == timu_num and quirky != 0 :
-                        ex_moneys = math.ceil(dati_time*quirky)
+                        ex_moneys = math.ceil((dati_time-cost_time)*quirky)
                         ex_message = f",其中快答奖励{ex_moneys}金币"
                     await BagUser.add_gold(event.user_id, event.group_id,
                                            moneys[cnt-1] + ex_moneys - tax)
