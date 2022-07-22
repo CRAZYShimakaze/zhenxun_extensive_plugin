@@ -36,8 +36,7 @@ grade = on_command("原神角色评级", priority=15, block=True)
 async def hf(bot: Bot, ev: Event):
     address_list = "https://s3.bmp.ovh/imgs/2022/07/22/acfdef7475a0f074.jpg"
     try:
-        choose = address_list
-        img = await AsyncHttpx().get(choose)
+        img = await AsyncHttpx().get(address_list)
     except:
         return await bot.send(event=ev, message="获取装备推荐超时")
     await bot.send(event=ev, message=MessageSegment.image(img.content))
@@ -47,8 +46,7 @@ async def hf(bot: Bot, ev: Event):
 async def hf(bot: Bot, ev: Event):
     address_list = "https://s3.bmp.ovh/imgs/2022/07/22/6ba3597e34f1ef67.jpg"
     try:
-        choose = address_list
-        img = await AsyncHttpx().get(choose)
+        img = await AsyncHttpx().get(address_list)
     except:
         return await bot.send(event=ev, message="获取角色评级超时")
     await bot.send(event=ev, message=MessageSegment.image(img.content))
