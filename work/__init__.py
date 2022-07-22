@@ -62,17 +62,17 @@ __plugin_configs__ = {
 }
 
 # 工资，对应答对题目数
-moneys = Config.get_config("work", "MONEYS", [0, 10, 50, 200, 200])
+moneys = Config.get_config("work", "MONEYS")
 # 快答奖励基数（剩余时长*基数=快答奖励，全作对才有快答奖励哦），设置为0则关闭快答奖励
-quirky = Config.get_config("work", "QUIRKY", 0.8)
+quirky = Config.get_config("work", "QUIRKY")
 # 答题数量
-timu_num = Config.get_config("work", "TIMU_NUM", 5)
+timu_num = Config.get_config("work", "TIMU_NUM")
 # 答题时长(秒)
-dati_time = Config.get_config("work", "DATI_TIME", 120)
+dati_time = Config.get_config("work", "DATI_TIME")
 
 # 防止题目数量与工资数组不对应
-if len(moneys)<timu_num :
-    for x in range(timu_num-len(moneys)):
+if len(moneys) < timu_num:
+    for x in range(timu_num - len(moneys)):
         moneys.append(200)
 
 cal_player = {}
@@ -93,14 +93,14 @@ async def _(bot: Bot,
     if arg:
         return
     try:
-        if (cal_player[event.group_id]['player'] == event.user_id
-                and time.time() - cal_player[event.group_id]["time"] <= dati_time):
+        if (cal_player[event.group_id]['player'] == event.user_id and
+                time.time() - cal_player[event.group_id]["time"] <= dati_time):
             await start.finish(f'你现在已经在打工了!\n认真一点啊喂...')
-        elif (cal_player[event.group_id]['player']
-              and time.time() - cal_player[event.group_id]["time"] <= dati_time):
+        elif (cal_player[event.group_id]['player'] and
+              time.time() - cal_player[event.group_id]["time"] <= dati_time):
             await start.finish(f'现在有人正在打工\n请稍后再开始下一轮...')
-        elif (cal_player[event.group_id]['player']
-              and time.time() - cal_player[event.group_id]["time"] > dati_time):
+        elif (cal_player[event.group_id]['player'] and
+              time.time() - cal_player[event.group_id]["time"] > dati_time):
             cal_player = {}
     except KeyError:
         pass
@@ -134,23 +134,24 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                 tax = 0
                 if not cnt:
                     await bot.send(event, message=f"你太菜了,竟然一道也没做出来!")
-                elif cnt > math.ceil(timu_num/3):
+                elif cnt > math.ceil(timu_num / 3):
                     tax = random.randint(0, 2)
                     # 快答奖励
                     ex_moneys = 0
                     ex_message = ""
-                    if cnt == timu_num and quirky != 0 :
-                        ex_moneys = math.ceil((dati_time-cost_time)*quirky)
+                    if cnt == timu_num and quirky != 0:
+                        ex_moneys = math.ceil((dati_time - cost_time) * quirky)
                         ex_message = f",其中快答奖励{ex_moneys}金币"
                     await BagUser.add_gold(event.user_id, event.group_id,
-                                           moneys[cnt-1] + ex_moneys - tax)
+                                           moneys[cnt - 1] + ex_moneys - tax)
                     await bot.send(
                         event,
                         message=
                         f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{moneys[cnt-1] + ex_moneys}金币{ex_message},扣税后得到{(moneys[cnt-1]) + ex_moneys - tax}金币!",
                         at_sender=True)
                 else:
-                    await BagUser.add_gold(event.user_id, event.group_id, (moneys[cnt-1]))
+                    await BagUser.add_gold(event.user_id, event.group_id,
+                                           (moneys[cnt - 1]))
                     await bot.send(
                         event,
                         message=
