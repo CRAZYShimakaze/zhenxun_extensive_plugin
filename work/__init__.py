@@ -38,28 +38,34 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
-__plugin_configs__ = {
-    "TIMU_NUM": {
-        "value": 5,
-        "help": "题目数量",
-        "default_value": 5,
-    },
-    "DATI_TIME": {
-        "value": 120,
-        "help": "答题时长(秒)",
-        "default_value": 120,
-    },
-    "MONEYS": {
-        "value": [0, 50, 100, 200, 200],
-        "help": "工资，对应答对题目数",
-        "default_value": [0, 10, 50, 200, 200],
-    },
-    "QUIRKY": {
-        "value": 0.8,
-        "help": "快答奖励基数（剩余时长*基数=快答奖励，全作对才有快答奖励哦），设置为0则关闭快答奖励",
-        "default_value": 0.8,
-    }
-}
+Config.add_plugin_config(
+        "work",
+        "TIMU_NUM",
+        5,
+        help_="题目数量",
+        default_value=5,
+)
+Config.add_plugin_config(
+        "work",
+        "DATI_TIME",
+        120,
+        help_="答题时长(秒)",
+        default_value=120,
+)
+Config.add_plugin_config(
+        "work",
+        "MONEYS",
+        [0, 50, 100, 200, 200],
+        help_="工资，对应答对题目数",
+        default_value=[0, 10, 50, 200, 200],
+)
+Config.add_plugin_config(
+        "work",
+        "QUIRKY",
+        0.8,
+        help_="快答奖励基数（剩余时长*基数=快答奖励，全作对才有快答奖励哦），设置为0则关闭快答奖励",
+        default_value=0.8,
+)
 
 # 工资，对应答对题目数
 moneys = Config.get_config("work", "MONEYS")
