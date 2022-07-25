@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 from nonebot.adapters.onebot.v11.event import Event
 from utils.http_utils import AsyncHttpx
 
-__zx_plugin_name__ = "角色评级和配装"
+__zx_plugin_name__ = "原神角色评级/配装"
 __plugin_usage__ = """
 usage：
     查询角色配装或角色评级推荐
@@ -34,10 +34,9 @@ grade = on_command("原神角色评级", priority=15, block=True)
 
 @equip.handle()
 async def hf(bot: Bot, ev: Event):
-    address_list = "https://s3.bmp.ovh/imgs/2022/06/29/4d3604c520931661.jpg"
+    address_list = "https://s3.bmp.ovh/imgs/2022/07/22/acfdef7475a0f074.jpg"
     try:
-        choose = address_list
-        img = await AsyncHttpx().get(choose)
+        img = await AsyncHttpx().get(address_list)
     except:
         return await bot.send(event=ev, message="获取装备推荐超时")
     await bot.send(event=ev, message=MessageSegment.image(img.content))
@@ -45,10 +44,9 @@ async def hf(bot: Bot, ev: Event):
 
 @grade.handle()
 async def hf(bot: Bot, ev: Event):
-    address_list = "https://s3.bmp.ovh/imgs/2022/06/29/a14321fa76effc6e.jpg"
+    address_list = "https://s3.bmp.ovh/imgs/2022/07/22/6ba3597e34f1ef67.jpg"
     try:
-        choose = address_list
-        img = await AsyncHttpx().get(choose)
+        img = await AsyncHttpx().get(address_list)
     except:
         return await bot.send(event=ev, message="获取角色评级超时")
     await bot.send(event=ev, message=MessageSegment.image(img.content))
