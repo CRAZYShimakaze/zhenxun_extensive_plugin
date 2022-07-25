@@ -41,11 +41,11 @@ __plugin_settings__ = {
     "cmd": __plugin_cmd__,
 }
 Config.add_plugin_config(
-        "idiom_salon",
-        "DATI_TIME",
-        40,
-        help_="答题时间",
-        default_value=40,
+    "idiom_salon",
+    "DATI_TIME",
+    40,
+    help_="答题时间",
+    default_value=40,
 )
 
 vs_player = {}
@@ -59,6 +59,7 @@ stop_game = on_command("接龙结算", permission=GROUP, priority=5, block=True)
 
 check_url = 'https://api.iyk0.com/idiom/?msg={}&b=1'
 
+
 @start.handle()
 async def _(bot: Bot,
             event: GroupMessageEvent,
@@ -66,24 +67,40 @@ async def _(bot: Bot,
             arg: Message = CommandArg()):
     global vs_player
     try:
-        if vs_player[event.group_id]["player1"] == event.user_id or vs_player[event.group_id]["player2"] == event.user_id:
-            await start.finish(f'你现在已经在游戏中了!\n认真一点啊喂...',at_sender=True)
-        elif ((vs_player[event.group_id]["player1"] and vs_player[event.group_id]["player2"]) and
+        if vs_player[event.group_id]["player1"] == event.user_id or vs_player[
+                event.group_id]["player2"] == event.user_id:
+            await start.finish(f'你现在已经在游戏中了!\n认真一点啊喂...', at_sender=True)
+        elif ((vs_player[event.group_id]["player1"]
+               and vs_player[event.group_id]["player2"]) and
               time.time() - vs_player[event.group_id]["time"] <= dati_time):
             await start.finish(f'对局正在进行\n请稍后再开始下一轮...')
-        elif vs_player[event.group_id]["player1"] and 0 == vs_player[event.group_id]["player2"]:
+        elif vs_player[event.group_id]["player1"] and 0 == vs_player[
+                event.group_id]["player2"]:
             await start.send(f'上局流局！新开局！\n')
             vs_player = {}
-        elif ((vs_player[event.group_id]["player1"] and vs_player[event.group_id]["player2"]) and
-              time.time() - vs_player[event.group_id]["time"] > dati_time):
-            winner = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2"]
-            loser = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2"]
-            winner_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2_name"]
-            loser_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2_name"]
+        elif ((vs_player[event.group_id]["player1"]
+               and vs_player[event.group_id]["player2"])
+              and time.time() - vs_player[event.group_id]["time"] > dati_time):
+            winner = vs_player[event.group_id]["player1"] if vs_player[
+                event.group_id]['next_player'] == 2 else vs_player[
+                    event.group_id]["player2"]
+            loser = vs_player[event.group_id]["player1"] if vs_player[
+                event.group_id]['next_player'] == 1 else vs_player[
+                    event.group_id]["player2"]
+            winner_name = vs_player[
+                event.group_id]["player1_name"] if vs_player[
+                    event.group_id]['next_player'] == 2 else vs_player[
+                        event.group_id]["player2_name"]
+            loser_name = vs_player[
+                event.group_id]["player1_name"] if vs_player[
+                    event.group_id]['next_player'] == 1 else vs_player[
+                        event.group_id]["player2_name"]
             coin = vs_player[event.group_id]['coin']
-            await BagUser.add_gold(winner, event.group_id,coin)
-            await BagUser.spend_gold(loser, event.group_id,coin)
-            await start.send(f'上局超时，强行结算！\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n')
+            await BagUser.add_gold(winner, event.group_id, coin)
+            await BagUser.spend_gold(loser, event.group_id, coin)
+            await start.send(
+                f'上局超时，强行结算！\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n'
+            )
             vs_player = {}
     except KeyError:
         pass
@@ -99,8 +116,10 @@ async def _(bot: Bot,
     coin = int(msg[1])
     user_coin = await BagUser.get_gold(event.user_id, event.group_id)
     if user_coin < coin:
-        await start.finish("你的金币不够！",at_sender=True)
-    await start.send(f"已发起对局，请挑战者发送'接'+以{lazy_pinyin(idiom)[-1]}开头的成语，赌注{coin}金币！(之前说过的不能再说)",at_sender=True)
+        await start.finish("你的金币不够！", at_sender=True)
+    await start.send(
+        f"已发起对局，请挑战者发送'接'+以{lazy_pinyin(idiom)[-1]}开头的成语，赌注{coin}金币！(之前说过的不能再说)",
+        at_sender=True)
     vs_player[event.group_id] = {
         "player1": event.user_id,
         "player1_name": event.sender.card or event.sender.nickname,
@@ -109,8 +128,8 @@ async def _(bot: Bot,
         "time": time.time(),
         "next_idiom": lazy_pinyin(idiom)[-1],
         "next_player": 0,
-        "coin":coin,
-        "log":[idiom],
+        "coin": coin,
+        "log": [idiom],
     }
 
 
@@ -120,102 +139,159 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     try:
         if (event.user_id == vs_player[event.group_id]["player1"] and 2 == vs_player[event.group_id]["next_player"]) or \
            (event.user_id == vs_player[event.group_id]["player2"] and 1 == vs_player[event.group_id]["next_player"]):
-            await submit.finish(f"你自己跟自己搁这玩呢，大聪明？",at_sender=True)
-        elif event.user_id != vs_player[event.group_id]["player1"] and 0 == vs_player[event.group_id]["player2"]:
+            await submit.finish(f"你自己跟自己搁这玩呢，大聪明？", at_sender=True)
+        elif event.user_id != vs_player[event.group_id][
+                "player1"] and 0 == vs_player[event.group_id]["player2"]:
             user_coin = await BagUser.get_gold(event.user_id, event.group_id)
             if user_coin < vs_player[event.group_id]["coin"]:
-                await submit.finish("你的金币不够！",at_sender=True)
+                await submit.finish("你的金币不够！", at_sender=True)
             msg = arg.extract_plain_text().strip().split()
             if (not check_result(msg[0])) or len(msg) != 1:
-                await submit.finish(f"你确定{msg[0]}是成语？？？",at_sender=True)
-            if lazy_pinyin(msg[0])[0] != vs_player[event.group_id]["next_idiom"]:
-                    start_idiom = vs_player[event.group_id]["next_idiom"]
-                    await submit.finish(f"成语要以{start_idiom}开头啊喂！",at_sender=True)
+                await submit.finish(f"你确定{msg[0]}是成语？？？", at_sender=True)
+            if lazy_pinyin(
+                    msg[0])[0] != vs_player[event.group_id]["next_idiom"]:
+                start_idiom = vs_player[event.group_id]["next_idiom"]
+                await submit.finish(f"成语要以{start_idiom}开头啊喂！", at_sender=True)
             log_list = vs_player[event.group_id]["log"]
             if msg[0] in log_list:
-                await submit.finish(f"{msg[0]}已经被说过了！",at_sender=True)
+                await submit.finish(f"{msg[0]}已经被说过了！", at_sender=True)
             vs_player[event.group_id]["player2"] = event.user_id
-            vs_player[event.group_id]["player2_name"] = event.sender.card or event.sender.nickname
+            vs_player[event.group_id][
+                "player2_name"] = event.sender.card or event.sender.nickname
             vs_player[event.group_id]["time"] = time.time()
             vs_player[event.group_id]["next_player"] = 1
             vs_player[event.group_id]["next_idiom"] = lazy_pinyin(msg[0])[-1]
             vs_player[event.group_id]["log"].append(msg[0])
-            p2=vs_player[event.group_id]["player2_name"]
-            p1=vs_player[event.group_id]["player1"]
-            await submit.send(Message(f"{p2}接受对局！请{at(p1)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"))
-        elif event.user_id != vs_player[event.group_id]["player1"] and event.user_id != vs_player[event.group_id]["player2"]:
-            p2=vs_player[event.group_id]["player2_name"]
-            p1=vs_player[event.group_id]["player1_name"]
-            await submit.finish(f"别搁这捣乱，这是{p1}和{p2}的对局！",at_sender=True)
+            p2 = vs_player[event.group_id]["player2_name"]
+            p1 = vs_player[event.group_id]["player1"]
+            await submit.send(
+                Message(
+                    f"{p2}接受对局！请{at(p1)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"
+                ))
+        elif event.user_id != vs_player[
+                event.group_id]["player1"] and event.user_id != vs_player[
+                    event.group_id]["player2"]:
+            p2 = vs_player[event.group_id]["player2_name"]
+            p1 = vs_player[event.group_id]["player1_name"]
+            await submit.finish(f"别搁这捣乱，这是{p1}和{p2}的对局！", at_sender=True)
         elif (event.user_id == vs_player[event.group_id]["player1"] and 1 == vs_player[event.group_id]["next_player"]) or \
              (event.user_id == vs_player[event.group_id]["player2"] and 2 == vs_player[event.group_id]["next_player"]):
             cost_time = int(time.time() - vs_player[event.group_id]["time"])
             if cost_time > dati_time:
-                await submit.send(f"你用时{cost_time}秒,超时了！\n",
-                                  at_sender=True)
-                winner = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2"]
-                loser = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2"]
-                winner_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2_name"]
-                loser_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2_name"]
+                await submit.send(f"你用时{cost_time}秒,超时了！\n", at_sender=True)
+                winner = vs_player[event.group_id]["player1"] if vs_player[
+                    event.group_id]['next_player'] == 2 else vs_player[
+                        event.group_id]["player2"]
+                loser = vs_player[event.group_id]["player1"] if vs_player[
+                    event.group_id]['next_player'] == 1 else vs_player[
+                        event.group_id]["player2"]
+                winner_name = vs_player[
+                    event.group_id]["player1_name"] if vs_player[
+                        event.group_id]['next_player'] == 2 else vs_player[
+                            event.group_id]["player2_name"]
+                loser_name = vs_player[
+                    event.group_id]["player1_name"] if vs_player[
+                        event.group_id]['next_player'] == 1 else vs_player[
+                            event.group_id]["player2_name"]
                 coin = vs_player[event.group_id]['coin']
-                await BagUser.add_gold(winner, event.group_id,coin)
-                await BagUser.spend_gold(loser, event.group_id,coin)
+                await BagUser.add_gold(winner, event.group_id, coin)
+                await BagUser.spend_gold(loser, event.group_id, coin)
                 log_idiom = "->".join(vs_player[event.group_id]["log"])
-                await submit.send(f'答题超时，进行结算！对局详情:\n{log_idiom}\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n')
+                await submit.send(
+                    f'答题超时，进行结算！对局详情:\n{log_idiom}\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n'
+                )
                 vs_player[event.group_id] = {}
             else:
                 msg = arg.extract_plain_text().strip().split()
                 if (not check_result(msg[0])) or len(msg) != 1:
-                    await submit.finish(f"你确定{msg[0]}是成语？？？",at_sender=True)
-                if lazy_pinyin(msg[0])[0] != vs_player[event.group_id]["next_idiom"]:
+                    await submit.finish(f"你确定{msg[0]}是成语？？？", at_sender=True)
+                if lazy_pinyin(
+                        msg[0])[0] != vs_player[event.group_id]["next_idiom"]:
                     start_idiom = vs_player[event.group_id]["next_idiom"]
-                    await submit.finish(f"成语要以{start_idiom}开头啊喂！",at_sender=True)
+                    await submit.finish(f"成语要以{start_idiom}开头啊喂！",
+                                        at_sender=True)
                 log_list = vs_player[event.group_id]["log"]
                 if msg[0] in log_list:
-                    await submit.finish(f"{msg[0]}已经被说过了！",at_sender=True)
-                vs_player[event.group_id]["next_idiom"] = lazy_pinyin(msg[0])[-1]
-                vs_player[event.group_id]["next_player"] = 1 if vs_player[event.group_id]["next_player"] == 2 else 2
+                    await submit.finish(f"{msg[0]}已经被说过了！", at_sender=True)
+                vs_player[event.group_id]["next_idiom"] = lazy_pinyin(
+                    msg[0])[-1]
+                vs_player[event.group_id]["next_player"] = 1 if vs_player[
+                    event.group_id]["next_player"] == 2 else 2
                 vs_player[event.group_id]["time"] = time.time()
-                next_one = vs_player[event.group_id]["player1"] if vs_player[event.group_id]["next_player"] == 1 else vs_player[event.group_id]["player2"]
+                next_one = vs_player[event.group_id]["player1"] if vs_player[
+                    event.group_id]["next_player"] == 1 else vs_player[
+                        event.group_id]["player2"]
                 vs_player[event.group_id]["log"].append(msg[0])
-                await submit.send(Message(f"请{at(next_one)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"))
+                await submit.send(
+                    Message(
+                        f"请{at(next_one)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"
+                    ))
     except Exception as e:
         print(e)
         pass
+
 
 @stop_game.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     global vs_player
     try:
-        if 0 == vs_player[event.group_id]["player1"] or 0 == vs_player[event.group_id]["player2"]:
+        if 0 == vs_player[event.group_id]["player1"] or 0 == vs_player[
+                event.group_id]["player2"]:
             await stop_game.send(f'对局清零！')
-            vs_player = {}
-        elif ((vs_player[event.group_id]["player1"] and vs_player[event.group_id]["player2"]) and
-              time.time() - vs_player[event.group_id]["time"] > dati_time):
-            winner = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2"]
-            loser = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2"]
-            winner_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2_name"]
-            loser_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2_name"]
+            vs_player[event.group_id] = {}
+        elif ((vs_player[event.group_id]["player1"]
+               and vs_player[event.group_id]["player2"])
+              and time.time() - vs_player[event.group_id]["time"] > dati_time):
+            winner = vs_player[event.group_id]["player1"] if vs_player[
+                event.group_id]['next_player'] == 2 else vs_player[
+                    event.group_id]["player2"]
+            loser = vs_player[event.group_id]["player1"] if vs_player[
+                event.group_id]['next_player'] == 1 else vs_player[
+                    event.group_id]["player2"]
+            winner_name = vs_player[
+                event.group_id]["player1_name"] if vs_player[
+                    event.group_id]['next_player'] == 2 else vs_player[
+                        event.group_id]["player2_name"]
+            loser_name = vs_player[
+                event.group_id]["player1_name"] if vs_player[
+                    event.group_id]['next_player'] == 1 else vs_player[
+                        event.group_id]["player2_name"]
             coin = vs_player[event.group_id]['coin']
-            await BagUser.add_gold(winner, event.group_id,coin)
-            await BagUser.spend_gold(loser, event.group_id,coin)
+            await BagUser.add_gold(winner, event.group_id, coin)
+            await BagUser.spend_gold(loser, event.group_id, coin)
             log_idiom = "->".join(vs_player[event.group_id]["log"])
-            await stop_game.send(f'{loser_name}回答超时，强行结算！对局详情:\n{log_idiom}\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n')
-            vs_player = {}
-        elif ((vs_player[event.group_id]["player1"] and vs_player[event.group_id]["player2"]) and
-              event.user_id == vs_player[event.group_id]["next_player"]):
-            winner = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2"]
-            loser = vs_player[event.group_id]["player1"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2"]
-            winner_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 2 else vs_player[event.group_id]["player2_name"]
-            loser_name = vs_player[event.group_id]["player1_name"] if vs_player[event.group_id]['next_player'] == 1 else vs_player[event.group_id]["player2_name"]
+            await stop_game.send(
+                f'{loser_name}回答超时，强行结算！对局详情:\n{log_idiom}\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n'
+            )
+            vs_player[event.group_id] = {}
+        elif ((vs_player[event.group_id]["player1"]
+               and vs_player[event.group_id]["player2"])
+              and event.user_id == vs_player[event.group_id]["next_player"]):
+            winner = vs_player[event.group_id]["player1"] if vs_player[
+                event.group_id]['next_player'] == 2 else vs_player[
+                    event.group_id]["player2"]
+            loser = vs_player[event.group_id]["player1"] if vs_player[
+                event.group_id]['next_player'] == 1 else vs_player[
+                    event.group_id]["player2"]
+            winner_name = vs_player[
+                event.group_id]["player1_name"] if vs_player[
+                    event.group_id]['next_player'] == 2 else vs_player[
+                        event.group_id]["player2_name"]
+            loser_name = vs_player[
+                event.group_id]["player1_name"] if vs_player[
+                    event.group_id]['next_player'] == 1 else vs_player[
+                        event.group_id]["player2_name"]
             coin = vs_player[event.group_id]['coin']
-            await BagUser.add_gold(winner, event.group_id,coin)
-            await BagUser.spend_gold(loser, event.group_id,coin)
+            await BagUser.add_gold(winner, event.group_id, coin)
+            await BagUser.spend_gold(loser, event.group_id, coin)
             log_idiom = "->".join(vs_player[event.group_id]["log"])
-            await stop_game.send(f'{loser_name}认输，进行结算！对局详情:\n{log_idiom}\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n')
-            vs_player = {}
+            await stop_game.send(
+                f'{loser_name}认输，进行结算！对局详情:\n{log_idiom}\n{winner_name}胜利，赚取{coin}金币！\n{loser_name}失败，扣除{coin}金币！\n'
+            )
+            vs_player[event.group_id] = {}
     except:
         pass
+
 
 # 检查正确性
 def check_result(answer: str) -> int:
