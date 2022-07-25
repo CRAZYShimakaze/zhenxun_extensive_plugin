@@ -9,4 +9,5 @@
 - [扫雷赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/minesweeper)
 - [21点](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/21_point)
 - [24点](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/24_point)
+- [成语接龙](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/idiom_salon)
 - 待开发...
