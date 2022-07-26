@@ -10,7 +10,7 @@ from services.log import logger
 from pypinyin import lazy_pinyin
 from configs.config import NICKNAME, Config
 from typing import Tuple
-import random
+import os
 import asyncio
 import time
 import requests
@@ -57,7 +57,12 @@ submit = on_command("接", permission=GROUP, priority=5, block=True)
 
 stop_game = on_command("接龙结算", permission=GROUP, priority=5, block=True)
 
-check_url = 'https://api.iyk0.com/idiom/?msg={}&b=1'
+#check_url = 'https://api.vore.top/api/idiom?q={}'
+dirname, _ = os.path.split(os.path.abspath(__file__))
+work_dir = os.getcwd()
+rel_path = dirname.replace(work_dir + '/', '')
+idiom_data = open(f'{rel_path}/idiom.txt', 'r', encoding='utf-8')
+idiom_list = idiom_data.read()
 
 
 @start.handle()
@@ -298,9 +303,10 @@ def check_result(answer: str) -> int:
     for item in answer:
         if not '\u4e00' <= item <= '\u9fa5':
             return False
-    resp = requests.get(check_url.format(answer))
-    resp = resp.text
+    #resp = requests.get(check_url.format(answer))
+    #resp = resp.text
 
-    retdata = json.loads(resp)
-    code = retdata['code']
-    return True if code == 200 else False
+    #retdata = json.loads(resp)
+    #code = retdata['code']
+    return True if answer in idiom_list else False
+    #return True if code == 200 else Falsed
