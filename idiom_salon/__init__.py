@@ -56,7 +56,7 @@ start = on_command("成语接龙", permission=GROUP, priority=5, block=True)
 submit = on_command("接", permission=GROUP, priority=5, block=True)
 
 stop_game = on_command("接龙结算", permission=GROUP, priority=5, block=True)
-
+#可切换为使用api验证成语合法性
 #check_url = 'https://api.vore.top/api/idiom?q={}'
 dirname, _ = os.path.split(os.path.abspath(__file__))
 work_dir = os.getcwd()
@@ -144,7 +144,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     try:
         if (event.user_id == vs_player[event.group_id]["player1"] and 2 == vs_player[event.group_id]["next_player"]) or \
            (event.user_id == vs_player[event.group_id]["player2"] and 1 == vs_player[event.group_id]["next_player"]):
-            await submit.finish(f"你自己跟自己搁这玩呢，大聪明？", at_sender=True)
+            await submit.finish(f"你搁这自己跟自己玩呢，大聪明？", at_sender=True)
         elif event.user_id != vs_player[event.group_id][
                 "player1"] and 0 == vs_player[event.group_id]["player2"]:
             user_coin = await BagUser.get_gold(event.user_id, event.group_id)
@@ -303,10 +303,12 @@ def check_result(answer: str) -> int:
     for item in answer:
         if not '\u4e00' <= item <= '\u9fa5':
             return False
+    #使用本地词库验证成语合法性
+    return True if answer in idiom_list else False
+    #以下为使用api验证成语合法性
     #resp = requests.get(check_url.format(answer))
     #resp = resp.text
 
     #retdata = json.loads(resp)
     #code = retdata['code']
-    return True if answer in idiom_list else False
     #return True if code == 200 else Falsed
