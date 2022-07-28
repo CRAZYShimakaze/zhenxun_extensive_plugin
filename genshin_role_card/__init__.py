@@ -31,6 +31,13 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": ["原神角色卡"],
 }
+Config.add_plugin_config(
+    "genshin_char_card",
+    "CHAR_OCCUPY",
+    True,
+    help_="原神角色卡并行限制，值为True时，查询期间只允许一个查询，跨群生效",
+    default_value=True,
+)
 
 char_card = on_command("原神角色卡", priority=15, block=True)
 characters = {
@@ -86,6 +93,7 @@ characters = {
     '鹿野院平藏': 'heizo',
 }
 char_occupy = False
+config_char_occupy = Config.get_config("genshin_char_card", "CHAR_OCCUPY")
 
 
 @char_card.handle()
@@ -94,14 +102,16 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     try:
         if char_occupy:
             await char_card.finish("当前正有角色正在查询,请稍后再试...")
-        #char_occupy = True
+        if not config_char_occupy:
+            char_occupy = True
         msg = arg.extract_plain_text().strip().split()
         #print(msg)
         try:
             uid = int(msg[0])
-        except:
+        except Exception:
             await char_card.send("请输入正确uid...")
-            #char_occupy = False
+            if not config_char_occupy:
+                char_occupy = False
             return
         if len(msg) == 2:
             if msg[1] in characters:
@@ -109,7 +119,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                 await char_card.send("开始获取角色信息...")
             else:
                 await char_card.send("请输入正确角色名...")
-                #char_occupy = False
+                if not config_char_occupy:
+                    char_occupy = False
                 return
         else:
             chara = 'none'
@@ -125,7 +136,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                         char_hanzi.append(item)
                         break
         else:
-            #char_occupy = False
+            if not config_char_occupy:
+                char_occupy = False
             await char_card.send(f"获取UID({str(uid)})角色信息超时,请检查是否已开放详细信息权限！",
                                  at_sender=True)
             return
@@ -134,7 +146,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         if alc_img:
             mes = alc_img + f"\n可查询角色:{','.join(char_hanzi)}"
             await char_card.send(mes, at_sender=True)
-            #char_occupy = False
+            if not config_char_occupy:
+                char_occupy = False
             logger.info(
                 f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
                 f" 发送原神角色卡")
