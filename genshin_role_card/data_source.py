@@ -19,7 +19,7 @@ async def get_char_list(uid: str):
     global browser_genshin  #, page_genshin
     url = f"https://enka.shinshin.moe/u/{uid}"
     s = time.time()
-    if browser_genshin == None:
+    if browser_genshin is None:
         browser_genshin = await get_browser()
     #if page_genshin == None:
     page_genshin = await browser_genshin.new_page()
@@ -40,8 +40,8 @@ async def get_char_list(uid: str):
         soup = BeautifulSoup(html, "html.parser")
         styles = [figure["style"] for figure in soup.find_all("figure")]
         return styles, page_genshin
-    except:
-        #page_genshin.close()
+    except Exception:
+        await page_genshin.close()
         return None, None
 
 
@@ -66,7 +66,7 @@ async def get_alc_image(uid, chara, page_genshin, styles):
             await page_genshin.wait_for_load_state("networkidle",
                                                    timeout=100000)
             card = image(await page_genshin.locator('div.Card').screenshot())
-            #await page_genshin.close()
+            await page_genshin.close()
             #await browser_genshin.close()
             return card
         index = -1
@@ -91,11 +91,11 @@ async def get_alc_image(uid, chara, page_genshin, styles):
         logger.info(f"角色载入完成！{str(time.time()-s)}s")
         s = time.time()
         card = image(await page_genshin.locator('div.Card').screenshot())
-        #await page_genshin.close()
+        await page_genshin.close()
         #await browser_genshin.close()
         return card
     except Exception as e:
         print(e)
-        #await page_genshin.close()
+        await page_genshin.close()
         #await browser.close()
         return None
