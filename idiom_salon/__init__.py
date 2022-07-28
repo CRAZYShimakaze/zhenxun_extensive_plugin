@@ -9,7 +9,8 @@ from models.bag_user import BagUser
 from services.log import logger
 from pypinyin import lazy_pinyin
 from configs.config import NICKNAME, Config
-from typing import Tuple
+from typing import Tuple, Dict
+from asyncio import TimerHandle
 import os
 import asyncio
 import time
@@ -49,6 +50,7 @@ Config.add_plugin_config(
 )
 
 vs_player = {}
+timers: Dict[str, TimerHandle] = {}
 dati_time = Config.get_config("idiom_salon", "DATI_TIME")
 
 start = on_command("成语接龙", permission=GROUP, priority=5, block=True)
@@ -136,6 +138,7 @@ async def _(bot: Bot,
         "coin": coin,
         "log": [idiom],
     }
+    await set_timeout(bot, event, event.group_id)
 
 
 @submit.handle()
@@ -237,8 +240,9 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
 
 
 @stop_game.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def stop_g(bot: Bot, event: GroupMessageEvent):
     global vs_player
+    timers.pop(event.group_id, None)
     try:
         if 0 == vs_player[event.group_id]["player1"] or 0 == vs_player[
                 event.group_id]["player2"]:
@@ -312,3 +316,14 @@ def check_result(answer: str) -> int:
     #retdata = json.loads(resp)
     #code = retdata['code']
     #return True if code == 200 else Falsed
+
+
+async def set_timeout(bot: Bot, event: GroupMessageEvent, cid: str, timeout: float = dati_time):
+    timer = timers.get(cid, None)
+    if timer:
+        timer.cancel()
+    loop = asyncio.get_running_loop()
+    timer = loop.call_later(
+        timeout, lambda: asyncio.ensure_future(stop_g(bot, event))
+    )
+    timers[cid] = timer
