@@ -85,7 +85,7 @@ characters = {
     '菲谢尔': 'fischl',
     '鹿野院平藏': 'heizo',
 }
-#char_occupy = False
+char_occupy = False
 
 
 @char_card.handle()
