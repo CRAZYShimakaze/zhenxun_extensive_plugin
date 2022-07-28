@@ -12,17 +12,17 @@ from bs4 import BeautifulSoup
 from services.log import logger
 
 browser_genshin = None
-page_genshin = None
 
 
+#page_genshin = None
 async def get_char_list(uid: str):
-    global browser_genshin, page_genshin
+    global browser_genshin  #, page_genshin
     url = f"https://enka.shinshin.moe/u/{uid}"
     s = time.time()
     if browser_genshin == None:
         browser_genshin = await get_browser()
-    if page_genshin == None:
-        page_genshin = await browser_genshin.new_page()
+    #if page_genshin == None:
+    page_genshin = await browser_genshin.new_page()
     try:
         logger.info(f"打开网页...")
         await page_genshin.goto(url, timeout=100000)

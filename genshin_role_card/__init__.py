@@ -85,7 +85,7 @@ characters = {
     '菲谢尔': 'fischl',
     '鹿野院平藏': 'heizo',
 }
-char_occupy = False
+#char_occupy = False
 
 
 @char_card.handle()
@@ -94,14 +94,14 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     try:
         if char_occupy:
             await char_card.finish("当前正有角色正在查询,请稍后再试...")
-        char_occupy = True
+        #char_occupy = True
         msg = arg.extract_plain_text().strip().split()
         #print(msg)
         try:
             uid = int(msg[0])
         except:
             await char_card.send("请输入正确uid...")
-            char_occupy = False
+            #char_occupy = False
             return
         if len(msg) == 2:
             if msg[1] in characters:
@@ -109,7 +109,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                 await char_card.send("开始获取角色信息...")
             else:
                 await char_card.send("请输入正确角色名...")
-                char_occupy = False
+                #char_occupy = False
                 return
         else:
             chara = 'none'
@@ -125,7 +125,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                         char_hanzi.append(item)
                         break
         else:
-            char_occupy = False
+            #char_occupy = False
             await char_card.send(f"获取UID({str(uid)})角色信息超时,请检查是否已开放详细信息权限！",
                                  at_sender=True)
             return
@@ -134,7 +134,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         if alc_img:
             mes = alc_img + f"\n可查询角色:{','.join(char_hanzi)}"
             await char_card.send(mes, at_sender=True)
-            char_occupy = False
+            #char_occupy = False
             logger.info(
                 f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
                 f" 发送原神角色卡")
@@ -142,7 +142,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             await char_card.send(
                 f"获取UID({str(uid)})角色信息失败,请检查是否已放入指定角色!\n可查询角色:{','.join(char_hanzi)}",
                 at_sender=True)
-            char_occupy = False
+            #char_occupy = False
         #try:
         #    version = await check_update()
         #    if float(version) > __plugin_version__ and version != '':
@@ -151,7 +151,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         #except Exception as e:
         #    logger.warning(f"{e}")
     except Exception as e:
-        char_occupy = False
+        #char_occupy = False
         #await char_card.send(f"获取UID({str(uid)})角色信息失败!", at_sender=True)
         print(e)
 
