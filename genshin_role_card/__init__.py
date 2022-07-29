@@ -90,10 +90,10 @@ characters = {
 
 @char_card.handle()
 async def _(event: MessageEvent, arg: Message = CommandArg()):
-    global char_occupy
+    #global char_occupy
     try:
-        if char_occupy:
-            await char_card.finish("当前正有角色正在查询,请稍后再试...")
+        #if char_occupy:
+            #await char_card.finish("当前正有角色正在查询,请稍后再试...")
         #char_occupy = True
         msg = arg.extract_plain_text().strip().split()
         #print(msg)
