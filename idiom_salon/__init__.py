@@ -9,12 +9,13 @@ from models.bag_user import BagUser
 from services.log import logger
 from pypinyin import lazy_pinyin
 from configs.config import NICKNAME, Config
-from typing import Tuple
+from typing import Tuple, Dict
 import os
 import asyncio
 import time
 import requests
 import json
+from asyncio import TimerHandle
 
 __zx_plugin_name__ = "成语接龙"
 __plugin_usage__ = """
@@ -50,6 +51,7 @@ Config.add_plugin_config(
 
 vs_player = {}
 dati_time = Config.get_config("idiom_salon", "DATI_TIME")
+timers: Dict[str, TimerHandle] = {}
 
 start = on_command("成语接龙", permission=GROUP, priority=5, block=True)
 
@@ -84,8 +86,8 @@ async def _(bot: Bot,
             await start.send(f'上局流局！新开局！\n')
             vs_player = {}
         elif ((vs_player[event.group_id]["player1"]
-               and vs_player[event.group_id]["player2"])
-              and time.time() - vs_player[event.group_id]["time"] > dati_time):
+               and vs_player[event.group_id]["player2"]) and
+              time.time() - vs_player[event.group_id]["time"] >= dati_time):
             winner = vs_player[event.group_id]["player1"] if vs_player[
                 event.group_id]['next_player'] == 2 else vs_player[
                     event.group_id]["player2"]
@@ -123,7 +125,7 @@ async def _(bot: Bot,
     if user_coin < coin:
         await start.finish("你的金币不够！", at_sender=True)
     await start.send(
-        f"已发起对局，请挑战者发送'接'+以{lazy_pinyin(idiom)[-1]}开头的成语，赌注{coin}金币！(之前说过的不能再说)",
+        f"已发起对局，请挑战者在{dati_time}秒内发送'接'+以{lazy_pinyin(idiom)[-1]}开头的成语，赌注{coin}金币！(之前说过的不能再说)",
         at_sender=True)
     vs_player[event.group_id] = {
         "player1": event.user_id,
@@ -136,6 +138,7 @@ async def _(bot: Bot,
         "coin": coin,
         "log": [idiom],
     }
+    set_timeout(bot, event, dati_time)
 
 
 @submit.handle()
@@ -169,6 +172,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
             vs_player[event.group_id]["log"].append(msg[0])
             p2 = vs_player[event.group_id]["player2_name"]
             p1 = vs_player[event.group_id]["player1"]
+            set_timeout(bot, event, dati_time)
             await submit.send(
                 Message(
                     f"{p2}接受对局！请{at(p1)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"
@@ -227,6 +231,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                     event.group_id]["next_player"] == 1 else vs_player[
                         event.group_id]["player2"]
                 vs_player[event.group_id]["log"].append(msg[0])
+                set_timeout(bot, event, dati_time)
                 await submit.send(
                     Message(
                         f"请{at(next_one)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"
@@ -237,16 +242,17 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
 
 
 @stop_game.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def stop(bot: Bot, event: GroupMessageEvent):
     global vs_player
     try:
         if 0 == vs_player[event.group_id]["player1"] or 0 == vs_player[
                 event.group_id]["player2"]:
-            await stop_game.send(f'对局清零！')
+            await stop_game.send(f'对局超时，自动清零！')
             vs_player[event.group_id] = {}
-        elif ((vs_player[event.group_id]["player1"]
-               and vs_player[event.group_id]["player2"])
-              and time.time() - vs_player[event.group_id]["time"] > dati_time):
+        elif (
+            (vs_player[event.group_id]["player1"]
+             and vs_player[event.group_id]["player2"])
+        ):  #and time.time() - vs_player[event.group_id]["time"] > dati_time):
             winner = vs_player[event.group_id]["player1"] if vs_player[
                 event.group_id]['next_player'] == 2 else vs_player[
                     event.group_id]["player2"]
@@ -296,6 +302,18 @@ async def _(bot: Bot, event: GroupMessageEvent):
             vs_player[event.group_id] = {}
     except:
         pass
+
+
+def set_timeout(bot: Bot, event: GroupMessageEvent, timeout: float = 300):
+    global timers
+    timer = timers.get(event.group_id, None)
+    if timer:
+        timers.pop(event.group_id)
+        timer.cancel()
+    loop = asyncio.get_running_loop()
+    timer = loop.call_later(timeout,
+                            lambda: asyncio.ensure_future(stop(bot, event)))
+    timers[event.group_id] = timer
 
 
 # 检查正确性
