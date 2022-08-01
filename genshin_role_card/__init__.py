@@ -93,7 +93,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     #global char_occupy
     try:
         #if char_occupy:
-            #await char_card.finish("当前正有角色正在查询,请稍后再试...")
+        #await char_card.finish("当前正有角色正在查询,请稍后再试...")
         #char_occupy = True
         msg = arg.extract_plain_text().strip().split()
         #print(msg)
@@ -189,12 +189,13 @@ async def get_service_dic(service_: str) -> str:
         "1": "官服,",
         "2": "官服,",
         "5": "B服,不支持",
-        "6": "美服,",
-        "7": "欧服,",
-        "8": "亚服,",
-        "9": "港澳服,"
+        "6": "美服,不支持",
+        "7": "欧服,不支持",
+        "8": "亚服,不支持",
+        "9": "港澳服,不支持"
     }
     if service_dic.get(service_, None):
-        return service_dic.get(service_, None).split(",")[0], service_dic.get(service_, None).split(",")[1]
+        return service_dic.get(service_, None).split(",")[0], service_dic.get(
+            service_, None).split(",")[1]
     else:
         return "", ""
