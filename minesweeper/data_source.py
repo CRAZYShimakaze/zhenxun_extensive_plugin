@@ -3,7 +3,7 @@ import random
 from enum import Enum
 from io import BytesIO
 from dataclasses import dataclass
-from typing import Tuple, Optional, Iterator
+from typing import List, Tuple, Optional, Iterator
 from PIL import Image, ImageDraw
 from PIL.Image import Image as IMG
 
@@ -47,12 +47,10 @@ class MineSweeper:
         self.start_time = time.time()  # 游戏开始时间
         self.state: GameState = GameState.PREPARE  # 游戏状态
         self.tiles = [[Tile() for _ in range(column)] for _ in range(row)]
+        self.players: List[int] = []  # 游戏参与人员
 
         self.skin = load_skin(row, column, skin_name)  # 皮肤
         self.scale: int = 4  # 缩放倍数
-        self.font = load_font("00TT.TTF", 50)
-        self.padding = 50  # 图片边距，用于添加序号
-        self.bg = self.draw_bg()  # 添加好序号的图片
 
     def set_mines(self):
         # 设置地雷
@@ -72,25 +70,6 @@ class MineSweeper:
                 self.tiles[i][j].count = self.count_around(i, j)
         self.state = GameState.GAMING
 
-    def draw_bg(self) -> IMG:
-        w = self.skin.background.width * self.scale + self.padding
-        h = self.skin.background.height * self.scale + self.padding
-        img = Image.new("RGBA", (w, h), "silver")
-        draw = ImageDraw.Draw(img)
-        for i in range(self.row):
-            x = 15
-            dy = self.skin.numbers[0].height * self.scale
-            s = chr(i + 65)
-            y = 220 + dy * i + (dy - self.font.getsize(s)[1]) / 2
-            draw.text((x, y), s, font=self.font, fill="black")
-        for i in range(self.column):
-            s = str(i + 1)
-            dx = self.skin.numbers[0].width * self.scale
-            x = 105 + dx * i + (dx - self.font.getsize(s)[0]) / 2
-            y = h - self.padding + 3
-            draw.text((x, y), s, font=self.font, fill="black")
-        return img
-
     def draw(self) -> BytesIO:
         bg = self.skin.background
         self.draw_face(bg)
@@ -98,9 +77,8 @@ class MineSweeper:
         self.draw_time(bg)
         self.draw_tiles(bg)
         bg = bg.resize((bg.width * self.scale, bg.height * self.scale), Image.NEAREST)
-        img = self.bg
-        img.paste(bg, (self.padding, 0))
-        return save_png(img)
+        self.draw_label(bg)
+        return save_png(bg)
 
     def draw_face(self, bg: IMG):
         if self.state == GameState.WIN:
@@ -161,6 +139,24 @@ class MineSweeper:
                 x = 12 + img.width * j
                 y = 55 + img.height * i
                 bg.paste(img, (x, y))
+
+    def draw_label(self, bg: IMG):
+        font = load_font("00TT.TTF", 7 * self.scale)
+        tile_w = self.skin.numbers[0].width * self.scale
+        tile_h = self.skin.numbers[0].height * self.scale
+        dx = 12.5 * self.scale
+        dy = 54.5 * self.scale
+        for i in range(self.row):
+            for j in range(self.column):
+                tile = self.tiles[i][j]
+                if tile.is_open or tile.marked:
+                    continue
+                text = chr(i + 65) + str(j + 1)
+                text_w, text_h = font.getsize(text)
+                x = dx + tile_w * j + (tile_w - text_w) / 2
+                y = dy + tile_h * i + (tile_h - text_h) / 2
+                draw = ImageDraw.Draw(bg)
+                draw.text((x, y), text, font=font, fill="black")
 
     def open(self, x: int, y: int) -> Optional[OpenResult]:
         if not self.is_valid(x, y):
