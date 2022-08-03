@@ -105,13 +105,26 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             return
         if len(str(uid)) != 9:
             await char_card.send("请输入正确uid...")
-            # char_occupy = False
+            #char_occupy = False
             return
-        service_dic, _s = await get_service_dic(str(uid)[0])
-        if _s != "":
-            await char_card.send(f"暂{_s}{service_dic}...")
-            # char_occupy = False
-            return
+        while 1:
+            if str(uid)[0] in ["1", "2"]:
+                service_dic = "官服"
+                break
+            elif str(uid)[0] in ["5"]:
+                service_dic = "B服"
+                break
+            elif str(uid)[0] in ["6"]:
+                service_dic = "美服"
+            elif str(uid)[0] in ["7"]:
+                service_dic = "欧服"
+            elif str(uid)[0] in ["8"]:
+                service_dic = "亚服"
+            elif str(uid)[0] in ["9"]:
+                service_dic = "港澳服"
+            else:
+                service_dic = ""
+            await char_card.finish(f"暂不支持{service_dic}查询...", at_sender=True)
         if len(msg) == 2:
             if msg[1] in characters:
                 chara = characters[msg[1]]
@@ -122,7 +135,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                 return
         else:
             chara = 'none'
-            await char_card.send(f"未指定{service_dic}角色,默认橱窗第一位...")
+            await char_card.send("未指定角色,默认橱窗第一位...")
         char_list, page = await get_char_list(str(uid))
         logger.info(f"角色获取完成！{char_list}")
         if char_list != None:
@@ -182,20 +195,3 @@ async def check_update() -> str:
     os.unlink(version_path)
     print(new_version)
     return new_version
-
-
-async def get_service_dic(service_: str) -> str:
-    service_dic = {
-        "1": "官服,",
-        "2": "官服,",
-        "5": "B服,不支持",
-        "6": "美服,不支持",
-        "7": "欧服,不支持",
-        "8": "亚服,不支持",
-        "9": "港澳服,不支持"
-    }
-    if service_dic.get(service_, None):
-        return service_dic.get(service_, None).split(",")[0], service_dic.get(
-            service_, None).split(",")[1]
-    else:
-        return "", ""
