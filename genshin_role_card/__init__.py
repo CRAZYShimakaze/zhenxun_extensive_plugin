@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 from curses.ascii import isdigit
-from utils.utils import get_bot, scheduler
-from nonebot import on_command
+from utils.utils import get_bot, scheduler, get_message_at
+from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent, Message
 from services.log import logger
 from configs.path_config import TEMP_PATH
 from .data_source import get_alc_image, get_char_list
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, RegexGroup
 from utils.manager import group_manager
 from configs.config import Config
 from utils.http_utils import AsyncHttpx
+from plugins.genshin.query_user._models import Genshin
+from typing import Tuple, List
 import os
 
 __zx_plugin_name__ = "原神角色卡"
@@ -19,6 +21,7 @@ usage：
     指令：
         原神角色卡 uid
         原神角色卡 uid 角色名
+        角色面板 ?[@用户] (例:刻晴面板)
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色卡 [uid] ?[角色名]"]
@@ -31,8 +34,8 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": ["原神角色卡"],
 }
-
-char_card = on_command("原神角色卡", priority=15, block=True)
+get_card = on_regex(r".*?(.*)面板(.*).*?", priority=1)
+char_card = on_command("原神角色卡", priority=4, block=True)
 characters = {
     '钟离': 'zhongli',
     '神里绫华': 'ayaka',
@@ -88,14 +91,35 @@ characters = {
 #char_occupy = False
 
 
+@get_card.handle()
+# async def _(bot: Bot, event: MessageEvent):
+#     city = get_msg(event.get_plaintext())
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    role = args[0].strip()
+    at = args[1].strip()
+    if at:
+        uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
+    else:
+        uid = await Genshin.get_user_uid(event.user_id)
+    if not uid:
+        await get_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
+    await gen(event, [str(uid), role])
+
+
 @char_card.handle()
 async def _(event: MessageEvent, arg: Message = CommandArg()):
+    msg = arg.extract_plain_text().strip().split()
+    await gen(event, msg)
+
+
+@char_card.handle()
+async def gen(event: MessageEvent, msg: list):
     #global char_occupy
     try:
         #if char_occupy:
         #await char_card.finish("当前正有角色正在查询,请稍后再试...")
         #char_occupy = True
-        msg = arg.extract_plain_text().strip().split()
+        #msg = arg.extract_plain_text().strip().split()
         #print(msg)
         try:
             uid = int(msg[0])
