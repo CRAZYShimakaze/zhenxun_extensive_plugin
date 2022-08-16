@@ -112,7 +112,6 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     await gen(event, msg)
 
 
-@char_card.handle()
 async def gen(event: MessageEvent, msg: list):
     #global char_occupy
     try:
