@@ -1,7 +1,7 @@
 # genshin_role_info
 zhenxun_bot 原神角色面板插件
 
-展示橱窗中角色的面板和伤害数据
+展示橱窗中角色的面板和伤害数据(与原神角色卡插件部分命令有冲突，建议只安装一个)
 
 移植自[LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon)
 

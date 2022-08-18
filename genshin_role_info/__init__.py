@@ -89,8 +89,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     if not uid:
         await my_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
-    if not os.path.exists(
-            f"my_plugins/genshin_role_card/player_info/{uid}.json"):
+    if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
         try:
             req = await AsyncHttpx.get(
                 url=url,
@@ -135,8 +134,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     if not uid:
         await his_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
-    if not os.path.exists(
-            f"my_plugins/genshin_role_card/player_info/{uid}.json"):
+    if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
         try:
             req = await AsyncHttpx.get(
                 url=url,
@@ -210,16 +208,14 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
         await char_card.finish(f"暂不支持{service_dic}查询...", at_sender=True)
     #await char_card.send("正在获取角色数据...")
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
-    if not os.path.exists(
-            f"my_plugins/genshin_role_card/player_info/{uid}.json"):
+    if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
         try:
             req = await AsyncHttpx.get(
                 url=url,
                 follow_redirects=True,
             )
             data = req.json()
-            save_json(data,
-                      GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json')
+            save_json(data, GENSHIN_CARD_PATH + f"/player_info/{uid}.json")
         except:
             await char_card.finish("服务器维护中,请稍后再试...")
         player_info = PlayerInfo(uid)
@@ -237,7 +233,7 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
         except:
             return  #await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
     else:
-        data = load_json(GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json')
+        data = load_json(GENSHIN_CARD_PATH + f"/player_info/{uid}.json")
         player_info = PlayerInfo(uid)
         try:
             player_info.set_player(data['playerInfo'])
@@ -300,8 +296,8 @@ async def update(event: MessageEvent, uid: str):
     #await char_card.send(f"正在更新uid{uid}的角色数据...")
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if os.path.exists(GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json'):
-        mod_time = os.path.getmtime(GENSHIN_CARD_PATH + '/player_info' +
-                                    f'/{uid}.json')
+        mod_time = os.path.getmtime(GENSHIN_CARD_PATH +
+                                    f"/player_info/{uid}.json")
         cd_time = int(time.time() - mod_time)
         if cd_time < 180:
             await char_card.finish(f'{180 - cd_time}秒后可再次更新!', at_sender=True)
@@ -311,7 +307,7 @@ async def update(event: MessageEvent, uid: str):
             follow_redirects=True,
         )
         data = req.json()
-        save_json(data, GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json')
+        save_json(data, GENSHIN_CARD_PATH + f"/player_info/{uid}.json")
     except:
         await char_card.finish("服务器维护中，,请稍后再试...")
     player_info = PlayerInfo(uid)
