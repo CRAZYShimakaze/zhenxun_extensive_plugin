@@ -1,0 +1,34 @@
+{
+    "playerInfo": {
+        "nickname": "橘猫猫",
+        "level": 59,
+        "signature": "(〃'▽'〃)友友们，有空常来玩玩鸭！",
+        "worldLevel": 8,
+        "nameCardId": 210053,
+        "finishAchievementNum": 366,
+        "towerFloorIndex": 12,
+        "towerLevelIndex": 3,
+        "showAvatarInfoList": [
+            {
+                "avatarId": 10000030,
+                "level": 90
+            },
+            {
+                "avatarId": 10000037,
+                "level": 90
+            },
+            {
+                "avatarId": 10000046,
+                "level": 90
+            },
+            {
+                "avatarId": 10000060,
+                "level": 90
+            }
+        ],
+        "profilePicture": {
+            "avatarId": 10000037
+        }
+    },
+    "ttl": 180
+}

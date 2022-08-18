@@ -1,0 +1,62 @@
+{
+    "playerInfo": {
+        "nickname": "憨九",
+        "level": 57,
+        "signature": "缺摩拉，缺天赋，缺素材，缺狗粮，缺体力",
+        "worldLevel": 8,
+        "nameCardId": 210088,
+        "finishAchievementNum": 575,
+        "towerFloorIndex": 11,
+        "towerLevelIndex": 1,
+        "showAvatarInfoList": [
+            {
+                "avatarId": 10000030,
+                "level": 80
+            },
+            {
+                "avatarId": 10000047,
+                "level": 60
+            },
+            {
+                "avatarId": 10000026,
+                "level": 90
+            },
+            {
+                "avatarId": 10000046,
+                "level": 80
+            },
+            {
+                "avatarId": 10000054,
+                "level": 50
+            },
+            {
+                "avatarId": 10000022,
+                "level": 80
+            },
+            {
+                "avatarId": 10000052,
+                "level": 80
+            },
+            {
+                "avatarId": 10000002,
+                "level": 90
+            }
+        ],
+        "showNameCardIdList": [
+            210018,
+            210015,
+            210088,
+            210097,
+            210103,
+            210052,
+            210051,
+            210019,
+            210039
+        ],
+        "profilePicture": {
+            "avatarId": 10000027,
+            "costumeId": 202701
+        }
+    },
+    "ttl": 180
+}

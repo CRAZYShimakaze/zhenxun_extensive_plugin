@@ -1,0 +1,11 @@
+{
+    "playerInfo": {
+        "nickname": "肝",
+        "level": 10,
+        "nameCardId": 210001,
+        "profilePicture": {
+            "avatarId": 10000007
+        }
+    },
+    "ttl": 180
+}

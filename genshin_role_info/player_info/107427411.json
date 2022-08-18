@@ -1,0 +1,63 @@
+{
+    "playerInfo": {
+        "nickname": "鸡哥天下第一鸡",
+        "level": 60,
+        "signature": "水",
+        "worldLevel": 8,
+        "nameCardId": 210026,
+        "finishAchievementNum": 579,
+        "towerFloorIndex": 12,
+        "towerLevelIndex": 3,
+        "showAvatarInfoList": [
+            {
+                "avatarId": 10000066,
+                "level": 90
+            },
+            {
+                "avatarId": 10000027,
+                "level": 90,
+                "costumeId": 202701
+            },
+            {
+                "avatarId": 10000034,
+                "level": 80
+            },
+            {
+                "avatarId": 10000043,
+                "level": 80
+            },
+            {
+                "avatarId": 10000015,
+                "level": 71
+            },
+            {
+                "avatarId": 10000014,
+                "level": 71,
+                "costumeId": 201401
+            },
+            {
+                "avatarId": 10000020,
+                "level": 80
+            },
+            {
+                "avatarId": 10000048,
+                "level": 60
+            }
+        ],
+        "showNameCardIdList": [
+            210009,
+            210018,
+            210040,
+            210067,
+            210085,
+            210097,
+            210109,
+            210123,
+            210119
+        ],
+        "profilePicture": {
+            "avatarId": 10000047
+        }
+    },
+    "ttl": 180
+}

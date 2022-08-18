@@ -1,0 +1,671 @@
+{
+    "playerInfo": {
+        "nickname": "小圈圈",
+        "level": 56,
+        "worldLevel": 8,
+        "nameCardId": 210043,
+        "finishAchievementNum": 455,
+        "towerFloorIndex": 12,
+        "towerLevelIndex": 3,
+        "showAvatarInfoList": [
+            {
+                "avatarId": 10000007,
+                "level": 20
+            },
+            {
+                "avatarId": 10000003,
+                "level": 20
+            },
+            {
+                "avatarId": 10000035,
+                "level": 20
+            },
+            {
+                "avatarId": 10000042,
+                "level": 20
+            },
+            {
+                "avatarId": 10000016,
+                "level": 20
+            }
+        ],
+        "showNameCardIdList": [
+            210001,
+            210028,
+            210047,
+            210049,
+            210056,
+            210097,
+            210103,
+            210015
+        ],
+        "profilePicture": {
+            "avatarId": 10000058
+        }
+    },
+    "avatarInfoList": [
+        {
+            "avatarId": 10000007,
+            "propMap": {
+                "1001": {
+                    "type": 1001,
+                    "ival": "7990",
+                    "val": "7990"
+                },
+                "1002": {
+                    "type": 1002,
+                    "ival": "1",
+                    "val": "1"
+                },
+                "1003": {
+                    "type": 1003,
+                    "ival": "0"
+                },
+                "1004": {
+                    "type": 1004,
+                    "ival": "0"
+                },
+                "4001": {
+                    "type": 4001,
+                    "ival": "20",
+                    "val": "20"
+                },
+                "10010": {
+                    "type": 10010,
+                    "ival": "24000",
+                    "val": "24000"
+                }
+            },
+            "talentIdList": [
+                91,
+                92,
+                93,
+                94,
+                95,
+                96
+            ],
+            "fightPropMap": {
+                "1": 3023.545654296875,
+                "2": 1258,
+                "4": 121.65646362304688,
+                "6": 0.03099999949336052,
+                "7": 189.76101684570312,
+                "9": 0.1520577371120453,
+                "20": 0.05000000074505806,
+                "21": 0,
+                "22": 0.5,
+                "23": 1,
+                "26": 0,
+                "27": 0.20000000298023224,
+                "28": 0,
+                "29": 0,
+                "30": 0,
+                "40": 0,
+                "41": 0,
+                "42": 0,
+                "43": 0,
+                "44": 0,
+                "45": 0,
+                "46": 0,
+                "50": 0,
+                "51": 0,
+                "52": 0,
+                "53": 0,
+                "54": 0,
+                "55": 0,
+                "56": 0,
+                "76": 60,
+                "1006": 52.79999923706055,
+                "1010": 4281.5458984375,
+                "2000": 4281.5458984375,
+                "2001": 125.42781829833984,
+                "2002": 218.6156463623047,
+                "2003": 0
+            },
+            "skillDepotId": 706,
+            "inherentProudSkillList": [
+                92101
+            ],
+            "skillLevelMap": {
+                "10077": 1,
+                "10078": 1,
+                "100555": 1
+            },
+            "proudSkillExtraLevelMap": {
+                "932": 3,
+                "939": 3
+            },
+            "equipList": [
+                {
+                    "itemId": 63240,
+                    "reliquary": {
+                        "level": 1,
+                        "mainPropId": 14001
+                    },
+                    "flat": {
+                        "nameTextMapHash": "1483059388",
+                        "setNameTextMapHash": "3782508715",
+                        "rankLevel": 2,
+                        "reliquaryMainstat": {
+                            "mainPropId": "FIGHT_PROP_HP",
+                            "statValue": 258
+                        },
+                        "itemType": "ITEM_RELIQUARY",
+                        "icon": "UI_RelicIcon_10013_4",
+                        "equipType": "EQUIP_BRACER"
+                    }
+                },
+                {
+                    "itemId": 60150,
+                    "reliquary": {
+                        "level": 1,
+                        "mainPropId": 10006
+                    },
+                    "flat": {
+                        "nameTextMapHash": "3634286204",
+                        "setNameTextMapHash": "2191797987",
+                        "rankLevel": 1,
+                        "reliquaryMainstat": {
+                            "mainPropId": "FIGHT_PROP_DEFENSE_PERCENT",
+                            "statValue": 3.9
+                        },
+                        "itemType": "ITEM_RELIQUARY",
+                        "icon": "UI_RelicIcon_10010_5",
+                        "equipType": "EQUIP_SHOES"
+                    }
+                },
+                {
+                    "itemId": 63110,
+                    "reliquary": {
+                        "level": 1,
+                        "mainPropId": 15006
+                    },
+                    "flat": {
+                        "nameTextMapHash": "3874090700",
+                        "setNameTextMapHash": "3782508715",
+                        "rankLevel": 1,
+                        "reliquaryMainstat": {
+                            "mainPropId": "FIGHT_PROP_DEFENSE_PERCENT",
+                            "statValue": 3.9
+                        },
+                        "itemType": "ITEM_RELIQUARY",
+                        "icon": "UI_RelicIcon_10013_1",
+                        "equipType": "EQUIP_RING"
+                    }
+                },
+                {
+                    "itemId": 60130,
+                    "reliquary": {
+                        "level": 1,
+                        "mainPropId": 13004
+                    },
+                    "flat": {
+                        "nameTextMapHash": "1724042012",
+                        "setNameTextMapHash": "2191797987",
+                        "rankLevel": 1,
+                        "reliquaryMainstat": {
+                            "mainPropId": "FIGHT_PROP_ATTACK_PERCENT",
+                            "statValue": 3.1
+                        },
+                        "itemType": "ITEM_RELIQUARY",
+                        "icon": "UI_RelicIcon_10010_3",
+                        "equipType": "EQUIP_DRESS"
+                    }
+                },
+                {
+                    "itemId": 11303,
+                    "weapon": {
+                        "level": 8,
+                        "affixMap": {
+                            "111303": 0
+                        }
+                    },
+                    "flat": {
+                        "nameTextMapHash": "3673792067",
+                        "rankLevel": 3,
+                        "weaponStats": [
+                            {
+                                "appendPropId": "FIGHT_PROP_BASE_ATTACK",
+                                "statValue": 63
+                            },
+                            {
+                                "appendPropId": "FIGHT_PROP_DEFENSE_PERCENT",
+                                "statValue": 7.4
+                            }
+                        ],
+                        "itemType": "ITEM_WEAPON",
+                        "icon": "UI_EquipIcon_Sword_Traveler"
+                    }
+                }
+            ],
+            "fetterInfo": {
+                "expLevel": 1
+            }
+        },
+        {
+            "avatarId": 10000003,
+            "propMap": {
+                "1001": {
+                    "type": 1001,
+                    "ival": "19",
+                    "val": "19"
+                },
+                "1002": {
+                    "type": 1002,
+                    "ival": "1",
+                    "val": "1"
+                },
+                "1003": {
+                    "type": 1003,
+                    "ival": "0"
+                },
+                "1004": {
+                    "type": 1004,
+                    "ival": "0"
+                },
+                "4001": {
+                    "type": 4001,
+                    "ival": "20",
+                    "val": "20"
+                },
+                "10010": {
+                    "type": 10010,
+                    "ival": "24000",
+                    "val": "24000"
+                }
+            },
+            "talentIdList": [
+                31,
+                32
+            ],
+            "fightPropMap": {
+                "1": 3948.357421875,
+                "4": 109.33277893066406,
+                "7": 206.49903869628906,
+                "20": 0.05000000074505806,
+                "21": 0,
+                "22": 0.5,
+                "23": 1,
+                "26": 0,
+                "27": 0,
+                "28": 11.999987602233887,
+                "29": 0,
+                "30": 0,
+                "40": 0,
+                "41": 0,
+                "42": 0,
+                "43": 0,
+                "44": 0,
+                "45": 0,
+                "46": 0,
+                "50": 0,
+                "51": 0,
+                "52": 0,
+                "53": 0,
+                "54": 0,
+                "55": 0,
+                "56": 0,
+                "74": 80,
+                "1010": 3948.357421875,
+                "2000": 3948.357421875,
+                "2001": 109.33277893066406,
+                "2002": 206.49903869628906,
+                "2003": 0
+            },
+            "skillDepotId": 301,
+            "inherentProudSkillList": [
+                32101,
+                32301
+            ],
+            "skillLevelMap": {
+                "10031": 1,
+                "10033": 1,
+                "10034": 1
+            },
+            "equipList": [
+                {
+                    "itemId": 11410,
+                    "weapon": {
+                        "level": 1,
+                        "affixMap": {
+                            "111410": 0
+                        }
+                    },
+                    "flat": {
+                        "nameTextMapHash": "2947140987",
+                        "rankLevel": 4,
+                        "weaponStats": [
+                            {
+                                "appendPropId": "FIGHT_PROP_BASE_ATTACK",
+                                "statValue": 45
+                            },
+                            {
+                                "appendPropId": "FIGHT_PROP_ELEMENT_MASTERY",
+                                "statValue": 12
+                            }
+                        ],
+                        "itemType": "ITEM_WEAPON",
+                        "icon": "UI_EquipIcon_Sword_Outlaw"
+                    }
+                }
+            ],
+            "fetterInfo": {
+                "expLevel": 1
+            }
+        },
+        {
+            "avatarId": 10000035,
+            "propMap": {
+                "1001": {
+                    "type": 1001,
+                    "ival": "0"
+                },
+                "1002": {
+                    "type": 1002,
+                    "ival": "1",
+                    "val": "1"
+                },
+                "1003": {
+                    "type": 1003,
+                    "ival": "0"
+                },
+                "1004": {
+                    "type": 1004,
+                    "ival": "0"
+                },
+                "4001": {
+                    "type": 4001,
+                    "ival": "20",
+                    "val": "20"
+                },
+                "10010": {
+                    "type": 10010,
+                    "ival": "24000",
+                    "val": "24000"
+                }
+            },
+            "fightPropMap": {
+                "1": 3323.200927734375,
+                "4": 100.36190795898438,
+                "7": 247.798828125,
+                "20": 0.05000000074505806,
+                "21": 0,
+                "22": 0.5,
+                "23": 1,
+                "26": 0,
+                "27": 0,
+                "28": 0,
+                "29": 0,
+                "30": 0,
+                "40": 0,
+                "41": 0,
+                "42": 0,
+                "43": 0,
+                "44": 0,
+                "45": 0,
+                "46": 0,
+                "50": 0,
+                "51": 0,
+                "52": 0,
+                "53": 0,
+                "54": 0,
+                "55": 0,
+                "56": 0,
+                "75": 80,
+                "1010": 3323.200927734375,
+                "2000": 3323.200927734375,
+                "2001": 100.36190795898438,
+                "2002": 247.798828125,
+                "2003": 0
+            },
+            "skillDepotId": 3501,
+            "inherentProudSkillList": [
+                352101,
+                352301
+            ],
+            "skillLevelMap": {
+                "10351": 1,
+                "10352": 1,
+                "10353": 1
+            },
+            "equipList": [
+                {
+                    "itemId": 11101,
+                    "weapon": {
+                        "level": 1
+                    },
+                    "flat": {
+                        "nameTextMapHash": "2410593283",
+                        "rankLevel": 1,
+                        "weaponStats": [
+                            {
+                                "appendPropId": "FIGHT_PROP_BASE_ATTACK",
+                                "statValue": 23
+                            }
+                        ],
+                        "itemType": "ITEM_WEAPON",
+                        "icon": "UI_EquipIcon_Sword_Blunt"
+                    }
+                }
+            ],
+            "fetterInfo": {
+                "expLevel": 1
+            }
+        },
+        {
+            "avatarId": 10000042,
+            "propMap": {
+                "1001": {
+                    "type": 1001,
+                    "ival": "0"
+                },
+                "1002": {
+                    "type": 1002,
+                    "ival": "1",
+                    "val": "1"
+                },
+                "1003": {
+                    "type": 1003,
+                    "ival": "0"
+                },
+                "1004": {
+                    "type": 1004,
+                    "ival": "0"
+                },
+                "4001": {
+                    "type": 4001,
+                    "ival": "20",
+                    "val": "20"
+                },
+                "10010": {
+                    "type": 10010,
+                    "ival": "24000",
+                    "val": "24000"
+                }
+            },
+            "fightPropMap": {
+                "1": 3520.618896484375,
+                "4": 129.15750122070312,
+                "7": 214.75900268554688,
+                "20": 0.10999999940395355,
+                "21": 0,
+                "22": 0.5,
+                "23": 1,
+                "26": 0,
+                "27": 0,
+                "28": 0,
+                "29": 0,
+                "30": 0,
+                "40": 0,
+                "41": 0,
+                "42": 0,
+                "43": 0,
+                "44": 0,
+                "45": 0,
+                "46": 0,
+                "50": 0,
+                "51": 0,
+                "52": 0,
+                "53": 0,
+                "54": 0,
+                "55": 0,
+                "56": 0,
+                "71": 40,
+                "1010": 3520.618896484375,
+                "2000": 3520.618896484375,
+                "2001": 129.15750122070312,
+                "2002": 214.75900268554688,
+                "2003": 0
+            },
+            "skillDepotId": 4201,
+            "inherentProudSkillList": [
+                422101,
+                422301
+            ],
+            "skillLevelMap": {
+                "10421": 1,
+                "10422": 1,
+                "10425": 1
+            },
+            "equipList": [
+                {
+                    "itemId": 11409,
+                    "weapon": {
+                        "level": 1,
+                        "affixMap": {
+                            "111409": 0
+                        }
+                    },
+                    "flat": {
+                        "nameTextMapHash": "3796905611",
+                        "rankLevel": 4,
+                        "weaponStats": [
+                            {
+                                "appendPropId": "FIGHT_PROP_BASE_ATTACK",
+                                "statValue": 42
+                            },
+                            {
+                                "appendPropId": "FIGHT_PROP_CRITICAL",
+                                "statValue": 6
+                            }
+                        ],
+                        "itemType": "ITEM_WEAPON",
+                        "icon": "UI_EquipIcon_Sword_Bloodstained"
+                    }
+                }
+            ],
+            "fetterInfo": {
+                "expLevel": 1
+            }
+        },
+        {
+            "avatarId": 10000016,
+            "propMap": {
+                "1001": {
+                    "type": 1001,
+                    "ival": "0"
+                },
+                "1002": {
+                    "type": 1002,
+                    "ival": "1",
+                    "val": "1"
+                },
+                "1003": {
+                    "type": 1003,
+                    "ival": "0"
+                },
+                "1004": {
+                    "type": 1004,
+                    "ival": "0"
+                },
+                "4001": {
+                    "type": 4001,
+                    "ival": "20",
+                    "val": "20"
+                },
+                "10010": {
+                    "type": 10010,
+                    "ival": "24000",
+                    "val": "24000"
+                }
+            },
+            "fightPropMap": {
+                "1": 3487.7158203125,
+                "4": 622.2022705078125,
+                "6": 0.6525200009346008,
+                "7": 210.62901306152344,
+                "20": 0.05000000074505806,
+                "21": 0,
+                "22": 0.5,
+                "23": 1,
+                "26": 0,
+                "27": 0,
+                "28": 0,
+                "29": 0,
+                "30": 0,
+                "40": 0,
+                "41": 0,
+                "42": 0,
+                "43": 0,
+                "44": 0,
+                "45": 0,
+                "46": 0,
+                "50": 0,
+                "51": 0,
+                "52": 0,
+                "53": 0,
+                "54": 0,
+                "55": 0,
+                "56": 0,
+                "70": 40,
+                "1010": 3487.7158203125,
+                "2000": 3487.7158203125,
+                "2001": 1028.20166015625,
+                "2002": 210.62901306152344,
+                "2003": 0
+            },
+            "skillDepotId": 1601,
+            "inherentProudSkillList": [
+                162101,
+                162301
+            ],
+            "skillLevelMap": {
+                "10160": 1,
+                "10161": 1,
+                "10165": 1
+            },
+            "equipList": [
+                {
+                    "itemId": 12502,
+                    "weapon": {
+                        "level": 80,
+                        "promoteLevel": 5,
+                        "affixMap": {
+                            "112502": 0
+                        }
+                    },
+                    "flat": {
+                        "nameTextMapHash": "3995710363",
+                        "rankLevel": 5,
+                        "weaponStats": [
+                            {
+                                "appendPropId": "FIGHT_PROP_BASE_ATTACK",
+                                "statValue": 532
+                            },
+                            {
+                                "appendPropId": "FIGHT_PROP_ATTACK_PERCENT",
+                                "statValue": 45.3
+                            }
+                        ],
+                        "itemType": "ITEM_WEAPON",
+                        "icon": "UI_EquipIcon_Claymore_Wolfmound"
+                    }
+                }
+            ],
+            "fetterInfo": {
+                "expLevel": 1
+            }
+        }
+    ],
+    "ttl": 300
+}
