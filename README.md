@@ -11,4 +11,5 @@
 - [21点](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/21_point)
 - [24点](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/24_point)
 - [成语接龙](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/idiom_salon)
+- [原神角色面板](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/genshin_role_info)
 - 待开发...

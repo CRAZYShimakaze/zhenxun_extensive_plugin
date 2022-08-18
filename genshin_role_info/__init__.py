@@ -17,20 +17,20 @@ import nonebot
 from nonebot import Driver
 from plugins.genshin.query_user._models import Genshin
 
-__zx_plugin_name__ = "原神角色卡"
+__zx_plugin_name__ = "原神角色面板"
 __plugin_usage__ = """
 usage：
     查询橱窗内角色的面板
     指令：
-        原神角色卡 uid 角色名
-        更新角色卡 uid
+        原神角色面板 uid 角色名
+        更新角色面板 uid
         角色面板 (例:刻晴面板)
         更新面板
         我的角色
         他的角色
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
-__plugin_cmd__ = ["原神角色卡", "更新角色卡", "我的角色", "他的角色", "XX面板"]
+__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
 __plugin_version__ = 0.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
@@ -41,8 +41,8 @@ __plugin_settings__ = {
     "cmd": __plugin_cmd__,
 }
 
-char_card = on_command("原神角色卡", priority=4, block=True)
-update_card = on_command("更新角色卡", priority=4, block=True)
+char_card = on_command("原神角色面板", priority=4, block=True)
+update_card = on_command("更新角色面板", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
 his_card = on_command("他的角色", priority=4, block=True)
 

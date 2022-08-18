@@ -1,12 +1,14 @@
 # genshin_role_card
 zhenxun_bot 原神角色卡片插件
 
-展示橱窗中第一个角色的面板数据
+展示橱窗中角色的面板数据(与原神角色面板插件部分命令有冲突，建议只安装一个)
 
 参考自[zhenxun-plugin-almanac](https://github.com/zhenxun-org/zhenxun_bot-tg/tree/main/plugins/genshin/almanac)
 ## 使用
 - 原神角色卡+uid
 - 原神角色卡查询+uid
+- 我的角色
+- 他的角色@CRAZYShimakaze
 
 ## 效果图
 
