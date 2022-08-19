@@ -22,8 +22,8 @@ __plugin_usage__ = """
 usage：
     查询橱窗内角色的面板
     指令：
-        原神角色面板 uid 角色名
-        更新角色面板 uid
+        原神角色卡 uid 角色名
+        更新角色卡 uid
         角色面板 (例:刻晴面板)
         更新面板
         我的角色
@@ -41,8 +41,8 @@ __plugin_settings__ = {
     "cmd": __plugin_cmd__,
 }
 
-char_card = on_command("原神角色面板", priority=4, block=True)
-update_card = on_command("更新角色面板", priority=4, block=True)
+char_card = on_command("原神角色卡", priority=4, block=True)
+update_card = on_command("更新角色卡", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
 his_card = on_command("他的角色", priority=4, block=True)
 
@@ -101,14 +101,14 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             player_info = PlayerInfo(uid)
             player_info.set_player(data['playerInfo'])
         except:
-            await char_card.finish("服务器维护中,请稍后再试...")
+            await my_card.finish("服务器维护中,请稍后再试...")
         if 'avatarInfoList' in data:
             for role in data['avatarInfoList']:
                 player_info.set_role(role)
         else:
             guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
             guide = Image_build(img=guide, quality=100, mode='RGB')
-            await char_card.finish(guide + f"在游戏中打开显示详情选项!", at_sender=True)
+            await my_card.finish(guide + f"在游戏中打开显示详情选项!", at_sender=True)
     else:
         data = load_json(GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json')
         player_info = PlayerInfo(uid)
@@ -119,11 +119,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         else:
             guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
             guide = Image_build(img=guide, quality=100, mode='RGB')
-            await char_card.finish(guide + f"在游戏中打开显示详情选项并输入更新角色卡指令!",
-                                   at_sender=True)
+            await my_card.finish(guide + f"在游戏中打开显示详情选项并输入更新角色卡指令!",
+                                 at_sender=True)
     roles_list = player_info.get_roles_list()
-    await char_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
-                           at_sender=True)
+    await my_card.finish(f"uid{uid}的角色:{','.join(roles_list)}", at_sender=True)
 
 
 @his_card.handle()
@@ -169,6 +168,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 @char_card.handle()
 #@driver.on_startup
 async def _(event: MessageEvent, arg: Message = CommandArg()):
+    print(arg)
     msg = arg.extract_plain_text().strip().split()
     try:
         uid = int(msg[0])
