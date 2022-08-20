@@ -467,7 +467,7 @@ async def draw_role_card(uid, data):
                      0, 1080, bg.size[1] - 95, '#afafaf',
                      get_font(33, '优设标题黑.ttf'))
     bg_draw.text((24, bg.size[1] - 50),
-                 'Migrated by CRAZY | Powered by Enka.Network',
+                 '  Migrated by CRAZY | Powered by Enka.Network',
                  fill='white',
                  font=get_font(36, '优设标题黑.ttf'))
 

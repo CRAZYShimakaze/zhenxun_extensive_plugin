@@ -18,6 +18,10 @@ zhenxun_bot 原神角色面板插件
 ![This is an image](https://s3.bmp.ovh/imgs/2022/08/18/d9bd1c79152d1eed.jpg#pic_center=640×1327)
 
 ### 更新
+**2022/8/20**[v0.3]
+
+1. 增加定时检测更新
+2. 增加角色数据缓存功能
 
 **2022/8/19**[v0.2]
 
