@@ -15,9 +15,14 @@ zhenxun_bot 原神角色面板插件
 
 ## 效果图
 
-![This is an image](https://s3.bmp.ovh/imgs/2022/08/18/d9bd1c79152d1eed.jpg)
+![This is an image](https://s3.bmp.ovh/imgs/2022/08/18/d9bd1c79152d1eed.jpg#pic_center=640×1327)
 
 ### 更新
+
+**2022/8/19**[v0.2]
+
+1. 统一立绘尺寸
+
 **2022/8/18**[v0.1]
 
 1. 初版
