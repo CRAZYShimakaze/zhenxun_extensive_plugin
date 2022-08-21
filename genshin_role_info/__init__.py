@@ -33,7 +33,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.4
+__plugin_version__ = 0.5
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -180,7 +180,6 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 @char_card.handle()
 #@driver.on_startup
 async def _(event: MessageEvent, arg: Message = CommandArg()):
-    print(arg)
     msg = arg.extract_plain_text().strip().split()
     try:
         uid = int(msg[0])
@@ -335,8 +334,6 @@ async def update(event: MessageEvent, uid: str):
     except Exception as e:
         print(e)
         pass  #await char_card.finish("发生错误，请重试！", at_sender=True)
-    for role in data['avatarInfoList']:
-        player_info.set_role(role)
     player_info.save()
     roles_list = player_info.get_roles_list()
     await char_card.finish(
