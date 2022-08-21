@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from curses.ascii import isdigit
 from utils.utils import get_bot, scheduler, get_message_at
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent, Message
@@ -7,12 +6,12 @@ from services.log import logger
 from configs.path_config import TEMP_PATH
 from .data_source import get_alc_image, get_char_list
 from nonebot.params import CommandArg, RegexGroup
-from utils.manager import group_manager
-from configs.config import Config
 from utils.http_utils import AsyncHttpx
 from plugins.genshin.query_user._models import Genshin
-from typing import Tuple, List
+from typing import Tuple
 import os
+import re
+import requests
 
 __zx_plugin_name__ = "原神角色卡"
 __plugin_usage__ = """
@@ -26,7 +25,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色卡 [uid] ?[角色名]"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.0
+__plugin_version__ = 1.8
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -130,7 +129,7 @@ async def gen(event: MessageEvent, msg: list):
             await char_card.send("请输入正确uid...")
             #char_occupy = False
             return
-        while 1:
+        while 0:
             if str(uid)[0] in ["1", "2"]:
                 service_dic = "官服"
                 break
@@ -201,20 +200,21 @@ async def gen(event: MessageEvent, msg: list):
         print(e)
 
 
-async def check_update() -> str:
-    version_path = TEMP_PATH / '__version__'
+@scheduler.scheduled_job(
+    "cron",
+    hour="*/1",
+)
+async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_card/__init__.py"
     try:
-        await AsyncHttpx.download_file(url, version_path)
+        version = requests.get(url)
+        version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
+                            str(version._content))
     except Exception as e:
-        logger.warning(f"Error downloading {url}: {e}")
-    with version_path.open("r", encoding="utf-8") as f:
-        for item in f.readlines():
-            if str(__plugin_version__) in item:
-                new_version = item.split('=')[-1].strip()
-                break
-        else:
-            new_version = '0.0'
-    os.unlink(version_path)
-    print(new_version)
-    return new_version
+        logger.warning(f"检测到原神角色卡插件更新时出现问题: {e}")
+    if version.group(1) != str(__plugin_version__):
+        bot = get_bot()
+        for admin in bot.config.superusers:
+            await bot.send_private_msg(user_id=int(admin),
+                                       message="检测到原神角色卡插件有更新！请前往github下载！")
+        logger.warning(f"检测到原神角色卡插件有更新！请前往github下载！")

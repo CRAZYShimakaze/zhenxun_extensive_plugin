@@ -33,7 +33,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.3
+__plugin_version__ = 0.4
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -200,7 +200,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def gen(event: MessageEvent, uid: str, role_name: str):
-    while 1:
+    while 0:
         if str(uid)[0] in ["1", "2"]:
             service_dic = "官服"
             break
@@ -272,10 +272,6 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
             at_sender=True)
     else:
         role_data = player_info.get_roles_info(role_name)
-        role_data["更新时间"] = datetime.datetime.strftime(
-            datetime.datetime.fromtimestamp(
-                os.path.getmtime(GENSHIN_CARD_PATH + '/player_info' +
-                                 f'/{uid}.json')), '%Y-%m-%d %H:%M:%S')
         img = await draw_role_card(uid, role_data)
         await char_card.finish(f"\n" + img + f"\n可查询角色:{','.join(roles_list)}",
                                at_sender=True)
@@ -292,7 +288,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def update(event: MessageEvent, uid: str):
-    while 1:
+    while 0:
         if str(uid)[0] in ["1", "2"]:
             service_dic = "官服"
             break
