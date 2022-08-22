@@ -347,7 +347,7 @@ async def update(event: MessageEvent, uid: str):
 @driver.on_startup
 @scheduler.scheduled_job(
     "cron",
-    hour="15",
+    hour=15,
 )
 async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
