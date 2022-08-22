@@ -25,15 +25,15 @@ usage：
     指令：
         原神角色卡 uid 角色名
         更新角色卡 uid
-        角色面板 (例:刻晴面板)
+        角色面板 (例:刻晴面板、刻晴面板@XXX)
         更新面板
         我的角色
-        他的角色
+        他的角色@XXX
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.5
+__plugin_version__ = 0.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -49,7 +49,7 @@ his_card = on_command("他的角色", priority=4, block=True)
 
 driver: Driver = nonebot.get_driver()
 
-get_card = on_regex(r".*?(.*)面板(.*).*?", priority=1)
+get_card = on_regex(r".*?(.*)面板(.*).*?", priority=4)
 alias_file = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/alias.json')
 name_list = alias_file['roles']
 
@@ -72,7 +72,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     else:
         uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
-        await get_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
+        await get_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
     if role == "更新":
         await update(event, str(uid))
     else:
@@ -88,7 +88,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         return
     uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
-        await my_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
+        await my_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
         try:
@@ -138,7 +138,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 async def _(event: MessageEvent, arg: Message = CommandArg()):
     uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
     if not uid:
-        await his_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
+        await his_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
         try:
@@ -184,7 +184,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     try:
         uid = int(msg[0])
     except:
-        await char_card.finish("请输入正确uid(uid与角色名需要用空格隔开)", at_sender=True)
+        await char_card.finish("请输入正确uid+角色名(uid与角色名需要用空格隔开)", at_sender=True)
     if len(msg) != 2:
         await char_card.finish("请输入正确角色名...", at_sender=True)
 
@@ -234,13 +234,13 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
             if 'avatarInfoList' in data:
                 for role in data['avatarInfoList']:
                     player_info.set_role(role)
+                player_info.save()
             else:
                 guide = load_image(GENSHIN_CARD_PATH +
                                    '/other/collections.png')
                 guide = Image_build(img=guide, quality=100, mode='RGB')
                 await char_card.finish(guide + f"在游戏中打开显示详情选项!",
                                        at_sender=True)
-            player_info.save()
         except:
             return  #await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
     else:
@@ -332,8 +332,11 @@ async def update(event: MessageEvent, uid: str):
             guide = Image_build(img=guide, quality=100, mode='RGB')
             await char_card.finish(guide + f"在游戏中打开显示详情选项!", at_sender=True)
     except Exception as e:
-        print(e)
-        pass  #await char_card.finish("发生错误，请重试！", at_sender=True)
+        error_line = e.__traceback__.tb_lineno
+        error_info = '第{error_line}行发生error为: {e}'.format(
+            error_line=error_line, e=str(e))
+        print(error_info)
+        #await char_card.finish("发生错误，请重试！", at_sender=True)
     player_info.save()
     roles_list = player_info.get_roles_list()
     await char_card.finish(
@@ -341,10 +344,10 @@ async def update(event: MessageEvent, uid: str):
         at_sender=True)
 
 
-#@driver.on_startup
+@driver.on_startup
 @scheduler.scheduled_job(
     "cron",
-    hour="*/1",
+    hour="15",
 )
 async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
@@ -354,7 +357,7 @@ async def check_update():
                             str(version._content))
     except Exception as e:
         logger.warning(f"检测到原神角色面板插件更新时出现问题: {e}")
-    if version.group(1) != str(__plugin_version__):
+    if float(version.group(1)) > __plugin_version__:
         bot = get_bot()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
