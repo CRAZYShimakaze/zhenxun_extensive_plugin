@@ -6,7 +6,7 @@ zhenxun_bot 原神角色卡片插件
 参考自[zhenxun-plugin-almanac](https://github.com/zhenxun-org/zhenxun_bot-tg/tree/main/plugins/genshin/almanac)
 ## 使用
 - 原神角色卡+uid
-- 原神角色卡查询+uid
+- 原神角色卡+uid+角色名
 - 我的角色
 - 他的角色@CRAZYShimakaze
 
@@ -15,6 +15,10 @@ zhenxun_bot 原神角色卡片插件
 ![This is an image](https://s3.bmp.ovh/imgs/2022/06/09/3a1c316ad6022c7a.png)
 
 ### 更新
+**2022/8/23**[v1.9]
+
+1. 减少更新提示频次(重启检查/每日下午3点检查)
+
 **2022/8/21**[v1.8]
 
 1. 开放国际服查询

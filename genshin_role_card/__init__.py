@@ -25,7 +25,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色卡 [uid] ?[角色名]"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 1.8
+__plugin_version__ = 1.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -33,7 +33,7 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": ["原神角色卡"],
 }
-get_card = on_regex(r".*?(.*)面板(.*).*?", priority=1)
+get_card = on_regex(r".*?(.*)面板(.*).*?", priority=4)
 char_card = on_command("原神角色卡", priority=4, block=True)
 characters = {
     '钟离': 'zhongli',
@@ -200,9 +200,10 @@ async def gen(event: MessageEvent, msg: list):
         print(e)
 
 
+@driver.on_startup
 @scheduler.scheduled_job(
     "cron",
-    hour="*/1",
+    hour="15",
 )
 async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_card/__init__.py"
@@ -212,7 +213,7 @@ async def check_update():
                             str(version._content))
     except Exception as e:
         logger.warning(f"检测到原神角色卡插件更新时出现问题: {e}")
-    if version.group(1) != str(__plugin_version__):
+    if float(version.group(1)) > __plugin_version__:
         bot = get_bot()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
