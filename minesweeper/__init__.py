@@ -5,6 +5,8 @@ from io import BytesIO
 from asyncio import TimerHandle
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Optional, NoReturn
+
+from configs.config import Config
 from models.bag_user import BagUser
 
 from nonebot.matcher import Matcher
@@ -16,7 +18,7 @@ from nonebot.adapters.onebot.v11 import (
     MessageEvent,
     GroupMessageEvent,
     Message,
-    MessageSegment,
+    MessageSegment, Bot,
 )
 
 from .data_source import MineSweeper, GameState, OpenResult, MarkResult
@@ -46,7 +48,7 @@ __plugin_cmd__ = [
     "查看游戏/查看游戏盘/显示游戏/显示游戏盘",
     "结束扫雷",
 ]
-__plugin_type__ = ("群内小游戏", )
+__plugin_type__ = ("群内小游戏",)
 __plugin_version__ = 0.1
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
@@ -55,7 +57,12 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
-
+__plugin_configs__ = {
+    "gold_weight": {
+        "value": 1,
+        "help": "金币奖励系数,默认为1时总金币为格子数乘以地雷数",
+        "default_value": 1, },
+}
 parser = ArgumentParser("minesweeper", description="扫雷")
 parser.add_argument("-r", "--row", type=int, default=8, help="行数")
 parser.add_argument("-c", "--col", type=int, default=8, help="列数")
@@ -89,7 +96,7 @@ minesweeper = on_shell_command("minesweeper", parser=parser, block=True, priorit
 
 @minesweeper.handle()
 async def _(
-    matcher: Matcher, event: MessageEvent, argv: List[str] = ShellCommandArgv()
+        matcher: Matcher, bot: Bot, event: MessageEvent, argv: List[str] = ShellCommandArgv()
 ):
     await handle_minesweeper(matcher, event, argv)
 
@@ -109,7 +116,7 @@ def game_running(event: MessageEvent) -> bool:
 
 # 命令前缀为空则需要to_me，否则不需要
 def smart_to_me(
-    event: MessageEvent, cmd: Tuple[str, ...] = Command(), raw_cmd: str = RawCommand()
+        event: MessageEvent, cmd: Tuple[str, ...] = Command(), raw_cmd: str = RawCommand()
 ) -> bool:
     return not raw_cmd.startswith(cmd[0]) or event.is_tome()
 
@@ -118,12 +125,12 @@ def shortcut(cmd: str, argv: List[str] = [], **kwargs):
     command = on_command(cmd, **kwargs, block=True, priority=12)
 
     @command.handle()
-    async def _(matcher: Matcher, event: MessageEvent, msg: Message = CommandArg()):
+    async def _(matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
         try:
             args = shlex.split(msg.extract_plain_text().strip())
         except:
             args = []
-        await handle_minesweeper(matcher, event, argv + args)
+        await handle_minesweeper(matcher, bot, event, argv + args)
 
 
 shortcut("扫雷", ["--row", "8", "--col", "8", "--num", "10"])
@@ -143,7 +150,7 @@ def is_qq(msg: str):
 
 
 @add_player.handle()
-async def _(matcher: Matcher, event: MessageEvent, msg: Message = CommandArg()):
+async def _(matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
     args = []
     for seg in msg["at"]:
         args.append(seg.data["qq"])
@@ -155,7 +162,7 @@ async def _(matcher: Matcher, event: MessageEvent, msg: Message = CommandArg()):
     except:
         pass
     if args:
-        await handle_minesweeper(matcher, event, ["--add"] + args)
+        await handle_minesweeper(matcher, bot, event, ["--add"] + args)
 
 
 async def stop_game(matcher: Matcher, cid: str):
@@ -176,9 +183,9 @@ def set_timeout(matcher: Matcher, cid: str, timeout: float = 600):
     timers[cid] = timer
 
 
-async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[str]):
+async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, argv: List[str]):
     async def send(
-        message: Optional[str] = None, image: Optional[BytesIO] = None
+            message: Optional[str] = None, image: Optional[BytesIO] = None
     ) -> NoReturn:
         if not (message or image):
             await matcher.finish()
@@ -193,7 +200,7 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
         args = parser.parse_args(argv)
     except ParserExit as e:
         if e.status == 0:
-            await send(__usage__)
+            await send(__plugin_usage__)
         await send()
 
     help_msg = "使用 “挖开”+位置 挖开方块，使用 “标记”+位置 标记方块，可同时加多个位置，如：“挖开 A1 B2”"
@@ -219,7 +226,7 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
 
         game = MineSweeper(options.row, options.col, options.num, options.skin)
         games[cid] = game
-        games[cid].players.append(event.user_id)
+        games[cid].players[str(event.user_id)] = 0
         set_timeout(matcher, cid)
 
         await send(help_msg, game.draw())
@@ -230,7 +237,10 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
     if options.show:
         await send(image=game.draw())
 
-    if event.user_id not in game.players:
+    player_names = []
+    for key, value in game.players.items():
+        player_names.append(key)
+    if str(event.user_id) not in player_names:
         await send("你不在本局游戏白名单中")
 
     if options.stop:
@@ -239,7 +249,7 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
 
     if options.add:
         for id in options.add:
-            game.players.append(int(id))
+            game.players[str(id)] = 0
         await send("添加成功")
 
     open_positions = options.open
@@ -261,12 +271,23 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
             msgs.append(f"位置 {position} 不合法，须为 字母+数字 的组合")
             continue
         res = game.open(pos[0], pos[1])
+        game.players[str(event.user_id)] += 1
         if res in [OpenResult.WIN, OpenResult.FAIL]:
             msg = ""
             if game.state == GameState.WIN:
                 if isinstance(event, GroupMessageEvent):
-                    await BagUser.add_gold(event.user_id, event.group_id, 10)
-                    msg = f"恭喜你获得游戏胜利！奖励你10金币！"
+                    msg = f"恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
+                    gold_weight = Config.get_config("minesweeper", "gold_weight")
+                    gold_all = game.mine_num * game.column * game.row * gold_weight
+                    c_all = 0
+                    for p, c in game.players.items():
+                        c_all += c
+                    for p, c in game.players.items():
+                        p = int(p)  # 可下标对象不可await
+                        name = await bot.get_group_member_info(group_id=event.group_id, user_id=p)
+                        name = name["nickname"]
+                        await BagUser.add_gold(p, event.group_id, gold_all * c // c_all)
+                        msg = msg + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
                 else:
                     msg = "恭喜你获得游戏胜利！"
             elif game.state == GameState.FAIL:
@@ -285,8 +306,23 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
             continue
         res = game.mark(pos[0], pos[1])
         if res == MarkResult.WIN:
+            if isinstance(event, GroupMessageEvent):
+                msg = f"恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
+                gold_weight = Config.get_config("minesweeper", "gold_weight")
+                gold_all = game.mine_num * game.column * game.row // len(game.players) * gold_weight
+                c_all = 0
+                for p, c in game.players.items():
+                    c_all += c
+                for p, c in game.players.items():
+                    p = int(p)  # 可下标对象不可await
+                    name = await bot.get_group_member_info(group_id=event.group_id, user_id=p)
+                    name = name["nickname"]
+                    await BagUser.add_gold(p, event.group_id, gold_all * c // c_all)
+                    msg = msg + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
+            else:
+                msg = "恭喜你获得游戏胜利！"
             games.pop(cid)
-            await send("恭喜你获得游戏胜利！", image=game.draw())
+            await send(msg, image=game.draw())
         elif res == MarkResult.OUT:
             msgs.append(f"位置 {position} 超出边界")
         elif res == MarkResult.OPENED:
