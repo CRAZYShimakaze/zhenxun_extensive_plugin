@@ -285,8 +285,13 @@ async def handle_minesweeper(matcher: Matcher, event: MessageEvent, argv: List[s
             continue
         res = game.mark(pos[0], pos[1])
         if res == MarkResult.WIN:
+            if isinstance(event, GroupMessageEvent):
+                    await BagUser.add_gold(event.user_id, event.group_id, 10)
+                    msg = f"恭喜你获得游戏胜利！奖励你10金币！"
+                else:
+                    msg = "恭喜你获得游戏胜利！"
             games.pop(cid)
-            await send("恭喜你获得游戏胜利！", image=game.draw())
+            await send(msg, image=game.draw())
         elif res == MarkResult.OUT:
             msgs.append(f"位置 {position} 超出边界")
         elif res == MarkResult.OPENED:
