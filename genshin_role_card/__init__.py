@@ -11,7 +11,7 @@ from plugins.genshin.query_user._models import Genshin
 from typing import Tuple
 import os
 import re
-import requests
+from nonebot import Driver
 
 __zx_plugin_name__ = "原神角色卡"
 __plugin_usage__ = """
@@ -88,7 +88,7 @@ characters = {
     '鹿野院平藏': 'heizo',
 }
 #char_occupy = False
-
+driver: Driver = nonebot.get_driver()
 
 @get_card.handle()
 # async def _(bot: Bot, event: MessageEvent):
@@ -208,7 +208,7 @@ async def gen(event: MessageEvent, msg: list):
 async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_card/__init__.py"
     try:
-        version = requests.get(url)
+        version = await AsyncHttpx.get(url)
         version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
                             str(version._content))
     except Exception as e:
