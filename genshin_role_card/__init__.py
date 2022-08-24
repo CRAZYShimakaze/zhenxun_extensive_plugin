@@ -11,6 +11,7 @@ from plugins.genshin.query_user._models import Genshin
 from typing import Tuple
 import os
 import re
+import nonebot
 from nonebot import Driver
 
 __zx_plugin_name__ = "原神角色卡"
