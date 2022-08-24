@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
-from ..utils.aiorequests import *
+from ..utils.aiorequests import get_img
 from ..utils.card_utils import load_image, load_json
 from ..utils.images import draw_right_text, draw_center_text
 
@@ -373,6 +373,7 @@ async def draw_role_card(uid, data):
     bg_draw.text((119, 1057), '总有效词条数', fill='#afafaf', font=get_font(36))
     score_pro = total_score / (average * 5) * 100
     total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C'
+    total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
     rank_icon = load_image(res_path + 'player_card2' +
                            f'/评分{total_rank[0]}.png',
                            mode='RGBA')

@@ -1,6 +1,7 @@
 import json
 import datetime
-import re, os
+import re
+import os
 from PIL import Image
 from pathlib import Path
 from typing import Union, Optional, Tuple

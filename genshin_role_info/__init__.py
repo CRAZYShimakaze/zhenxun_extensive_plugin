@@ -3,19 +3,18 @@ from .utils.card_utils import *
 from .data_source.draw_role_card import draw_role_card
 from curses.ascii import isdigit
 from utils.utils import get_bot, scheduler, get_message_at
+from utils.manager import group_manager
+from utils.http_utils import AsyncHttpx
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent, Message
-from services.log import logger
 from nonebot.params import CommandArg, RegexGroup
-from utils.manager import group_manager
+from nonebot import Driver
+from services.log import logger
 from configs.config import Config
-from utils.http_utils import AsyncHttpx
 import os
 import time
 import datetime
 import nonebot
-import requests
-from nonebot import Driver
 from plugins.genshin.query_user._models import Genshin
 
 __zx_plugin_name__ = "原神角色面板"
@@ -33,7 +32,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.6
+__plugin_version__ = 0.5
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -107,7 +106,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         else:
             guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
             guide = Image_build(img=guide, quality=100, mode='RGB')
-            await my_card.finish(guide + f"在游戏中打开显示详情选项!", at_sender=True)
+            await my_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
         player_info.save()
     else:
         #data = load_json(GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json')
@@ -125,7 +124,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     if roles_list == []:
         guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
         guide = Image_build(img=guide, quality=100, mode='RGB')
-        await my_card.finish(guide + f"无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await my_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
                              at_sender=True)
     else:
         await my_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
@@ -155,7 +154,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             for role in data['avatarInfoList']:
                 player_info.set_role(role)
         else:
-            await his_card.finish(f"未打开显示详情选项!", at_sender=True)
+            await his_card.finish("未打开显示详情选项!", at_sender=True)
         player_info.save()
     else:
         #data = load_json(GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json')
@@ -167,10 +166,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         #else:
         #    await his_card.finish(f"未打开显示详情选项!", at_sender=True)
     roles_list = player_info.get_roles_list()
-    if roles_list == []:
+    if not roles_list:
         guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
         guide = Image_build(img=guide, quality=100, mode='RGB')
-        await his_card.finish(guide + f"无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await his_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
                               at_sender=True)
     else:
         await his_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
@@ -239,8 +238,7 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
                 guide = load_image(GENSHIN_CARD_PATH +
                                    '/other/collections.png')
                 guide = Image_build(img=guide, quality=100, mode='RGB')
-                await char_card.finish(guide + f"在游戏中打开显示详情选项!",
-                                       at_sender=True)
+                await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
         except:
             return  #await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
     else:
@@ -260,10 +258,10 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
         #except:
         #    return  #await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
     roles_list = player_info.get_roles_list()
-    if roles_list == []:
+    if not roles_list:
         guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
         guide = Image_build(img=guide, quality=100, mode='RGB')
-        await his_card.finish(guide + f"无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await his_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
                               at_sender=True)
     if role_name not in roles_list:
         await char_card.finish(
@@ -272,7 +270,7 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
     else:
         role_data = player_info.get_roles_info(role_name)
         img = await draw_role_card(uid, role_data)
-        await char_card.finish(f"\n" + img + f"\n可查询角色:{','.join(roles_list)}",
+        await char_card.finish("\n" + img + f"\n可查询角色:{','.join(roles_list)}",
                                at_sender=True)
 
 
@@ -330,11 +328,10 @@ async def update(event: MessageEvent, uid: str):
         else:
             guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
             guide = Image_build(img=guide, quality=100, mode='RGB')
-            await char_card.finish(guide + f"在游戏中打开显示详情选项!", at_sender=True)
+            await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     except Exception as e:
         error_line = e.__traceback__.tb_lineno
-        error_info = '第{error_line}行发生error为: {e}'.format(
-            error_line=error_line, e=str(e))
+        error_info = f'第{error_line}行发生error为: {e}'
         print(error_info)
         #await char_card.finish("发生错误，请重试！", at_sender=True)
     player_info.save()
@@ -352,17 +349,17 @@ async def update(event: MessageEvent, uid: str):
 async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     try:
-        version = requests.get(url)
+        version = await AsyncHttpx.get(url)
         version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
-                            str(version._content))
+                            str(version.text))
     except Exception as e:
-        logger.warning(f"检测到原神角色面板插件更新时出现问题: {e}")
+        logger.warning("检测到原神角色面板插件更新时出现问题: {e}")
     if float(version.group(1)) > __plugin_version__:
         bot = get_bot()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
                                        message="检测到原神角色面板插件有更新！请前往github下载！")
-        logger.warning(f"检测到原神角色面板插件有更新！请前往github下载！")
+        logger.warning("检测到原神角色面板插件有更新！请前往github下载！")
 
 
 #@trans_data.handle()
