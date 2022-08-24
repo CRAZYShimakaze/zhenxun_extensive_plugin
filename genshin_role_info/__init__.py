@@ -356,7 +356,12 @@ async def check_update():
         version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
                             str(version._content))
     except Exception as e:
-        logger.warning(f"检测到原神角色面板插件更新时出现问题: {e}")
+        bot = get_bot()
+        for admin in bot.config.superusers:
+            await bot.send_private_msg(user_id=int(admin),
+                                       message="原神角色面板插件检查更新失败，请检查github连接性是否良好!")        
+        logger.warning(f"原神角色面板插件检查更新失败，请检查github连接性是否良好!: {e}") 
+        return
     if float(version.group(1)) > __plugin_version__:
         bot = get_bot()
         for admin in bot.config.superusers:
