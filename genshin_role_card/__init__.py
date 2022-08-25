@@ -71,7 +71,7 @@ characters = {
     '迪奥娜': 'diona',
     '芭芭拉': 'barbara',
     '早柚': 'sayu',
-    '安柏': 'amber',
+    '安柏': 'ambor',
     '埃洛伊': 'aloy',
     '云堇': 'yunjin',
     '罗莎莉亚': 'rosaria',
@@ -86,6 +86,8 @@ characters = {
     '五郎': 'gorou',
     '菲谢尔': 'fischl',
     '鹿野院平藏': 'heizo',
+    '柯莱': 'collei',
+    '提纳里': 'tighnari'
 }
 #char_occupy = False
 
