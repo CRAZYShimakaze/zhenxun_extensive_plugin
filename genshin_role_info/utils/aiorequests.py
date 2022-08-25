@@ -91,6 +91,7 @@ async def get_img(url: str,
                                         headers=headers,
                                         params=params,
                                         timeout=timeout,
+                                        follow_redirects=True,
                                         **kwargs)
                 resp = resp.read()
                 if b'NoSuchKey' in resp:
@@ -102,6 +103,7 @@ async def get_img(url: str,
                                         headers=headers,
                                         params=params,
                                         timeout=timeout,
+                                        follow_redirects=True,
                                         **kwargs)
                 resp = resp.read()
                 if b'error' in resp:

@@ -11,10 +11,14 @@ from ..utils.card_utils import Image_build, GENSHIN_CARD_PATH
 
 res_path = GENSHIN_CARD_PATH + '/'
 res_path2 = GENSHIN_CARD_PATH + '/res/'
-weapon_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
-artifact_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
-talent_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/constellation_icon/{}.png'
-skill_url = 'https://static.cherishmoon.fun/LittlePaimon/skill/{}.png'
+#weapon_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
+#artifact_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
+#talent_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/constellation_icon/{}.png'
+#skill_url = 'https://static.cherishmoon.fun/LittlePaimon/skill/{}.png'
+weapon_url = 'https://enka.network/ui/{}.png'
+artifact_url = 'https://enka.network/ui/{}.png'
+talent_url = 'https://enka.network/ui/{}.png'
+skill_url = 'https://enka.network/ui/{}.png'
 
 element_type = ['物理', '火元素', '雷元素', '水元素', '草元素', '风元素', '岩元素', '冰元素']
 

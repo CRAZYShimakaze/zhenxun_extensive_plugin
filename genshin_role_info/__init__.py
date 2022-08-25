@@ -15,6 +15,7 @@ import os
 import time
 import datetime
 import nonebot
+import random
 from plugins.genshin.query_user._models import Genshin
 
 __zx_plugin_name__ = "原神角色面板"
@@ -32,7 +33,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.5
+__plugin_version__ = 0.7
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -226,6 +227,8 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
             )
         except:
             await char_card.finish("服务器维护中,请稍后再试...")
+        if req == {}:
+            await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
         try:
@@ -317,7 +320,9 @@ async def update(event: MessageEvent, uid: str):
             follow_redirects=True,
         )
     except:
-        await char_card.finish("服务器维护中，,请稍后再试...")
+        await char_card.finish("服务器维护中,请稍后再试...")
+    if req == {}:
+        await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
     player_info = PlayerInfo(uid)
     try:
@@ -341,21 +346,33 @@ async def update(event: MessageEvent, uid: str):
         at_sender=True)
 
 
-@driver.on_startup
+@driver.on_bot_connect
 @scheduler.scheduled_job(
     "cron",
-    hour="15",
+    hour=random.randint(9, 22),
+    minute=random.randint(0, 59),
 )
 async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
+    bot = get_bot()
     try:
         version = await AsyncHttpx.get(url)
         version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
                             str(version.text))
     except Exception as e:
-        logger.warning("检测到原神角色面板插件更新时出现问题: {e}")
+        url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
+        try:
+            version = await AsyncHttpx.get(url)
+            version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
+                                str(version.text))
+        except Exception as e:
+            for admin in bot.config.superusers:
+                await bot.send_private_msg(
+                    user_id=int(admin),
+                    message="原神角色面板插件检查更新失败，请检查github连接性是否良好!")
+            logger.warning("原神角色面板插件检查更新失败，请检查github连接性是否良好!: {e}")
+            return
     if float(version.group(1)) > __plugin_version__:
-        bot = get_bot()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
                                        message="检测到原神角色面板插件有更新！请前往github下载！")

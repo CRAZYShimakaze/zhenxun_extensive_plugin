@@ -4,9 +4,6 @@ from pathlib import Path
 from ..utils.card_utils import load_json, GENSHIN_CARD_PATH
 from .common import common_fix, draw_dmg_pic, udc, get_damage_multipiler, growth_reaction
 
-all_skill_data = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                           '/roles_data.json')
-
 
 def get_role_dmg(data: dict):
     dm = get_damage_multipiler(deepcopy(data))
