@@ -4,11 +4,45 @@ import re
 import os
 from PIL import Image
 from pathlib import Path
-from typing import Union, Optional, Tuple
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment
 from io import BytesIO
+from typing import Dict, Optional, Any, Union, Tuple, AsyncIterator
+from utils.http_utils import AsyncHttpx
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
+
+
+async def get_img(url: str,
+                  *,
+                  save_path: Optional[Union[str, Path]] = None,
+                  size: Optional[Union[Tuple[int, int], float]] = None,
+                  mode: Optional[str] = None,
+                  crop: Optional[Tuple[int, int, int, int]] = None,
+                  **kwargs) -> Union[str, Image.Image]:
+    if save_path and Path(save_path).exists():
+        img = Image.open(save_path)
+    else:
+        if save_path and not Path(save_path).exists():
+            save_path = Path(save_path)
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+        await AsyncHttpx.download_file(url, save_path, follow_redirects=True)
+        img = Image.open(save_path)
+    if size:
+        if isinstance(size, float):
+            img = img.resize(
+                (int(img.size[0] * size), int(img.size[1] * size)),
+                Image.ANTIALIAS)
+        elif isinstance(size, tuple):
+            img = img.resize(size, Image.ANTIALIAS)
+    if mode:
+        img = img.convert(mode)
+    if crop:
+        img = img.crop(crop)
+    if save_path and not Path(save_path).exists():
+        save_path = Path(save_path)
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        img.save(save_path)
+    return img
 
 
 def load_image(
