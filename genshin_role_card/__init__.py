@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
-from curses.ascii import isdigit
-from utils.utils import get_bot, scheduler
-from nonebot import on_command
+from utils.utils import get_bot, scheduler, get_message_at
+from nonebot import on_command, on_regex
+from nonebot import Driver
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent, Message
 from services.log import logger
 from configs.path_config import TEMP_PATH
 from .data_source import get_alc_image, get_char_list
-from nonebot.params import CommandArg
-from utils.manager import group_manager
-from configs.config import Config
+from nonebot.params import CommandArg, RegexGroup
 from utils.http_utils import AsyncHttpx
+from plugins.genshin.query_user._models import Genshin
+from typing import Tuple
 import os
+import re
+import requests
+
+driver: Driver = nonebot.get_driver()
 
 __zx_plugin_name__ = "原神角色卡"
 __plugin_usage__ = """
@@ -19,11 +23,12 @@ usage：
     指令：
         原神角色卡 uid
         原神角色卡 uid 角色名
+        角色面板 ?[@用户] (例:刻晴面板)
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色卡 [uid] ?[角色名]"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.0
+__plugin_version__ = 2.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -31,8 +36,8 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": ["原神角色卡"],
 }
-
-char_card = on_command("原神角色卡", priority=15, block=True)
+get_card = on_regex(r".*?(.*)面板(.*).*?", priority=4)
+char_card = on_command("原神角色卡", priority=4, block=True)
 characters = {
     '钟离': 'zhongli',
     '神里绫华': 'ayaka',
@@ -69,7 +74,7 @@ characters = {
     '迪奥娜': 'diona',
     '芭芭拉': 'barbara',
     '早柚': 'sayu',
-    '安柏': 'amber',
+    '安柏': 'ambor',
     '埃洛伊': 'aloy',
     '云堇': 'yunjin',
     '罗莎莉亚': 'rosaria',
@@ -84,32 +89,76 @@ characters = {
     '五郎': 'gorou',
     '菲谢尔': 'fischl',
     '鹿野院平藏': 'heizo',
+    '柯莱': 'collei',
+    '提纳里': 'tighnari'
 }
-char_occupy = False
+#char_occupy = False
+
+
+@get_card.handle()
+# async def _(bot: Bot, event: MessageEvent):
+#     city = get_msg(event.get_plaintext())
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    role = args[0].strip()
+    at = args[1].strip()
+    if at:
+        uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
+    else:
+        uid = await Genshin.get_user_uid(event.user_id)
+    if not uid:
+        await get_card.finish("请输入原神绑定uid+uid进行绑定后再查询！")
+    await gen(event, [str(uid), role])
 
 
 @char_card.handle()
 async def _(event: MessageEvent, arg: Message = CommandArg()):
-    global char_occupy
+    msg = arg.extract_plain_text().strip().split()
+    await gen(event, msg)
+
+
+async def gen(event: MessageEvent, msg: list):
+    #global char_occupy
     try:
-        if char_occupy:
-            await char_card.finish("当前正有角色正在查询,请稍后再试...")
-        char_occupy = True
-        msg = arg.extract_plain_text().strip().split()
+        #if char_occupy:
+        #await char_card.finish("当前正有角色正在查询,请稍后再试...")
+        #char_occupy = True
+        #msg = arg.extract_plain_text().strip().split()
         #print(msg)
         try:
             uid = int(msg[0])
         except:
             await char_card.send("请输入正确uid...")
-            char_occupy = False
+            #char_occupy = False
             return
+        if len(str(uid)) != 9:
+            await char_card.send("请输入正确uid...")
+            #char_occupy = False
+            return
+        while 0:
+            if str(uid)[0] in ["1", "2"]:
+                service_dic = "官服"
+                break
+            elif str(uid)[0] in ["5"]:
+                service_dic = "B服"
+                break
+            elif str(uid)[0] in ["6"]:
+                service_dic = "美服"
+            elif str(uid)[0] in ["7"]:
+                service_dic = "欧服"
+            elif str(uid)[0] in ["8"]:
+                service_dic = "亚服"
+            elif str(uid)[0] in ["9"]:
+                service_dic = "港澳服"
+            else:
+                service_dic = ""
+            await char_card.finish(f"暂不支持{service_dic}查询...", at_sender=True)
         if len(msg) == 2:
             if msg[1] in characters:
                 chara = characters[msg[1]]
                 await char_card.send("开始获取角色信息...")
             else:
                 await char_card.send("请输入正确角色名...")
-                char_occupy = False
+                #char_occupy = False
                 return
         else:
             chara = 'none'
@@ -125,7 +174,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
                         char_hanzi.append(item)
                         break
         else:
-            char_occupy = False
+            #char_occupy = False
             await char_card.send(f"获取UID({str(uid)})角色信息超时,请检查是否已开放详细信息权限！",
                                  at_sender=True)
             return
@@ -134,7 +183,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         if alc_img:
             mes = alc_img + f"\n可查询角色:{','.join(char_hanzi)}"
             await char_card.send(mes, at_sender=True)
-            char_occupy = False
+            #char_occupy = False
             logger.info(
                 f"(USER {event.user_id}, GROUP {event.group_id if isinstance(event, GroupMessageEvent) else 'private'})"
                 f" 发送原神角色卡")
@@ -142,7 +191,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             await char_card.send(
                 f"获取UID({str(uid)})角色信息失败,请检查是否已放入指定角色!\n可查询角色:{','.join(char_hanzi)}",
                 at_sender=True)
-            char_occupy = False
+            #char_occupy = False
         #try:
         #    version = await check_update()
         #    if float(version) > __plugin_version__ and version != '':
@@ -151,25 +200,27 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         #except Exception as e:
         #    logger.warning(f"{e}")
     except Exception as e:
-        char_occupy = False
+        #char_occupy = False
         #await char_card.send(f"获取UID({str(uid)})角色信息失败!", at_sender=True)
         print(e)
 
 
-async def check_update() -> str:
-    version_path = TEMP_PATH / '__version__'
+@driver.on_startup
+@scheduler.scheduled_job(
+    "cron",
+    hour="15",
+)
+async def check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_card/__init__.py"
     try:
-        await AsyncHttpx.download_file(url, version_path)
+        version = requests.get(url)
+        version = re.search(r"__plugin_version__ = ([0-9\.]{3})",
+                            str(version._content))
     except Exception as e:
-        logger.warning(f"Error downloading {url}: {e}")
-    with version_path.open("r", encoding="utf-8") as f:
-        for item in f.readlines():
-            if str(__plugin_version__) in item:
-                new_version = item.split('=')[-1].strip()
-                break
-        else:
-            new_version = '0.0'
-    os.unlink(version_path)
-    print(new_version)
-    return new_version
+        logger.warning(f"检测到原神角色卡插件更新时出现问题: {e}")
+    if float(version.group(1)) > __plugin_version__:
+        bot = get_bot()
+        for admin in bot.config.superusers:
+            await bot.send_private_msg(user_id=int(admin),
+                                       message="检测到原神角色卡插件有更新！请前往github下载！")
+        logger.warning(f"检测到原神角色卡插件有更新！请前往github下载！")
