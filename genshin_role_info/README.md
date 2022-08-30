@@ -18,6 +18,10 @@ zhenxun_bot 原神角色面板插件
 ![This is an image](https://s3.bmp.ovh/imgs/2022/08/18/d9bd1c79152d1eed.jpg#pic_center=640×1327)
 
 ### 更新
+**2022/8/26**[v0.8]
+
+1. 修复新接口无法获取图片问题
+
 **2022/8/25**[v0.7]
 
 1. 支持3.0角色查询

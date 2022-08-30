@@ -1,8 +1,7 @@
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
-from ..utils.aiorequests import get_img
-from ..utils.card_utils import load_image, load_json
+from ..utils.card_utils import load_image, load_json, get_img
 from ..utils.images import draw_right_text, draw_center_text
 
 from .damage import get_role_dmg
