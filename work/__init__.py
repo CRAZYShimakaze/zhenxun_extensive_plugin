@@ -119,8 +119,7 @@ async def _(bot: Bot,
     question, answer = random_question(timu_num)
     await asyncio.sleep(1)
     await start.send(f"请在{dati_time}秒内完成以下{timu_num}道题目,输入'提交 X X X'进行提交:\n" +
-                     "\n".join(question),
-                     at_sender=True)
+                     "\n".join(question), at_sender=True)
     cal_player[event.group_id] = {
         "player": event.user_id,
         "time": time.time(),
@@ -136,7 +135,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
             await Worker.add_work_count(event.user_id,event.group_id) ## 增加打工次数记录
             cost_time = int(time.time() - cal_player[event.group_id]["time"])
             if cost_time > dati_time:
-                await submit.send(f"{at(cal_player[event.group_id]['player'])}你用时{cost_time}秒,算得太慢了,请重新申请吧！", at_sender=True)
+                await submit.send(f"你用时{cost_time}秒,算得太慢了,请重新申请吧！", at_sender=True)
             else:
                 msg = arg.extract_plain_text().strip().split()
                 salarys = 0 ## 工资
@@ -145,7 +144,7 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                 cnt = check_result(msg, cal_player[event.group_id]['answer'])
                 tax = 0
                 if not cnt:
-                    await bot.send(event, message=f"{at(cal_player[event.group_id]['player'])}你太菜了,竟然一道也没做出来!")
+                    await bot.send(event, message=f"你太菜了,竟然一道也没做出来!")
                 elif cnt > math.ceil(timu_num / 3):
                     tax = random.randint(0, 2)
                     # 快答奖励
@@ -159,16 +158,14 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                     await bot.send(
                         event,
                         message=
-                        f"{at(cal_player[event.group_id]['player'])}你{cost_time}秒做对了{cnt}道题,这是你的工资:{moneys[cnt-1] + ex_moneys}金币{ex_message},扣税后得到{salarys}金币!",
-                        at_sender=True)
+                        f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{moneys[cnt-1] + ex_moneys}金币{ex_message},扣税后得到{salarys}金币!", at_sender=True)
                 else:
                     salarys = moneys[cnt - 1]
                     await BagUser.add_gold(event.user_id, event.group_id, salarys)
                     await bot.send(
                         event,
                         message=
-                        f"{at(cal_player[event.group_id]['player'])}你{cost_time}秒做对了{cnt}道题,这是你的工资:{salarys}金币,工资太低不需要交税!",
-                        at_sender=True)
+                        f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{salarys}金币,工资太低不需要交税!", at_sender=True)
                 await Worker.add_salary(event.user_id, event.group_id, salarys) ## 增加工资记录
                 await Worker.add_question_count(event.user_id, event.group_id, cnt) ## 增加答对题目数记录
             await Worker.add_time_count(event.user_id, event.group_id, cost_time) ## 增加工时记录（秒）
