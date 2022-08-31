@@ -1,5 +1,24 @@
 # zhenxun_bot_plugin
+
+<p>
+  <a href="https://www.oscs1024.com/cd/1522831757949284352">
+    <img src="https://www.oscs1024.com/platform/badge/CRAZYShimakaze/zhenxun_extensive_plugin.svg">
+  </a>
+
+  <a href="https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin">
+    <img src="https://badgen.net/badge/Github/CRAZYShimakaze/zhenxun_extensive_plugin?icon=github">
+  </a>
+
+<img src="https://img.shields.io/badge/-Python3.9-3776AB?style=flat-square">
+  <a href="https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/CRAZYShimakaze/zhenxun_extensive_plugin?style=flat-square">
+  </a>
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/CRAZYShimakaze/zhenxun_extensive_plugin?style=flat-square">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/CRAZYShimakaze/zhenxun_extensive_plugin?style=flat-square">
+  </p>
+
 适用于zhenxun_bot的扩展插件
+
 
 第三方插件交流群：217496217
 ## 列表
