@@ -13,6 +13,7 @@ from typing import Tuple
 import os
 import re
 import requests
+import nonebot
 
 driver: Driver = nonebot.get_driver()
 
