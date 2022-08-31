@@ -33,7 +33,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.8
+__plugin_version__ = 0.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -227,7 +227,7 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
             )
         except:
             await char_card.finish("服务器维护中,请稍后再试...")
-        if req == {}:
+        if req.status_code != 200:
             await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
@@ -242,7 +242,8 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
                                    '/other/collections.png')
                 guide = Image_build(img=guide, quality=100, mode='RGB')
                 await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
-        except:
+        except Exception as e:
+            print(e)
             return  #await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
     else:
         #data = load_json(GENSHIN_CARD_PATH + f"/player_info/{uid}.json")
@@ -321,7 +322,7 @@ async def update(event: MessageEvent, uid: str):
         )
     except:
         await char_card.finish("服务器维护中,请稍后再试...")
-    if req == {}:
+    if req.status_code != 200:
         await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
     player_info = PlayerInfo(uid)

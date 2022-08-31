@@ -279,8 +279,7 @@ class PlayerInfo:
             weapon_info['名称'] = weapon['Name'][weapon_data['flat']
                                                ['nameTextMapHash']]
             weapon_info['图标'] = weapon_data['flat']['icon']
-            weapon_info['类型'] = weapon['Type'][weapon_data['flat']
-                                               ['nameTextMapHash']]
+            weapon_info['类型'] = weapon['Type'][weapon_info['名称']]
             weapon_info['等级'] = weapon_data['weapon']['level']
             weapon_info['星级'] = weapon_data['flat']['rankLevel']
             if 'promoteLevel' in weapon_data['weapon']:
