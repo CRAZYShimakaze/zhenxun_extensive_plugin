@@ -1,7 +1,7 @@
 # zhenxun_bot_plugin
 
 <p>
-  <a href="https://www.oscs1024.com/cd/1522831757949284352">
+  <a href="https://www.oscs1024.com/cd/1535499661232435200?sign=e9655203">
     <img src="https://www.oscs1024.com/platform/badge/CRAZYShimakaze/zhenxun_extensive_plugin.svg">
   </a>
 
