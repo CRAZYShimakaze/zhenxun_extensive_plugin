@@ -206,7 +206,7 @@ async def gen(event: MessageEvent, msg: list):
         print(e)
 
 
-@driver.on_startup
+@driver.on_bot_connect
 @scheduler.scheduled_job(
     "cron",
     hour="15",
