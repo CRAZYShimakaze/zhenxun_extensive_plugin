@@ -33,7 +33,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关", )
-__plugin_version__ = 0.9
+__plugin_version__ = 1.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -100,7 +100,9 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             player_info = PlayerInfo(uid)
             player_info.set_player(data['playerInfo'])
         except:
-            await my_card.finish("服务器维护中,请稍后再试...")
+            await char_card.finish("服务器维护中,请稍后再试...")
+        if req.status_code != 200:
+            await char_card.finish("服务器维护中,请稍后再试...")
         if 'avatarInfoList' in data:
             for role in data['avatarInfoList']:
                 player_info.set_role(role)
@@ -150,7 +152,9 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             player_info = PlayerInfo(uid)
             player_info.set_player(data['playerInfo'])
         except:
-            await his_card.finish("服务器维护中,请稍后再试...")
+            await char_card.finish("服务器维护中,请稍后再试...")
+        if req.status_code != 200:
+            await char_card.finish("服务器维护中,请稍后再试...")
         if 'avatarInfoList' in data:
             for role in data['avatarInfoList']:
                 player_info.set_role(role)
