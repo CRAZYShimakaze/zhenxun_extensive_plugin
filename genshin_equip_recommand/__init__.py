@@ -34,7 +34,7 @@ grade = on_command("原神角色评级", priority=15, block=True)
 
 @equip.handle()
 async def hf(bot: Bot, ev: Event):
-    address_list = "https://s3.bmp.ovh/imgs/2022/07/22/acfdef7475a0f074.jpg"
+    address_list = "https://s3.bmp.ovh/imgs/2022/09/01/2211532ef945c055.jpg"
     try:
         img = await AsyncHttpx().get(address_list)
     except:
@@ -44,7 +44,7 @@ async def hf(bot: Bot, ev: Event):
 
 @grade.handle()
 async def hf(bot: Bot, ev: Event):
-    address_list = "https://s3.bmp.ovh/imgs/2022/07/22/6ba3597e34f1ef67.jpg"
+    address_list = "https://s3.bmp.ovh/imgs/2022/09/01/f00c4edb99eac50c.jpg"
     try:
         img = await AsyncHttpx().get(address_list)
     except:
