@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import jsonpath
 
 import nonebot
 import requests
@@ -119,8 +120,12 @@ def porn_pic(pic_url):
     response = requests.post(request_url, data=params, headers=headers)
     try:
         data = response.json()['data'][0]
+        data1 = response.json()['data']
         if data['type'] == 1:
-            score = round((data['probability']) * 100, 2)
+            data2 = jsonpath.jsonpath(data1,'$..probability')
+            data2.sort(reverse=True)
+            data2=data2[0]
+            score = round((data2) * 100, 2)
             return int(score) + 1
         else:
             return 0
