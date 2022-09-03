@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
+import os
 import random
+import re
 import time
+from typing import Tuple
 
 import nonebot
 from nonebot import Driver
 from nonebot import on_command, on_regex
+from nonebot.adapters.onebot.v11 import MessageEvent, Message
 from nonebot.params import CommandArg, RegexGroup
 
 from plugins.genshin.query_user._models import Genshin
 from services.log import logger
+from utils.http_utils import AsyncHttpx
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_role_card import draw_role_card
-from .utils.card_utils import *
+from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path
 
 __zx_plugin_name__ = "原神角色面板"
 __plugin_usage__ = """
@@ -28,7 +33,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.0
+__plugin_version__ = 1.1
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -36,6 +41,8 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
+
+from .utils.image_utils import load_image, Image_build
 
 char_card = on_command("原神角色卡", priority=4, block=True)
 update_card = on_command("更新角色卡", priority=4, block=True)
@@ -45,7 +52,7 @@ his_card = on_command("他的角色", priority=4, block=True)
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r".*?(.*)面板(.*).*?", priority=4)
-alias_file = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/alias.json')
+alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
 
 
@@ -85,7 +92,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 async def get_char(uid: str):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
-    if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
+    if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(url=url, follow_redirects=True)
         except Exception as e:
@@ -102,8 +109,7 @@ async def get_char(uid: str):
                     player_info.set_role(role)
                 player_info.save()
             else:
-                guide = load_image(GENSHIN_CARD_PATH +
-                                   '/other/collections.png')
+                guide = load_image(f'{other_path}/collections.png')
                 guide = Image_build(img=guide, quality=100, mode='RGB')
                 await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
         except Exception as e:
@@ -113,7 +119,7 @@ async def get_char(uid: str):
         player_info = PlayerInfo(uid)
     roles_list = player_info.get_roles_list()
     if not roles_list:
-        guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
+        guide = load_image(f'{other_path}/collections.png')
         guide = Image_build(img=guide, quality=100, mode='RGB')
         await my_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
                              at_sender=True)
@@ -153,7 +159,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 async def gen(event: MessageEvent, uid: str, role_name: str):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
-    if not os.path.exists(GENSHIN_CARD_PATH + f"/player_info/{uid}.json"):
+    if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(
                 url=url,
@@ -173,8 +179,7 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
                     player_info.set_role(role)
                 player_info.save()
             else:
-                guide = load_image(GENSHIN_CARD_PATH +
-                                   '/other/collections.png')
+                guide = load_image(f'{other_path}/collections.png')
                 guide = Image_build(img=guide, quality=100, mode='RGB')
                 await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
         except Exception as e:
@@ -184,7 +189,7 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
         player_info = PlayerInfo(uid)
     roles_list = player_info.get_roles_list()
     if not roles_list:
-        guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
+        guide = load_image(f'{other_path}/collections.png')
         guide = Image_build(img=guide, quality=100, mode='RGB')
         await his_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
                               at_sender=True)
@@ -212,9 +217,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 async def update(event: MessageEvent, uid: str):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
-    if os.path.exists(GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json'):
-        mod_time = os.path.getmtime(GENSHIN_CARD_PATH +
-                                    f"/player_info/{uid}.json")
+    if os.path.exists(f'{player_info_path}/{uid}.json'):
+        mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
         if cd_time < 180:
             await char_card.finish(f'{180 - cd_time}秒后可再次更新!', at_sender=True)
@@ -236,7 +240,7 @@ async def update(event: MessageEvent, uid: str):
             for role in data['avatarInfoList']:
                 player_info.set_role(role)
         else:
-            guide = load_image(GENSHIN_CARD_PATH + '/other/collections.png')
+            guide = load_image(f'{other_path}/collections.png')
             guide = Image_build(img=guide, quality=100, mode='RGB')
             await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     except Exception as e:

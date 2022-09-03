@@ -1,187 +1,39 @@
 import datetime
-import json
 import os
 import re
-from io import BytesIO
-from pathlib import Path
-from typing import Optional, Union, Tuple
 
-from PIL import Image
-from nonebot.adapters.onebot.v11 import MessageSegment
+from PIL import ImageFont
 
-from utils.http_utils import AsyncHttpx
+from ..utils.json_utils import load_json, save_json
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
-
-
-async def get_img(url: str,
-                  *,
-                  save_path: Optional[Union[str, Path]] = None,
-                  size: Optional[Union[Tuple[int, int], float]] = None,
-                  mode: Optional[str] = None,
-                  crop: Optional[Tuple[int, int, int, int]] = None,
-                  **kwargs) -> Union[str, Image.Image]:
-    if save_path and Path(save_path).exists():
-        img = Image.open(save_path)
-    else:
-        if save_path and not Path(save_path).exists():
-            save_path = Path(save_path)
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-        await AsyncHttpx.download_file(url, save_path, follow_redirects=True)
-        img = Image.open(save_path)
-    if size:
-        if isinstance(size, float):
-            img = img.resize(
-                (int(img.size[0] * size), int(img.size[1] * size)),
-                Image.ANTIALIAS)
-        elif isinstance(size, tuple):
-            img = img.resize(size, Image.ANTIALIAS)
-    if mode:
-        img = img.convert(mode)
-    if crop:
-        img = img.crop(crop)
-    if save_path and not Path(save_path).exists():
-        save_path = Path(save_path)
-        save_path.parent.mkdir(parents=True, exist_ok=True)
-        img.save(save_path)
-    return img
-
-
-def load_image(
-        path: Union[Path, str],
-        *,
-        size: Optional[Union[Tuple[int, int], float]] = None,
-        crop: Optional[Tuple[int, int, int, int]] = None,
-        mode: Optional[str] = None,
-):
-    """
-    说明：
-        读取图像，并预处理
-    参数：
-        :param path: 图片路径
-        :param size: 预处理尺寸
-        :param crop: 预处理裁剪大小
-        :param mode: 预处理图像模式
-        :return: 图像对象
-    """
-    img = Image.open(path)
-    if size:
-        if isinstance(size, float):
-            img = img.resize(
-                (int(img.size[0] * size), int(img.size[1] * size)),
-                Image.ANTIALIAS)
-        elif isinstance(size, tuple):
-            img = img.resize(size, Image.ANTIALIAS)
-    if crop:
-        img = img.crop(crop)
-    if mode:
-        img = img.convert(mode)
-    return img
-
-
-def load_json(path: Union[Path, str], encoding: str = 'utf-8') -> dict:
-    """
-    说明：
-        读取本地json文件，返回json字典。
-    参数：
-        :param path: 文件路径
-        :param encoding: 编码，默认为utf-8
-        :return: json字典
-    """
-    if isinstance(path, str):
-        path = Path(path)
-    if not path.exists():
-        save_json({}, path, encoding)
-    return json.load(path.open('r', encoding=encoding))
-
-
-def save_json(data: dict,
-              path: Union[Path, str] = None,
-              encoding: str = 'utf-8'):
-    """
-    保存json文件
-    :param data: json数据
-    :param path: 保存路径
-    :param encoding: 编码
-    """
-    if isinstance(path, str):
-        path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(data,
-              path.open('w', encoding=encoding),
-              ensure_ascii=False,
-              indent=4)
-
-
-def get_name_by_id(role_id: str):
-    """
-        根据角色id获取角色名
-        :param role_id: 角色id
-        :return: 角色名字符串
-    """
-    alias_file = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                                '/alias.json')
-    name_list = alias_file['roles']
-    if role_id in name_list:
-        return name_list[role_id][0]
-    else:
-        return None
-
-
-def Image_build(img: Union[Image.Image, Path, str],
-                *,
-                size: Optional[Union[Tuple[int, int], float]] = None,
-                crop: Optional[Tuple[int, int, int, int]] = None,
-                quality: Optional[int] = 100,
-                mode: Optional[str] = None) -> MessageSegment:
-    """
-    说明：
-        图片预处理并构造成MessageSegment
-        :param img: 图片Image对象或图片路径
-        :param size: 预处理尺寸
-        :param crop: 预处理裁剪大小
-        :param quality: 预处理图片质量
-        :param mode: 预处理图像模式
-        :return: MessageSegment.image
-    """
-    if isinstance(img, str) or isinstance(img, Path):
-        img = load_image(path=img, size=size, mode=mode, crop=crop)
-    else:
-        if size:
-            if isinstance(size, float):
-                img = img.resize(
-                    (int(img.size[0] * size), int(img.size[1] * size)),
-                    Image.ANTIALIAS)
-            elif isinstance(size, tuple):
-                img = img.resize(size, Image.ANTIALIAS)
-        if crop:
-            img = img.crop(crop)
-        if mode:
-            img = img.convert(mode)
-    bio = BytesIO()
-    img.save(bio,
-             format='JPEG' if img.mode == 'RGB' else 'PNG',
-             quality=quality)
-    return MessageSegment.image(bio)
-
-
-role_data = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                           '/role_data.json')
-role_skill = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                            '/role_skill.json')
-role_talent = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                             '/role_talent.json')
-weapon = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/weapon.json')
-prop_list = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/prop.json')
-artifact_list = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                               '/artifact.json')
-role_score = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/score.json')
+player_info_path = GENSHIN_CARD_PATH + '/player_info'
+res_path = GENSHIN_CARD_PATH + '/res/'
+json_path = res_path + 'json_data'
+bg_path = res_path + 'background'
+char_pic_path = res_path + 'char_pic'
+other_path = res_path + 'other'
+regoin_path = res_path + 'region'
+outline_path = res_path + 'outline'
+skill_path = res_path + 'skill'
+talent_path = res_path + 'talent'
+weapon_path = res_path + 'weapon'
+reli_path = res_path + 'reli'
+font_path = res_path + 'fonts'
+role_data = load_json(path=f'{json_path}/role_data.json')
+role_skill = load_json(path=f'{json_path}/role_skill.json')
+role_talent = load_json(path=f'{json_path}/role_talent.json')
+weapon = load_json(path=f'{json_path}/weapon.json')
+prop_list = load_json(path=f'{json_path}/prop.json')
+artifact_list = load_json(path=f'{json_path}/artifact.json')
+role_score = load_json(path=f'{json_path}/score.json')
+alias_file = load_json(path=f'{json_path}/alias.json')
 
 
 class PlayerInfo:
 
     def __init__(self, uid: str):
-        self.path = GENSHIN_CARD_PATH + '/player_info' + f'/{uid}.json'
+        self.path = f'{player_info_path}/{uid}.json'
         self.data = load_json(path=self.path)
         self.player_info = self.data['玩家信息'] if '玩家信息' in self.data else {}
         self.roles = self.data['角色'] if '角色' in self.data else {}
@@ -210,7 +62,7 @@ class PlayerInfo:
             if role_name in ['荧', '空']:
                 traveler_skill = role_skill['Name'][list(
                     data['skillLevelMap'].keys())[-1]]
-                find_element = re.search(r'(风|雷|岩|草|水|火|冰)',
+                find_element = re.search(r'([风雷岩草水火冰])',
                                          traveler_skill).group(1)
                 role_info['元素'] = find_element
                 role_name = find_element + '主'
@@ -362,6 +214,19 @@ class PlayerInfo:
         save_json(data=self.data, path=self.path)
 
 
+def get_name_by_id(role_id: str):
+    """
+        根据角色id获取角色名
+        :param role_id: 角色id
+        :return: 角色名字符串
+    """
+    name_list = alias_file['roles']
+    if role_id in name_list:
+        return name_list[role_id][0]
+    else:
+        return None
+
+
 def dictList_to_list(data):
     if not isinstance(data, list):
         return 'unknown'
@@ -372,159 +237,5 @@ def dictList_to_list(data):
     return new_data
 
 
-def artifact_value(role_prop: dict, prop_name: str, prop_value: float,
-                   effective: dict):
-    """
-    计算圣遗物单词条的有效词条数
-    :param role_prop: 角色基础属性
-    :param prop_name: 属性名
-    :param prop_value: 属性值
-    :param effective: 有效词条列表
-    :return: 评分
-    """
-    prop_map = {
-        '攻击力': 4.975,
-        '生命值': 4.975,
-        '防御力': 6.2,
-        '暴击率': 3.3,
-        '暴击伤害': 6.6,
-        '元素精通': 19.75,
-        '元素充能效率': 5.5
-    }
-    if prop_name in effective.keys() and prop_name in ['攻击力', '生命值', '防御力']:
-        return round(
-            prop_value / role_prop[prop_name] * 100 / prop_map[prop_name] *
-            effective[prop_name], 2)
-    if prop_name.replace('百分比', '') in effective.keys():
-        return round(
-            prop_value / prop_map[prop_name.replace('百分比', '')] *
-            effective[prop_name.replace('百分比', '')], 2)
-    return 0
-
-
-def artifact_total_value(role_prop: dict, artifact: dict, effective: dict):
-    """
-    计算圣遗物总有效词条数以及评分
-    :param role_prop: 角色基础属性
-    :param artifact: 圣遗物信息
-    :param effective: 有效词条列表
-    :return: 总词条数，评分
-    """
-    new_role_prop = {
-        '攻击力': role_prop['基础攻击'],
-        '生命值': role_prop['基础生命'],
-        '防御力': role_prop['基础防御']
-    }
-    value = 0
-    for i in artifact['词条']:
-        value += artifact_value(new_role_prop, i['属性名'], i['属性值'], effective)
-    value = round(value, 2)
-    return value, round(value / get_expect_score(effective) * 100, 1)
-
-
-def get_effective(role_name: str,
-                  role_weapon: str,
-                  artifacts: list,
-                  element: str = '风'):
-    """
-    根据角色的武器、圣遗物来判断获取该角色有效词条列表
-    :param role_name: 角色名
-    :param role_weapon: 角色武器
-    :param artifacts: 角色圣遗物列表
-    :param element: 角色元素，仅需主角传入
-    :return: 有效词条列表
-    """
-    if role_name in ['荧', '空']:
-        role_name = str(element) + '主'
-    if role_name in role_score['Weight']:
-        if len(artifacts) < 5:
-            return role_score['Weight'][role_name]['常规']
-        if role_name == '钟离':
-            if artifacts[-2]['主属性']['属性名'] == '岩元素伤害加成':
-                return role_score['Weight'][role_name]['岩伤']
-            elif artifacts[-2]['主属性']['属性名'] in [
-                '物理伤害加成', '火元素伤害加成', '冰元素伤害加成'
-            ]:
-                return role_score['Weight'][role_name]['武神']
-        if role_name == '班尼特' and artifacts[-2]['主属性']['属性名'] == '火元素伤害加成':
-            return role_score['Weight'][role_name]['输出']
-        if role_name == '甘雨':
-            suit = get_artifact_suit(artifacts)
-            if suit and ('乐团' in suit[0][0] or
-                         (len(suit) == 2 and '乐团' in suit[1][0])):
-                return role_score['Weight'][role_name]['融化']
-        if role_name == '申鹤' and artifacts[-2]['主属性']['属性名'] == '冰元素伤害加成':
-            return role_score['Weight'][role_name]['输出']
-        if role_name == '七七' and artifacts[-2]['主属性']['属性名'] == '物理伤害加成':
-            return role_score['Weight'][role_name]['输出']
-        if role_name in ['温迪', '砂糖'
-                         ] and artifacts[-2]['主属性']['属性名'] == '风元素伤害加成':
-            return role_score['Weight'][role_name]['输出']
-        if '西风' in role_weapon and '西风' in role_score['Weight'][role_name]:
-            return role_score['Weight'][role_name]['西风']
-        return role_score['Weight'][role_name]['常规']
-    else:
-        return {'攻击力': 1, '暴击率': 1, '暴击伤害': 1}
-
-
-def get_expect_score(effective: dict):
-    """
-    计算单个圣遗物小毕业所需的期望词条数
-    :param effective: 有效词条列表
-    :return: 期望词条数
-    """
-    total = 0
-    if len(effective.keys()) == 2:
-        average = 15 / 5
-    elif effective.keys() == '西风':
-        average = 17 / 5
-    elif len(effective.keys()) == 3:
-        average = 24 / 5
-    elif len(effective.keys()) == 4:
-        average = 28 / 5
-    else:
-        average = 30 / 5
-    for name, value in effective.items():
-        total += value * average
-    return round(total / len(effective.keys()), 2)
-
-
-def check_effective(prop_name: str, effective: dict):
-    """
-    检查词条是否有效
-    :param prop_name: 词条属性名
-    :param effective: 有效词条列表
-    :return: 是否有效
-    """
-    if '攻击力' in effective and '攻击力' in prop_name:
-        return True
-    if '生命值' in effective and '生命值' in prop_name:
-        return True
-    if '防御力' in effective and '防御力' in prop_name:
-        return True
-    return prop_name in effective
-
-
-def get_artifact_suit(artifacts: list):
-    """
-    获取圣遗物套装
-    :param artifacts: 圣遗物列表
-    :return: 套装列表
-    """
-    suit = []
-    suit2 = []
-    final_suit = []
-    for artifact in artifacts:
-        suit.append(artifact['所属套装'])
-    for s in suit:
-        if s not in suit2 and 1 < suit.count(s) < 4:
-            suit2.append(s)
-        if suit.count(s) >= 4:
-            for r in artifacts:
-                if r['所属套装'] == s:
-                    return [(s, r['图标']), (s, r['图标'])]
-    for r in artifacts:
-        if r['所属套装'] in suit2:
-            final_suit.append((r['所属套装'], r['图标']))
-            suit2.remove(r['所属套装'])
-    return final_suit
+def get_font(size, font='hywh.ttf'):
+    return ImageFont.truetype(str(res_path + 'fonts/' + font), size)
