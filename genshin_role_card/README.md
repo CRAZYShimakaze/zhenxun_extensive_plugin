@@ -15,6 +15,11 @@ zhenxun_bot 原神角色卡片插件
 ![This is an image](https://s3.bmp.ovh/imgs/2022/06/09/3a1c316ad6022c7a.png)
 
 ### 更新
+
+**2022/9/2**[v2.1]
+
+1. 清理冗余代码
+
 **2022/8/30**[v2.0]
 
 1. bug fix
