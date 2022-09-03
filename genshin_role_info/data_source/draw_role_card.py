@@ -1,19 +1,17 @@
-from pathlib import Path
-
 from PIL import Image, ImageDraw, ImageFont
+
+from .damage import get_role_dmg
+from ..utils.card_utils import Image_build, GENSHIN_CARD_PATH
+from ..utils.card_utils import get_artifact_suit, artifact_total_value, get_expect_score, get_effective, check_effective
 from ..utils.card_utils import load_image, load_json, get_img
 from ..utils.images import draw_right_text, draw_center_text
 
-from .damage import get_role_dmg
-from ..utils.card_utils import get_artifact_suit, artifact_total_value, get_expect_score, get_effective, check_effective
-from ..utils.card_utils import Image_build, GENSHIN_CARD_PATH
-
 res_path = GENSHIN_CARD_PATH + '/'
 res_path2 = GENSHIN_CARD_PATH + '/res/'
-#weapon_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
-#artifact_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
-#talent_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/constellation_icon/{}.png'
-#skill_url = 'https://static.cherishmoon.fun/LittlePaimon/skill/{}.png'
+# weapon_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
+# artifact_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/equip/{}.png'
+# talent_url = 'https://upload-bbs.mihoyo.com/game_record/genshin/constellation_icon/{}.png'
+# skill_url = 'https://static.cherishmoon.fun/LittlePaimon/skill/{}.png'
 weapon_url = 'https://enka.network/ui/{}.png'
 artifact_url = 'https://enka.network/ui/{}.png'
 talent_url = 'https://enka.network/ui/{}.png'
@@ -21,7 +19,7 @@ skill_url = 'https://enka.network/ui/{}.png'
 
 element_type = ['物理', '火元素', '雷元素', '水元素', '草元素', '风元素', '岩元素', '冰元素']
 
-region = load_json(res_path + 'json_data' + '/role_region.json')
+role_data = load_json(res_path + 'json_data' + '/role_data.json')
 
 
 def get_font(size, font='hywh.ttf'):
@@ -29,7 +27,7 @@ def get_font(size, font='hywh.ttf'):
 
 
 async def draw_role_card(uid, data):
-    #def draw_role_card(uid, data):
+    # def draw_role_card(uid, data):
     bg_card = load_image(res_path + 'player_card2' + f'/背景_{data["元素"]}.png',
                          mode='RGBA')
     try:
@@ -56,13 +54,13 @@ async def draw_role_card(uid, data):
     new_w = 1200
     new_h = int(img.size[1] * (new_w / img.size[0]))
     img = img.resize((new_w, new_h), Image.ANTIALIAS)
-    bg.alpha_composite(img, (200, 0))  #234))
+    bg.alpha_composite(img, (200, 0))  # 234))
 
     base_mask = load_image(res_path + 'player_card2' + '/底遮罩.png')
     bg.alpha_composite(base_mask, (0, 0))
     if data['名称'] not in ['荧', '空', '埃洛伊']:
         region_icon = load_image(path=res_path + 'player_card2' +
-                                 f'/{region[data["名称"]]}.png',
+                                      f'/{role_data[data["名称"]]["region"]}.png',
                                  size=(130, 130))
         bg.alpha_composite(region_icon, (0, 4))
     bg_draw = ImageDraw.Draw(bg)
@@ -153,10 +151,10 @@ async def draw_role_card(uid, data):
     if data['名称'] in ['神里绫华', '莫娜']:
         data['天赋'].pop(2)
     for i in range(3):
-        #bg.alpha_composite(base_icon.resize((132, 142)), (564, 253 + 147 * i))
+        # bg.alpha_composite(base_icon.resize((132, 142)), (564, 253 + 147 * i))
         bg.alpha_composite(base_icon.resize((83, 90)),
                            (595 + 147 * i, 253 + 495))
-        #draw_center_text(bg_draw, str(data['天赋'][i]['等级']), 510, 552,
+        # draw_center_text(bg_draw, str(data['天赋'][i]['等级']), 510, 552,
         #                 310 + 147 * i, 'black', get_font(34, 'number.ttf'))
         draw_center_text(bg_draw, str(data['天赋'][i]['等级']), 545 + 147 * i,
                          587 + 147 * i, 310 + 470, 'white',
@@ -164,12 +162,12 @@ async def draw_role_card(uid, data):
         skill_icon = res_path2 + 'skill' + f'/{data["天赋"][i]["图标"]}.png'
         skill_icon = await get_img(
             url=skill_url.format(
-                #skill_icon = aiorequests.get_img(url=skill_url.format(
+                # skill_icon = aiorequests.get_img(url=skill_url.format(
                 data["天赋"][i]["图标"]),
             size=(36, 36),
             save_path=skill_icon,
             mode='RGBA')
-        #bg.alpha_composite(skill_icon, (603, 298 + 147 * i))
+        # bg.alpha_composite(skill_icon, (603, 298 + 147 * i))
         bg.alpha_composite(skill_icon, (619 + 147 * i, 776))
 
     # 命座
@@ -183,17 +181,17 @@ async def draw_role_card(uid, data):
         talent_icon = res_path2 + 'skill' + f'/{talent["图标"]}.png'
         talent_icon = await get_img(
             url=talent_url.format(talent["图标"]),
-            #talent_icon = aiorequests.get_img(url=talent_url.format(talent["图标"]),
+            # talent_icon = aiorequests.get_img(url=talent_url.format(talent["图标"]),
             size=(45, 45),
             save_path=talent_icon,
             mode='RGBA')
-        #bg.alpha_composite(talent_icon, (529 + t * 84, 813))
+        # bg.alpha_composite(talent_icon, (529 + t * 84, 813))
         bg.alpha_composite(talent_icon, (529 + t * 84, 813 + 45))
         t += 1
     for t2 in range(t, 6):
-        #bg.alpha_composite(base_icon_grey.resize((83, 90)),
+        # bg.alpha_composite(base_icon_grey.resize((83, 90)),
         #                   (510 + t2 * 84, 790))
-        #bg.alpha_composite(lock, (530 + t2 * 84, 813))
+        # bg.alpha_composite(lock, (530 + t2 * 84, 813))
         bg.alpha_composite(base_icon_grey.resize((83, 90)),
                            (510 + t2 * 84, 790 + 45))
         bg.alpha_composite(lock, (530 + t2 * 84, 813 + 45))
@@ -205,7 +203,7 @@ async def draw_role_card(uid, data):
     weapon_icon = res_path2 + 'weapon' + f'/{data["武器"]["图标"]}.png'
     weapon_icon = await get_img(
         url=weapon_url.format(data["武器"]["图标"]),
-        #weapon_icon = aiorequests.get_img(url=weapon_url.format(data["武器"]["图标"]),
+        # weapon_icon = aiorequests.get_img(url=weapon_url.format(data["武器"]["图标"]),
         size=(150, 150),
         save_path=weapon_icon,
         mode='RGBA')
@@ -242,7 +240,7 @@ async def draw_role_card(uid, data):
         reli_path = res_path2 + 'reli' + f'/{artifact["图标"]}.png'
         reli_path = await get_img(
             url=artifact_url.format(
-                #reli_path = aiorequests.get_img(url=artifact_url.format(
+                # reli_path = aiorequests.get_img(url=artifact_url.format(
                 artifact["图标"]),
             size=(100, 100),
             save_path=reli_path,
@@ -313,7 +311,7 @@ async def draw_role_card(uid, data):
         reli_path = res_path2 + 'reli' + f'/{artifact["图标"]}.png'
         reli_path = await get_img(
             url=artifact_url.format(
-                #reli_path = aiorequests.get_img(url=artifact_url.format(
+                # reli_path = aiorequests.get_img(url=artifact_url.format(
                 artifact["图标"]),
             size=(100, 100),
             save_path=reli_path,
@@ -375,7 +373,7 @@ async def draw_role_card(uid, data):
     # 圣遗物评分
     bg_draw.text((119, 1057), '总有效词条数', fill='#afafaf', font=get_font(36))
     score_pro = total_score / (average * 5) * 100
-    total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C'
+    total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C '
     total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
     rank_icon = load_image(res_path + 'player_card2' +
                            f'/评分{total_rank[0]}.png',
@@ -411,7 +409,7 @@ async def draw_role_card(uid, data):
         artifact_path = res_path2 + 'reli' + f'/{suit[0][1]}.png'
         artifact_path = await get_img(
             url=artifact_url.format(
-                #artifact_path = aiorequests.get_img(url=artifact_url.format(
+                # artifact_path = aiorequests.get_img(url=artifact_url.format(
                 suit[0][1]),
             size=(110, 110),
             save_path=artifact_path,
@@ -426,7 +424,7 @@ async def draw_role_card(uid, data):
         if suit[0][0] == suit[1][0]:
             artifact_path1 = res_path2 + 'reli' + f'/{suit[0][1]}.png'
             artifact_path1 = artifact_path2 = await get_img(
-                #artifact_path1 = artifact_path2 = aiorequests.get_img(
+                # artifact_path1 = artifact_path2 = aiorequests.get_img(
                 url=artifact_url.format(suit[0][1]),
                 size=(110, 110),
                 save_path=artifact_path1,
@@ -443,7 +441,7 @@ async def draw_role_card(uid, data):
             artifact_path1 = res_path2 + 'reli' + f'/{suit[0][1]}.png'
             artifact_path1 = await get_img(
                 url=artifact_url.format(
-                    #artifact_path1 = aiorequests.get_img(url=artifact_url.format(
+                    # artifact_path1 = aiorequests.get_img(url=artifact_url.format(
                     suit[0][1]),
                 size=(110, 110),
                 save_path=artifact_path1,
@@ -451,7 +449,7 @@ async def draw_role_card(uid, data):
             artifact_path2 = res_path2 + 'reli' + f'/{suit[1][1]}.png'
             artifact_path2 = await get_img(
                 url=artifact_url.format(
-                    #artifact_path2 = aiorequests.get_img(url=artifact_url.format(
+                    # artifact_path2 = aiorequests.get_img(url=artifact_url.format(
                     suit[1][1]),
                 size=(110, 110),
                 save_path=artifact_path2,

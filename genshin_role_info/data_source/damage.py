@@ -1,7 +1,5 @@
 from copy import deepcopy
-from pathlib import Path
 
-from ..utils.card_utils import load_json, GENSHIN_CARD_PATH
 from .common import common_fix, draw_dmg_pic, udc, get_damage_multipiler, growth_reaction
 
 
@@ -23,19 +21,19 @@ def get_role_dmg(data: dict):
         data['伤害描述'].insert(0, '护盾减抗')
         dmg_data['玉璋护盾'] = (str(
             int((health * dm['玉璋护盾'][0] + dm['玉璋护盾'][1]) *
-                (1 + data['属性']['护盾强效']) * 1.5)), )
+                (1 + data['属性']['护盾强效']) * 1.5)),)
         dmg_data['原岩共鸣'] = udc(dm['原岩共鸣'] * attack +
-                               (health * 0.019 if level_role > 60 else 0),
-                               (cr + ve['暴击率'], cd),
-                               db[6] + ve['增伤'],
-                               level_role,
-                               rcd=0.2)
+                                   (health * 0.019 if level_role > 60 else 0),
+                                   (cr + ve['暴击率'], cd),
+                                   db[6] + ve['增伤'],
+                                   level_role,
+                                   rcd=0.2)
         dmg_data['天星伤害'] = udc(dm['天星'] * attack +
-                               (health * 0.33 if level_role > 60 else 0),
-                               (cr + vq['暴击率'], cd),
-                               db[6] + vq['增伤'],
-                               level_role,
-                               rcd=0.2)
+                                   (health * 0.33 if level_role > 60 else 0),
+                                   (cr + vq['暴击率'], cd),
+                                   db[6] + vq['增伤'],
+                                   level_role,
+                                   rcd=0.2)
         a = udc(dm['踢枪'] * attack +
                 (health * 0.0139 if level_role > 60 else 0),
                 (cr + va['普攻暴击率'], cd),
@@ -55,14 +53,14 @@ def get_role_dmg(data: dict):
         vq['增伤'] += dm['e增伤']
         dci = 0.6 if cons >= 2 else 0
         dmg_data['协同攻击'] = udc(dm['协同攻击'] * attack, (cr + ve['暴击率'], cd),
-                               db[2] + ve['增伤'],
-                               level_role,
-                               dci=dci)
+                                   db[2] + ve['增伤'],
+                                   level_role,
+                                   dci=dci)
         dmg_data['梦想一刀'] = udc((dm['梦想一刀基础'] + dm['梦想一刀愿力']) * attack,
-                               (cr + vq['暴击率'], cd),
-                               db[2] + vq['增伤'],
-                               level_role,
-                               dci=dci)
+                                   (cr + vq['暴击率'], cd),
+                                   db[2] + vq['增伤'],
+                                   level_role,
+                                   dci=dci)
         a1 = udc((dm['梦想一心重击基础'][0] + dm['梦想一心愿力']) * attack,
                  (cr + vq['暴击率'], cd),
                  db[2] + vq['增伤'],
@@ -77,19 +75,19 @@ def get_role_dmg(data: dict):
         extra_energy = (data['属性']['元素充能效率'] -
                         1) * 0.6 if level_role >= 70 else 0
         dmg_data['梦想一心能量'] = (str(
-            round(dm['梦想一心能量'] * (1 + extra_energy) * 5, 1)), )
+            round(dm['梦想一心能量'] * (1 + extra_energy) * 5, 1)),)
     elif data['名称'] == '申鹤':
-        dmg_data['冰翎加成'] = (str(int(dm['冰翎'] * attack)), )
+        dmg_data['冰翎加成'] = (str(int(dm['冰翎'] * attack)),)
         db[-1] += 0.15 if level_role >= 40 else 0
         vq['增伤'] += 0.15 if level_role >= 70 else 0
         dmg_data['战技长按'] = udc(dm['e长按'] * attack, (cr + ve['暴击率'], cd),
-                               db[-1] + ve['增伤'],
-                               level_role,
-                               rcd=dm['大招减抗'])
+                                   db[-1] + ve['增伤'],
+                                   level_role,
+                                   rcd=dm['大招减抗'])
         dmg_data['大招持续伤害'] = udc(dm['大招持续'] * attack, (cr + vq['暴击率'], cd),
-                                 db[-1] + vq['增伤'],
-                                 level_role,
-                                 rcd=dm['大招减抗'])
+                                       db[-1] + vq['增伤'],
+                                       level_role,
+                                       rcd=dm['大招减抗'])
     elif data['名称'] == '珊瑚宫心海':
         health = data['属性']['基础生命'] + data['属性']['额外生命']
         adb = 0.15 * data['属性']['治疗加成'] if level_role >= 70 else 0
@@ -101,25 +99,25 @@ def get_role_dmg(data: dict):
         aq = udc(dm['普攻伤害提升'] * health, (cr + va['普攻暴击率'], cd),
                  db[3] + adb + va['普攻增伤'], level_role)
         if len(ab) == 1:
-            dmg_data['开大普攻第一段'] = (str(int(ab[0]) + int(aq[0])), )
+            dmg_data['开大普攻第一段'] = (str(int(ab[0]) + int(aq[0])),)
         else:
             dmg_data['开大普攻第一段'] = (str(int(ab[0]) + int(aq[0])),
-                                   str(int(ab[1]) + int(aq[1])))
+                                          str(int(ab[1]) + int(aq[1])))
         dmg_data['开大战技伤害'] = udc(dm['水母伤害'] * attack + dm['E伤害提升'] * health,
-                                 (cr + ve['暴击率'], cd), db[3] + ve['增伤'],
-                                 level_role)
+                                       (cr + ve['暴击率'], cd), db[3] + ve['增伤'],
+                                       level_role)
         dmg_data['大招释放伤害'] = udc(dm['大招伤害'] * health, (cr + vq['暴击率'], cd),
-                                 db[3] + vq['增伤'], level_role)
+                                       db[3] + vq['增伤'], level_role)
         dmg_data['开大普攻治疗量'] = (str(
             int((float(dm['大招治疗量'][0].replace('%生命值上限', '')) / 100.0 * health +
-                 float(dm['大招治疗量'][1])) * (1 + data['属性']['治疗加成']))), )
+                 float(dm['大招治疗量'][1])) * (1 + data['属性']['治疗加成']))),)
         dmg_data['战技治疗量'] = (str(
             int((float(dm['水母治疗量'][0].replace('%生命值上限', '')) / 100.0 * health +
-                 float(dm['水母治疗量'][1])) * (1 + data['属性']['治疗加成']))), )
+                 float(dm['水母治疗量'][1])) * (1 + data['属性']['治疗加成']))),)
     else:
         dmg_data = get_dmg_data(data, dm, va, ve, vq)
     if data['伤害描述']:
-        dmg_data['额外说明'] = ('，'.join(data['伤害描述']), )
+        dmg_data['额外说明'] = ('，'.join(data['伤害描述']),)
     return draw_dmg_pic(dmg_data) if dmg_data else None
 
 
@@ -202,7 +200,7 @@ def get_dmg_data(data, dm, va, ve, vq):
                     if len(num) > 1 and num[1] not in data['伤害描述']:
                         data['伤害描述'].insert(0, num[1])
         elif skill_type == 'T':
-            dmg_data[skill_name] = (str(num), )
+            dmg_data[skill_name] = (str(num),)
         else:
             r = 1  # 反应系数
             n = '1'  # 段数
@@ -215,9 +213,9 @@ def get_dmg_data(data, dm, va, ve, vq):
                     if p.startswith('r'):
                         r = growth_reaction(data['属性']['元素精通'], float(
                             p[3:])) if f'{p[1:3]}系数' not in data[
-                                '属性'] else growth_reaction(
-                                    data['属性']['元素精通'], float(p[3:]),
-                                    data['属性'][f'{p[1:3]}系数'])
+                            '属性'] else growth_reaction(
+                            data['属性']['元素精通'], float(p[3:]),
+                            data['属性'][f'{p[1:3]}系数'])
                     if p.startswith('n'):
                         n = p[1:]
                     if p.startswith('e'):

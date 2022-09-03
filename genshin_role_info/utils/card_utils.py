@@ -1,12 +1,14 @@
-import json
 import datetime
-import re
+import json
 import os
-from PIL import Image
-from pathlib import Path
-from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment
+import re
 from io import BytesIO
-from typing import Dict, Optional, Any, Union, Tuple, AsyncIterator
+from pathlib import Path
+from typing import Optional, Union, Tuple
+
+from PIL import Image
+from nonebot.adapters.onebot.v11 import MessageSegment
+
 from utils.http_utils import AsyncHttpx
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
@@ -46,11 +48,11 @@ async def get_img(url: str,
 
 
 def load_image(
-    path: Union[Path, str],
-    *,
-    size: Optional[Union[Tuple[int, int], float]] = None,
-    crop: Optional[Tuple[int, int, int, int]] = None,
-    mode: Optional[str] = None,
+        path: Union[Path, str],
+        *,
+        size: Optional[Union[Tuple[int, int], float]] = None,
+        crop: Optional[Tuple[int, int, int, int]] = None,
+        mode: Optional[str] = None,
 ):
     """
     说明：
@@ -118,7 +120,7 @@ def get_name_by_id(role_id: str):
         :return: 角色名字符串
     """
     alias_file = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                           '/alias.json')
+                                '/alias.json')
     name_list = alias_file['roles']
     if role_id in name_list:
         return name_list[role_id][0]
@@ -163,17 +165,17 @@ def Image_build(img: Union[Image.Image, Path, str],
     return MessageSegment.image(bio)
 
 
-role_element = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                         '/role_element.json')
+role_data = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
+                           '/role_data.json')
 role_skill = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                       '/role_skill.json')
+                            '/role_skill.json')
 role_talent = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                        '/role_talent.json')
+                             '/role_talent.json')
 weapon = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/weapon.json')
 prop_list = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/prop.json')
 artifact_list = load_json(path=GENSHIN_CARD_PATH + '/json_data' +
-                          '/artifact.json')
-ra_score = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/score.json')
+                               '/artifact.json')
+role_score = load_json(path=GENSHIN_CARD_PATH + '/json_data' + '/score.json')
 
 
 class PlayerInfo:
@@ -213,15 +215,15 @@ class PlayerInfo:
                 role_info['元素'] = find_element
                 role_name = find_element + '主'
             else:
-                role_info['元素'] = role_element[role_name]
+                role_info['元素'] = role_data[role_name]["element"]
 
             if 'talentIdList' in data:
                 if len(data['talentIdList']) >= 3:
                     data['skillLevelMap'][list(data['skillLevelMap'].keys())[
-                        ra_score['Talent'][role_name][0]]] += 3
+                        role_skill['Talent'][role_name][0]]] += 3
                 if len(data['talentIdList']) >= 5:
                     data['skillLevelMap'][list(data['skillLevelMap'].keys())[
-                        ra_score['Talent'][role_name][1]]] += 3
+                        role_skill['Talent'][role_name][1]]] += 3
 
             role_info['天赋'] = []
             for skill in data['skillLevelMap']:
@@ -233,17 +235,17 @@ class PlayerInfo:
                 role_info['天赋'].append(skill_detail)
             if role_info['名称'] == '神里绫华':
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][
-                    -1], role_info['天赋'][0]
+                                                                  -1], role_info['天赋'][0]
                 role_info['天赋'][2], role_info['天赋'][-1] = role_info['天赋'][
-                    -1], role_info['天赋'][2]
+                                                                  -1], role_info['天赋'][2]
             if role_info['名称'] == '安柏':
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][
-                    -1], role_info['天赋'][0]
+                                                                  -1], role_info['天赋'][0]
             if role_info['名称'] in ['空', '荧']:
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][
-                    -1], role_info['天赋'][0]
+                                                                  -1], role_info['天赋'][0]
                 role_info['天赋'][1], role_info['天赋'][-1] = role_info['天赋'][
-                    -1], role_info['天赋'][1]
+                                                                  -1], role_info['天赋'][1]
             if role_info['名称'] == '达达利亚':
                 role_info['天赋'][0]['等级'] += 1
 
@@ -277,7 +279,7 @@ class PlayerInfo:
             weapon_info = {}
             weapon_data = data['equipList'][-1]
             weapon_info['名称'] = weapon['Name'][weapon_data['flat']
-                                               ['nameTextMapHash']]
+            ['nameTextMapHash']]
             weapon_info['图标'] = weapon_data['flat']['icon']
             weapon_info['类型'] = weapon['Type'][weapon_info['名称']]
             weapon_info['等级'] = weapon_data['weapon']['level']
@@ -296,10 +298,10 @@ class PlayerInfo:
             try:
                 weapon_info['副属性'] = {
                     '属性名':
-                    prop_list[weapon_data['flat']['weaponStats'][1]
-                              ['appendPropId']],
+                        prop_list[weapon_data['flat']['weaponStats'][1]
+                        ['appendPropId']],
                     '属性值':
-                    weapon_data['flat']['weaponStats'][1]['statValue']
+                        weapon_data['flat']['weaponStats'][1]['statValue']
                 }
             except IndexError:
                 weapon_info['副属性'] = {'属性名': '无属性', '属性值': 0}
@@ -310,7 +312,7 @@ class PlayerInfo:
             for artifact in data['equipList'][:-1]:
                 artifact_info = {}
                 artifact_info['名称'] = artifact_list['Name'][artifact['flat']
-                                                            ['icon']]
+                ['icon']]
                 artifact_info['图标'] = artifact['flat']['icon']
                 artifact_info['部位'] = artifact_list['Piece'][
                     artifact['flat']['icon'].split('_')[-1]][1]
@@ -320,18 +322,18 @@ class PlayerInfo:
                 artifact_info['星级'] = artifact['flat']['rankLevel']
                 artifact_info['主属性'] = {
                     '属性名':
-                    prop_list[artifact['flat']['reliquaryMainstat']
-                              ['mainPropId']],
+                        prop_list[artifact['flat']['reliquaryMainstat']
+                        ['mainPropId']],
                     '属性值':
-                    artifact['flat']['reliquaryMainstat']['statValue']
+                        artifact['flat']['reliquaryMainstat']['statValue']
                 }
                 artifact_info['词条'] = []
                 for reliquary in artifact['flat']['reliquarySubstats']:
                     artifact_info['词条'].append({
                         '属性名':
-                        prop_list[reliquary['appendPropId']],
+                            prop_list[reliquary['appendPropId']],
                         '属性值':
-                        reliquary['statValue']
+                            reliquary['statValue']
                     })
                 artifacts.append(artifact_info)
             role_info['圣遗物'] = artifacts
@@ -434,33 +436,33 @@ def get_effective(role_name: str,
     """
     if role_name in ['荧', '空']:
         role_name = str(element) + '主'
-    if role_name in ra_score['Role']:
+    if role_name in role_score['Weight']:
         if len(artifacts) < 5:
-            return ra_score['Role'][role_name]['常规']
+            return role_score['Weight'][role_name]['常规']
         if role_name == '钟离':
             if artifacts[-2]['主属性']['属性名'] == '岩元素伤害加成':
-                return ra_score['Role'][role_name]['岩伤']
+                return role_score['Weight'][role_name]['岩伤']
             elif artifacts[-2]['主属性']['属性名'] in [
-                    '物理伤害加成', '火元素伤害加成', '冰元素伤害加成'
+                '物理伤害加成', '火元素伤害加成', '冰元素伤害加成'
             ]:
-                return ra_score['Role'][role_name]['武神']
+                return role_score['Weight'][role_name]['武神']
         if role_name == '班尼特' and artifacts[-2]['主属性']['属性名'] == '火元素伤害加成':
-            return ra_score['Role'][role_name]['输出']
+            return role_score['Weight'][role_name]['输出']
         if role_name == '甘雨':
             suit = get_artifact_suit(artifacts)
             if suit and ('乐团' in suit[0][0] or
                          (len(suit) == 2 and '乐团' in suit[1][0])):
-                return ra_score['Role'][role_name]['融化']
+                return role_score['Weight'][role_name]['融化']
         if role_name == '申鹤' and artifacts[-2]['主属性']['属性名'] == '冰元素伤害加成':
-            return ra_score['Role'][role_name]['输出']
+            return role_score['Weight'][role_name]['输出']
         if role_name == '七七' and artifacts[-2]['主属性']['属性名'] == '物理伤害加成':
-            return ra_score['Role'][role_name]['输出']
-        if role_name in ['枫原万叶', '温迪', '砂糖'
+            return role_score['Weight'][role_name]['输出']
+        if role_name in ['温迪', '砂糖'
                          ] and artifacts[-2]['主属性']['属性名'] == '风元素伤害加成':
-            return ra_score['Role'][role_name]['输出']
-        if '西风' in role_weapon and '西风' in ra_score['Role'][role_name]:
-            return ra_score['Role'][role_name]['西风']
-        return ra_score['Role'][role_name]['常规']
+            return role_score['Weight'][role_name]['输出']
+        if '西风' in role_weapon and '西风' in role_score['Weight'][role_name]:
+            return role_score['Weight'][role_name]['西风']
+        return role_score['Weight'][role_name]['常规']
     else:
         return {'攻击力': 1, '暴击率': 1, '暴击伤害': 1}
 
