@@ -32,11 +32,11 @@ usage：
     当四个格子都为青色时，你便赢得了游戏！
     指令：
         猜成语：开始游戏；
-        可发送“结束”结束游戏；可发送“提示”查看提示。
+        可发送“结束猜成语”结束游戏；可发送“提示”查看提示。
 """.strip()
 __plugin_des__ = "猜成语"
 __plugin_type__ = ("群内小游戏", )
-__plugin_cmd__ = ["猜成语", "提示", "结束游戏"]
+__plugin_cmd__ = ["猜成语", "提示", "结束猜成语"]
 __plugin_version__ = 0.1
 __plugin_author__ = "yajiwa"
 
@@ -117,7 +117,7 @@ def shortcut(cmd: str, argv: List[str] = [], **kwargs):
 
 shortcut("猜成语")
 shortcut("提示", ["--hint"], aliases={"给个提示"}, rule=game_running)
-shortcut("结束", ["--stop"], aliases={"停止游戏", "结束游戏"}, rule=game_running)
+shortcut("结束猜成语", ["--stop"], rule=game_running)
 
 idiom_matcher = on_message(Rule(game_running) & get_idiom_input,
                            block=True,
@@ -195,6 +195,7 @@ async def handle_handle(matcher: Matcher, event: MessageEvent,
         #     await send(image=game.draw_hint())
         # else:
         #     await send("猜错7次后才可以提示哦!")
+        image = game.draw_hint()
         if isinstance(event, GroupMessageEvent):
             cost_coin = hint_cost[len(game.guessed_idiom)]
             have_gold = await BagUser.get_gold(event.user_id, event.group_id)
@@ -202,7 +203,6 @@ async def handle_handle(matcher: Matcher, event: MessageEvent,
                 await send(f"当前提示需要{cost_coin}金币,你的金币不够!")
                 return
             else:
-                image = game.draw_hint()
                 await BagUser.spend_gold(event.user_id, event.group_id,
                                          cost_coin)
                 await send(f"扣除{cost_coin}金币获取提示...", image)
