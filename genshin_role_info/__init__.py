@@ -17,6 +17,7 @@ from utils.http_utils import AsyncHttpx
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_role_card import draw_role_card
 from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path
+from .utils.image_utils import load_image, Image_build
 
 __zx_plugin_name__ = "原神角色面板"
 __plugin_usage__ = """
@@ -41,8 +42,6 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
-
-from .utils.image_utils import load_image, Image_build
 
 char_card = on_command("原神角色卡", priority=4, block=True)
 update_card = on_command("更新角色卡", priority=4, block=True)
@@ -268,7 +267,7 @@ async def check_update():
         version = re.search(r"__plugin_version__ = ([0-9.]{3})",
                             str(version.text))
     except Exception as e:
-        logger.warning(f"原神角色面板插件检查更新失败，请检查github连接性是否良好!: {e}")
+        logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main" \
               "/genshin_role_info/__init__.py "
         try:
@@ -279,14 +278,14 @@ async def check_update():
             for admin in bot.config.superusers:
                 await bot.send_private_msg(
                     user_id=int(admin),
-                    message="原神角色面板插件检查更新失败，请检查github连接性是否良好!")
-            logger.warning(f"原神角色面板插件检查更新失败，请检查github连接性是否良好!: {e}")
+                    message=f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!")
+            logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
             return
     if float(version.group(1)) > __plugin_version__:
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
-                                       message="检测到原神角色面板插件有更新！请前往github下载！")
-        logger.warning("检测到原神角色面板插件有更新！请前往github下载！")
+                                       message=f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
+        logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
 
 # @trans_data.handle()
 # async def _():
