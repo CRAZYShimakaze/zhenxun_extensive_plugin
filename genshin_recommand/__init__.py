@@ -79,7 +79,7 @@ async def _():
     minute=random.randint(0, 59),
 )
 async def check_update():
-    url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
+    url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommand/__init__.py"
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url)
@@ -88,7 +88,7 @@ async def check_update():
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main" \
-              "/genshin_role_info/__init__.py "
+              "/genshin_recommand/__init__.py "
         try:
             version = await AsyncHttpx.get(url)
             version = re.search(r"__plugin_version__ = ([0-9.]{3})",
