@@ -1,7 +1,7 @@
 import re
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.adapters.onebot.v11.bot import Bot, MessageSegment
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.adapters.onebot.v11.message import Message
 from nonebot.params import Arg, Depends
@@ -43,6 +43,13 @@ Config.add_plugin_config(
     help_="SECRET_KEY,通过登陆https://cloud.baidu.com/product/imagecensoring获取",
     default_value="",
 )
+Config.add_plugin_config(
+    "setu_score",
+    "SEND_TO_ADMIN",
+    "",
+    help_="是否将社保色图转发给管理员",
+    default_value=True,
+)
 API_Key = Config.get_config("setu_score", "API_KEY")
 Secret_Key = Config.get_config("setu_score", "SECRET_KEY")
 
@@ -80,6 +87,10 @@ async def setu_got(bot: Bot,
         await bot.send(event, '你太菜了，这张也能称为色图？')
     elif s == 100:
         await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:社保!')  # (评分{s})')
+        if Config.get_config("setu_score", "SEND_TO_ADMIN"):
+            for admin in bot.config.superusers:
+                await bot.send_private_msg(user_id=int(admin),
+                                           message=f"检测到社保色图一份！" + MessageSegment.image(pic_url))
     elif s > 80:
         await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:涩情!')  # (评分{s})')
     elif s > 50:
