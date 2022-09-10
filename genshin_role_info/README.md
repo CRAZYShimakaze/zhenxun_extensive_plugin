@@ -18,6 +18,9 @@ zhenxun_bot 原神角色面板插件
 <img src="https://s3.bmp.ovh/imgs/2022/08/18/d9bd1c79152d1eed.jpg" height="700px">
 
 ### 更新
+**2022/9/10**[v1.2]
+
+1. 适配多莉
 
 **2022/9/3**[v1.1]
 

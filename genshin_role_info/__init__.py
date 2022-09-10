@@ -46,7 +46,7 @@ __plugin_settings__ = {
 char_card = on_command("原神角色卡", priority=4, block=True)
 update_card = on_command("更新角色卡", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
-his_card = on_command("他的角色", priority=4, block=True)
+his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, block=True)
 
 driver: Driver = nonebot.get_driver()
 

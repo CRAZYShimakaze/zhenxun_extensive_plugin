@@ -74,11 +74,11 @@ async def draw_role_card(uid, data):
                          mode='RGBA')
     try:
         dmg_img = get_role_dmg(data)
-        dmg_img = draw_dmg_pic(dmg_img)
     except Exception as e:
         print(e)
         dmg_img = None
     if dmg_img:
+        dmg_img = draw_dmg_pic(dmg_img)
         bg = Image.new('RGBA', (1080, 1920 + dmg_img.size[1] + 20),
                        (0, 0, 0, 0))
         bg_card_center = bg_card.crop((0, 730, 1080, 1377)).resize(
