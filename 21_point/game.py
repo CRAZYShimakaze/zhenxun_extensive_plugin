@@ -169,7 +169,7 @@ async def stop_card(deck_id: int, player: int) -> str:
     for index, game in enumerate(game_ls):
         game: Deck
         if deck_id == game.deck_id and game.player2 == player:
-            while game.player1_point < game.player2_point and game.player1_point <= 21:
+            while game.player1_point < game.player2_point and game.player1_point <= 16:
                 game.get_one_card(1)
             words = f"{game.player1_name}的牌为\n"
             for card in game.player1_cards:

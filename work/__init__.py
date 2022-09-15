@@ -1,14 +1,15 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GROUP, Bot, GroupMessageEvent, Message
 from nonebot.typing import T_State
-from utils.utils import is_number, get_message_at
-from nonebot.params import CommandArg, Command, ArgStr
+from utils.utils import is_number
+from nonebot.params import CommandArg, Command
 from models.group_member_info import GroupInfoUser
-from utils.message_builder import at, image
+from utils.message_builder import at,image
 from models.bag_user import BagUser
-from services.log import logger
 from configs.config import NICKNAME, Config
-from typing import Tuple
+from typing import Tuple, Any
+from .model import Worker
+from .utils import rank
 import random
 import asyncio
 import time
@@ -22,15 +23,17 @@ usage：
         打工: 开始游戏，固定时间内计算多道数学题来获取金币
         提交 [答案1 答案2 ...]: 进行结算
         结束打工：直接结束游戏
+        打工排行/卷王排行/工时排行/工资排行/算数能手排行：这都有卷王？
 """.strip()
 __plugin_des__ = "缺钱么朋友,那就来当社畜吧!"
 __plugin_cmd__ = [
     "打工",
     "提交",
     "结束打工",
+    "打工排行/卷王排行/工时排行/工资排行/算数能手排行",
 ]
 __plugin_type__ = ("群内小游戏", )
-__plugin_version__ = 0.2
+__plugin_version__ = 0.3
 __plugin_author__ = "CRAZYShimakaze、Syozhi"
 __plugin_settings__ = {
     "level": 5,
@@ -89,6 +92,8 @@ submit = on_command("提交", permission=GROUP, priority=5, block=True)
 
 stop_game = on_command("结束打工", permission=GROUP, priority=5, block=True)
 
+ranking = on_command("打工排行", aliases={"卷王排行", "工时排行", "工资排行", "算数能手排行"}, permission=GROUP, priority=5, block=True)
+
 
 @start.handle()
 async def _(bot: Bot,
@@ -114,8 +119,7 @@ async def _(bot: Bot,
     question, answer = random_question(timu_num)
     await asyncio.sleep(1)
     await start.send(f"请在{dati_time}秒内完成以下{timu_num}道题目,输入'提交 X X X'进行提交:\n" +
-                     "\n".join(question),
-                     at_sender=True)
+                     "\n".join(question), at_sender=True)
     cal_player[event.group_id] = {
         "player": event.user_id,
         "time": time.time(),
@@ -128,12 +132,13 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     global cal_player
     try:
         if event.user_id == cal_player[event.group_id]['player']:
+            await Worker.add_work_count(event.user_id,event.group_id) ## 增加打工次数记录
             cost_time = int(time.time() - cal_player[event.group_id]["time"])
             if cost_time > dati_time:
-                await submit.send(f"你用时{cost_time}秒,算得太慢了,请重新申请吧！",
-                                  at_sender=True)
+                await submit.send(f"你用时{cost_time}秒,算得太慢了,请重新申请吧！", at_sender=True)
             else:
                 msg = arg.extract_plain_text().strip().split()
+                salarys = 0 ## 工资
                 await submit.send(f"哼哼哼,检查结果ing...")
                 await asyncio.sleep(1)
                 cnt = check_result(msg, cal_player[event.group_id]['answer'])
@@ -148,21 +153,22 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                     if cnt == timu_num and quirky != 0:
                         ex_moneys = math.ceil((dati_time - cost_time) * quirky)
                         ex_message = f",其中快答奖励{ex_moneys}金币"
-                    await BagUser.add_gold(event.user_id, event.group_id,
-                                           moneys[cnt - 1] + ex_moneys - tax)
+                    salarys = moneys[cnt - 1] + ex_moneys - tax
+                    await BagUser.add_gold(event.user_id, event.group_id, salarys)
                     await bot.send(
                         event,
                         message=
-                        f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{moneys[cnt-1] + ex_moneys}金币{ex_message},扣税后得到{(moneys[cnt-1]) + ex_moneys - tax}金币!",
-                        at_sender=True)
+                        f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{moneys[cnt-1] + ex_moneys}金币{ex_message},扣税后得到{salarys}金币!", at_sender=True)
                 else:
-                    await BagUser.add_gold(event.user_id, event.group_id,
-                                           (moneys[cnt - 1]))
+                    salarys = moneys[cnt - 1]
+                    await BagUser.add_gold(event.user_id, event.group_id, salarys)
                     await bot.send(
                         event,
                         message=
-                        f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{moneys[cnt-1]}金币,工资太低不需要交税!",
-                        at_sender=True)
+                        f"你{cost_time}秒做对了{cnt}道题,这是你的工资:{salarys}金币,工资太低不需要交税!", at_sender=True)
+                await Worker.add_salary(event.user_id, event.group_id, salarys) ## 增加工资记录
+                await Worker.add_question_count(event.user_id, event.group_id, cnt) ## 增加答对题目数记录
+            await Worker.add_time_count(event.user_id, event.group_id, cost_time) ## 增加工时记录（秒）
             cal_player[event.group_id] = {}
         else:
             await submit.finish(
@@ -186,6 +192,30 @@ async def _(bot: Bot, event: GroupMessageEvent):
     except:
         pass
 
+@ranking.handle()
+async def _(
+    event: GroupMessageEvent,
+    cmd: Tuple[str, ...] = Command(),
+    arg: Message = CommandArg(),
+):
+    num = arg.extract_plain_text().strip()
+    if is_number(num) and 51 > int(num) > 10:
+        num = int(num)
+    else:
+        num = 10
+    rank_image = None
+    if cmd[0] in ["打工排行", "卷王排行"]:
+        rank_image = await rank(event.group_id, "work_count", num)
+    if cmd[0] in "工时排行":
+        rank_image = await rank(event.group_id, "time_count", num)
+    if cmd[0] == "工资排行":
+        rank_image = await rank(event.group_id, "salary", num)
+    if cmd[0] == "算数能手排行":
+        rank_image = await rank(event.group_id, "question_count", num)
+    if rank_image:
+        await ranking.send(image(b64=rank_image.pic2bs4()))
+    else:
+        await ranking.send("没有足够的数据，要不先打个工看看？")
 
 # 随机算式
 def random_question(num: int):
