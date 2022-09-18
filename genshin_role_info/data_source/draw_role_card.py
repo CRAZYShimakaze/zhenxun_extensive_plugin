@@ -14,10 +14,14 @@ weapon_url = 'https://enka.network/ui/{}.png'
 artifact_url = 'https://enka.network/ui/{}.png'
 talent_url = 'https://enka.network/ui/{}.png'
 skill_url = 'https://enka.network/ui/{}.png'
+role_url = 'https://enka.network/ui/{}.png'
 
 element_type = ['物理', '火元素', '雷元素', '水元素', '草元素', '风元素', '岩元素', '冰元素']
 
 role_data = load_json(f'{json_path}/role_data.json')
+role_name = load_json(f'{json_path}/role_name.json')
+
+
 def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     """
     绘制伤害图片
@@ -92,12 +96,21 @@ async def draw_role_card(uid, data):
         bg = Image.new('RGBA', (1080, 1920), (0, 0, 0, 0))
         bg.alpha_composite(bg_card, (0, 0))
     # 立绘
-    img = load_image(path=f'{char_pic_path}/{data["名称"]}.png')
-    new_w = 1200
-    new_h = int(img.size[1] * (new_w / img.size[0]))
-    img = img.resize((new_w, new_h), Image.ANTIALIAS)
-    bg.alpha_composite(img, (200, 0))  # 234))
-
+    role_pic = f'{char_pic_path}/{data["名称"]}.png'
+    role_pic = await get_img(
+        url=role_url.format(
+            role_name["Name"][data["名称"]]),
+        save_path=role_pic,
+        mode='RGBA')
+    new_h = 872
+    new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
+    role_pic = role_pic.resize((new_w, new_h), Image.ANTIALIAS)
+    if data['名称'] == '荧':
+        bg.alpha_composite(role_pic, (450, 0))  # 234))
+    elif data['名称'] == '空':
+        bg.alpha_composite(role_pic, (400, 0))  # 234))
+    else:
+        bg.alpha_composite(role_pic, (-100, 0))  # 234))
     base_mask = load_image(f'{other_path}/底遮罩.png')
     bg.alpha_composite(base_mask, (0, 0))
     if data['名称'] not in ['荧', '空', '埃洛伊']:
@@ -400,7 +413,7 @@ async def draw_role_card(uid, data):
     bg_draw.text((119, 1057), '总有效词条数', fill='#afafaf', font=get_font(36))
     score_pro = total_score / (average * 5) * 100
     total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C '
-    total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
+    # total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
     rank_icon = load_image(f'{other_path}/评分{total_rank[0]}.png',
                            mode='RGBA')
     if len(total_rank) == 3:

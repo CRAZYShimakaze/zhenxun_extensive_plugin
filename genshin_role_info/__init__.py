@@ -16,7 +16,7 @@ from services.log import logger
 from utils.http_utils import AsyncHttpx
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_role_card import draw_role_card
-from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path
+from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id
 from .utils.image_utils import load_image, Image_build
 
 __zx_plugin_name__ = "原神角色面板"
@@ -145,7 +145,6 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         await char_card.finish("请输入正确uid+角色名(uid与角色名需要用空格隔开)", at_sender=True)
     if len(msg) != 2:
         await char_card.finish("请输入正确角色名...", at_sender=True)
-
     role = msg[1]
     for item in name_list:
         if role in name_list.get(item):
@@ -171,19 +170,15 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
             await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
-        try:
-            player_info.set_player(data['playerInfo'])
-            if 'avatarInfoList' in data:
-                for role in data['avatarInfoList']:
-                    player_info.set_role(role)
-                player_info.save()
-            else:
-                guide = load_image(f'{other_path}/collections.png')
-                guide = Image_build(img=guide, quality=100, mode='RGB')
-                await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
-        except Exception as e:
-            print(e)
-            return  # await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
+        player_info.set_player(data['playerInfo'])
+        if 'avatarInfoList' in data:
+            for role in data['avatarInfoList']:
+                player_info.set_role(role)
+            player_info.save()
+        else:
+            guide = load_image(f'{other_path}/collections.png')
+            guide = Image_build(img=guide, quality=100, mode='RGB')
+            await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     else:
         player_info = PlayerInfo(uid)
     roles_list = player_info.get_roles_list()
@@ -233,23 +228,20 @@ async def update(event: MessageEvent, uid: str):
         await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
     player_info = PlayerInfo(uid)
-    try:
-        player_info.set_player(data['playerInfo'])
-        if 'avatarInfoList' in data:
-            for role in data['avatarInfoList']:
-                player_info.set_role(role)
-        else:
-            guide = load_image(f'{other_path}/collections.png')
-            guide = Image_build(img=guide, quality=100, mode='RGB')
-            await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
-    except Exception as e:
-        error_line = e.__traceback__.tb_lineno
-        error_info = f'第{error_line}行发生error为: {e}'
-        print(error_info)
+    player_info.set_player(data['playerInfo'])
+    if 'avatarInfoList' in data:
+        update_role_list = []
+        for role in data['avatarInfoList']:
+            player_info.set_role(role)
+            update_role_list.append(get_name_by_id(str(role['avatarId'])))
+    else:
+        guide = load_image(f'{other_path}/collections.png')
+        guide = Image_build(img=guide, quality=100, mode='RGB')
+        await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     player_info.save()
     roles_list = player_info.get_roles_list()
     await char_card.finish(
-        f"更新uid{uid}的角色数据完成!可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",
+        f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",
         at_sender=True)
 
 

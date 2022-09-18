@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
+import os
 import random
 import re
+from typing import Tuple
 
 import nonebot
-from nonebot import on_command, Driver
-from nonebot.adapters.onebot.v11 import MessageSegment
+from nonebot import on_command, Driver, on_regex
+from nonebot.adapters.onebot.v11 import Message
+from nonebot.params import RawCommand, RegexGroup
 
 from services import logger
 from utils.http_utils import AsyncHttpx
+from utils.message_builder import image
 from utils.utils import scheduler, get_bot
 
 driver: Driver = nonebot.get_driver()
@@ -20,11 +24,13 @@ usage：
         角色配装
         角色评级
         武器推荐
+        深渊配队
+        XX攻略
 """.strip()
 __plugin_des__ = "查询角色攻略"
-__plugin_cmd__ = ["角色配装", "角色评级", "武器推荐"]
+__plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 0.5
+__plugin_version__ = 0.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -36,40 +42,39 @@ __plugin_cd_limit__ = {
     "rst": "正在查询中，请当前请求完成...",
 }
 
-equip = on_command("角色配装", priority=15, block=True)
-grade = on_command("角色评级", priority=15, block=True)
-weapon = on_command("武器推荐", priority=15, block=True)
-
-address_list = {"equip": "https://s3.bmp.ovh/imgs/2022/09/01/2211532ef945c055.jpg",
-                "grade": "https://s3.bmp.ovh/imgs/2022/09/01/f00c4edb99eac50c.jpg",
-                "weapon": "https://s3.bmp.ovh/imgs/2022/09/05/cfd3ef62ed42ddad.jpg"}
+get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队"}, priority=15, block=True)
+role_guide = on_regex(r".*?(.*)攻略", priority=15)
+common_guide = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
+genshin_role_guide = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
+RES_PATH = os.path.join(os.path.dirname(__file__), "res")
 
 
-@equip.handle()
-async def _():
+@get_guide.handle()
+async def _(arg: Message = RawCommand()):
+    save_path = f'{RES_PATH}/{arg}.jpg'
+    if os.path.exists(save_path):
+        await get_guide.finish(image(save_path))
     try:
-        img = await AsyncHttpx().get(address_list["equip"])
-    except:
-        return await equip.send("获取装备推荐超时")
-    await equip.send(MessageSegment.image(img.content))
+        await AsyncHttpx.download_file(common_guide.format(arg), save_path, follow_redirects=True)
+    except TimeoutError:
+        return await get_guide.send("获取推荐超时")
+    await get_guide.send(image(save_path))
 
 
-@grade.handle()
-async def _():
+@role_guide.handle()
+async def _(args: Tuple[str, ...] = RegexGroup()):
+    role = args[0].strip()
+    save_path = f'{RES_PATH}/{role}.png'
+    if os.path.exists(save_path):
+        await role_guide.finish(image(save_path))
     try:
-        img = await AsyncHttpx().get(address_list["grade"])
-    except:
-        return await grade.send("获取角色评级超时")
-    await grade.send(MessageSegment.image(img.content))
-
-
-@weapon.handle()
-async def _():
+        await AsyncHttpx.download_file(genshin_role_guide.format(role), save_path, follow_redirects=True)
+    except TimeoutError:
+        return await role_guide.send("获取推荐超时")
     try:
-        img = await AsyncHttpx().get(address_list["weapon"])
+        await role_guide.send(image(save_path))
     except:
-        return await weapon.send("获取装备推荐超时")
-    await weapon.send(MessageSegment.image(img.content))
+        os.unlink(save_path)
 
 
 @driver.on_bot_connect
