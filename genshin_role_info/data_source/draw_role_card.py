@@ -7,7 +7,7 @@ from ..utils.artifact_utils import get_effective, get_expect_score, artifact_tot
     get_artifact_suit
 from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, regoin_path, outline_path, \
     res_path, talent_path, weapon_path, reli_path
-from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img, Image_build
+from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img
 from ..utils.json_utils import load_json
 
 weapon_url = 'https://enka.network/ui/{}.png'
@@ -412,8 +412,8 @@ async def draw_role_card(uid, data):
     # 圣遗物评分
     bg_draw.text((119, 1057), '总有效词条数', fill='#afafaf', font=get_font(36))
     score_pro = total_score / (average * 5) * 100
-    total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C '
-    # total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
+    # total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C '
+    total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
     rank_icon = load_image(f'{other_path}/评分{total_rank[0]}.png',
                            mode='RGBA')
     if len(total_rank) == 3:
@@ -506,5 +506,4 @@ async def draw_role_card(uid, data):
                  '  Migrated by CRAZY | Powered by Enka.Network',
                  fill='white',
                  font=get_font(36, '优设标题黑.ttf'))
-
-    return Image_build(img=bg, quality=100, mode='RGB')
+    return bg, total_score

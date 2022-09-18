@@ -3,12 +3,13 @@ import os
 import random
 import re
 import time
+from pathlib import Path
 from typing import Tuple
 
 import nonebot
 from nonebot import Driver
 from nonebot import on_command, on_regex
-from nonebot.adapters.onebot.v11 import MessageEvent, Message
+from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent
 from nonebot.params import CommandArg, RegexGroup
 
 from plugins.genshin.query_user._models import Genshin
@@ -16,7 +17,8 @@ from services.log import logger
 from utils.http_utils import AsyncHttpx
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_role_card import draw_role_card
-from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id
+from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
+    group_info_path
 from .utils.image_utils import load_image, Image_build
 
 __zx_plugin_name__ = "原神角色面板"
@@ -34,7 +36,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.2
+__plugin_version__ = 1.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -51,6 +53,8 @@ his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, bloc
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r".*?(.*)面板(.*).*?", priority=4)
+group_best = on_regex(r"^群最强(.*)", priority=4)
+
 alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
 
@@ -73,9 +77,28 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     if not uid:
         await get_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
     if role == "更新":
-        await update(event, str(uid))
+        await update(str(uid))
     else:
         await gen(event, str(uid), role)
+
+
+@group_best.handle()
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    role = args[0].strip()
+    for item in name_list:
+        if role in name_list.get(item):
+            role = name_list.get(item)[0]
+            break
+    else:
+        return
+    role_path = f'{group_info_path}/{event.group_id}/{role}'
+    if not os.path.exists(role_path):
+        await group_best.finish(f"本群还没有{role}的数据收录哦！赶快去查询吧！", at_sender=True)
+    else:
+        role_info = os.listdir(role_path)[0]
+        role_pic = load_image(f'{role_path}/{role_info}')
+        role_pic = Image_build(img=role_pic, quality=100, mode='RGB')
+        await group_best.finish(f"本群最强{role}!由{role_info.split('-')[-1].rstrip('.png')}查询\n" + role_pic)
 
 
 @my_card.handle()
@@ -193,9 +216,15 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
             at_sender=True)
     else:
         role_data = player_info.get_roles_info(role_name)
-        img = await draw_role_card(uid, role_data)
-        await char_card.finish("\n" + img + f"\n可查询角色:{','.join(roles_list)}",
-                               at_sender=True)
+        img, score = await draw_role_card(uid, role_data)
+        best_flag = check_best_role(role_name, event, img, score) if isinstance(event, GroupMessageEvent) else 0
+        img = Image_build(img=img, quality=100, mode='RGB')
+        if best_flag:
+            await char_card.finish(f"恭喜成为本群最强{role_name}!\n" + img + f"\n可查询角色:{','.join(roles_list)}",
+                                   at_sender=True)
+        else:
+            await char_card.finish("\n" + img + f"\n可查询角色:{','.join(roles_list)}",
+                                   at_sender=True)
 
 
 @update_card.handle()
@@ -206,10 +235,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     except Exception as e:
         print(e)
         await char_card.finish("请输入正确uid...", at_sender=True)
-    await update(event, uid)
+    await update(uid)
 
 
-async def update(event: MessageEvent, uid: str):
+async def update(uid: str):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
@@ -245,6 +274,22 @@ async def update(event: MessageEvent, uid: str):
         at_sender=True)
 
 
+def check_best_role(role_name, event, img, score):
+    role_path = f'{group_info_path}/{event.group_id}/{role_name}/{score}-{event.user_id}.png'
+    role_path = Path(role_path)
+    role_path.parent.mkdir(parents=True, exist_ok=True)
+    if not os.listdir(role_path.parent):
+        img.save(role_path)
+    else:
+        role_score = os.listdir(role_path.parent)[0].split('-')[0]
+        if float(role_score) < score:
+            os.unlink(f'{role_path.parent}/{os.listdir(role_path.parent)[0]}')
+            img.save(role_path)
+        else:
+            return False
+    return True
+
+
 @driver.on_bot_connect
 @scheduler.scheduled_job(
     "cron",
@@ -252,7 +297,7 @@ async def update(event: MessageEvent, uid: str):
     minute=random.randint(0, 59),
 )
 async def check_update():
-    url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
+    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url)
@@ -260,19 +305,7 @@ async def check_update():
                             str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
-        url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main" \
-              "/genshin_role_info/__init__.py "
-        try:
-            version = await AsyncHttpx.get(url)
-            version = re.search(r"__plugin_version__ = ([0-9.]{3})",
-                                str(version.text))
-        except Exception as e:
-            for admin in bot.config.superusers:
-                await bot.send_private_msg(
-                    user_id=int(admin),
-                    message=f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!")
-            logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
-            return
+        return
     if float(version.group(1)) > __plugin_version__:
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
