@@ -32,9 +32,10 @@ usage：
         更新面板
         我的角色
         他的角色@XXX
+        群最强XX (例:群最强甘雨)
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
-__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
+__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
 __plugin_type__ = ("原神相关",)
 __plugin_version__ = 1.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
