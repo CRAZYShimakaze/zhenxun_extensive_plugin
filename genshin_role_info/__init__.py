@@ -32,9 +32,10 @@ usage：
         更新面板
         我的角色
         他的角色@XXX
+        群最强XX (例:群最强甘雨)
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
-__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板"]
+__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
 __plugin_type__ = ("原神相关",)
 __plugin_version__ = 1.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
@@ -217,13 +218,13 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
     else:
         role_data = player_info.get_roles_info(role_name)
         img, score = await draw_role_card(uid, role_data)
-        best_flag = check_best_role(role_name, event, img, score) if isinstance(event, GroupMessageEvent) else 0
+        best_flag, diff = check_best_role(role_name, event, img, score) if isinstance(event, GroupMessageEvent) else 0
         img = Image_build(img=img, quality=100, mode='RGB')
         if best_flag:
             await char_card.finish(f"恭喜成为本群最强{role_name}!\n" + img + f"\n可查询角色:{','.join(roles_list)}",
                                    at_sender=True)
         else:
-            await char_card.finish("\n" + img + f"\n可查询角色:{','.join(roles_list)}",
+            await char_card.finish(f"距本群最强{role_name}还有{round(diff,2)}词条差距!\n" + img + f"\n可查询角色:{','.join(roles_list)}",
                                    at_sender=True)
 
 
@@ -286,8 +287,8 @@ def check_best_role(role_name, event, img, score):
             os.unlink(f'{role_path.parent}/{os.listdir(role_path.parent)[0]}')
             img.save(role_path)
         else:
-            return False
-    return True
+            return False, float(role_score) - score
+    return True, 0
 
 
 @driver.on_bot_connect
