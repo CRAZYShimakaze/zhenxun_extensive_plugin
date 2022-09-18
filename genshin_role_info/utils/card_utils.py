@@ -8,6 +8,7 @@ from ..utils.json_utils import load_json, save_json
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
 player_info_path = GENSHIN_CARD_PATH + '/player_info'
+group_info_path = GENSHIN_CARD_PATH + '/group_info'
 res_path = GENSHIN_CARD_PATH + '/res/'
 json_path = res_path + 'json_data'
 bg_path = res_path + 'background'
