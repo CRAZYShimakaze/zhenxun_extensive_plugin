@@ -61,13 +61,14 @@ def get_role_dmg(data: dict):
         data['伤害描述'].insert(0, '满愿力')
         vq['增伤'] += dm['e增伤']
         dci = 0.6 if cons >= 2 else 0
+        weapon_buff = ((0.25 + 0.05 * data['武器']['精炼等级']) * 0.4) if data['武器']['名称'] == '薙草之稻光' else 0
         dmg_data['协同攻击'] = udc(dm['协同攻击'] * attack, (cr + ve['暴击率'], cd),
                                    db[2] + ve['增伤'],
                                    level_role,
                                    dci=dci)
         dmg_data['梦想一刀'] = udc((dm['梦想一刀基础'] + dm['梦想一刀愿力']) * attack,
                                    (cr + vq['暴击率'], cd),
-                                   db[2] + vq['增伤'],
+                                   db[2] + vq['增伤'] + weapon_buff,
                                    level_role,
                                    dci=dci)
         dmg_data['梦想一刀超激化'] = udc((dm['梦想一刀基础'] + dm['梦想一刀愿力']) * attack + r,
@@ -616,9 +617,8 @@ def weapon_common_fix(data: dict):
         attr['额外攻击'] += attr['基础攻击'] * 6 * (0.024 + 0.006 * weapon['精炼等级'])
         data['伤害描述'].append('息灾前台满层')
     elif weapon['名称'] == '薙草之稻光':
-        attr['额外攻击'] += attr['基础攻击'] * (attr['元素充能效率'] -
-                                                1) * (0.21 + 0.07 * weapon['精炼等级'])
         attr['元素充能效率'] += 0.25 + 0.05 * weapon['精炼等级']
+        attr['额外攻击'] += attr['基础攻击'] * attr['元素充能效率'] / 10 * (0.21 + 0.07 * weapon['精炼等级'])
     elif weapon['名称'] == '「渔获」':
         extra_q['增伤'] += 0.12 + 0.04 * weapon['精炼等级']
         extra_q['暴击率'] += 0.045 + 0.015 * weapon['精炼等级']
@@ -742,7 +742,7 @@ def common_fix(data: dict):
         # 四件套的情况
         if suit[0][0] == suit[1][0]:
             if suit[0][0] == '绝缘之旗印':
-                extra_q['增伤'] += 0.25 * attr['元素充能效率']
+                extra_q['增伤'] += 0.25 * attr['元素充能效率'] if attr['元素充能效率'] < 3 else 0.25 * 3
             if suit[0][0] == '苍白之火':
                 attr['额外攻击'] += attr['基础攻击'] * 0.18
                 attr['伤害加成'][0] += 0.25
