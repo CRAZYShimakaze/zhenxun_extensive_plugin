@@ -283,6 +283,7 @@ def check_best_role(role_name, event, img, score):
             if float(role_score) < score:
                 os.unlink(f'{role_path.parent}/{os.listdir(role_path.parent)[0]}')
                 img.save(role_path)
+                return f"恭喜成为本群最强{role_name}!\n"
             else:
                 return f"距本群最强{role_name}还有{round(float(role_score) - score, 2)}词条差距!\n"
     return ""
