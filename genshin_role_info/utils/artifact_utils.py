@@ -86,8 +86,8 @@ def get_effective(role_name: str,
             return role_score['Weight'][role_name]['输出']
         if role_name == '七七' and artifacts[-2]['主属性']['属性名'] == '物理伤害加成':
             return role_score['Weight'][role_name]['输出']
-        if role_name in ['温迪', '砂糖'
-                         ] and artifacts[-2]['主属性']['属性名'] == '风元素伤害加成':
+        if role_name in ['温迪', '砂糖', '枫原万叶'
+                         ] and artifacts[-1]['主属性']['属性名'] in ['暴击率', '暴击伤害']:
             return role_score['Weight'][role_name]['输出']
         if '西风' in role_weapon and '西风' in role_score['Weight'][role_name]:
             return role_score['Weight'][role_name]['西风']

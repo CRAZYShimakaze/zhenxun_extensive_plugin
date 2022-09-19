@@ -218,14 +218,9 @@ async def gen(event: MessageEvent, uid: str, role_name: str):
     else:
         role_data = player_info.get_roles_info(role_name)
         img, score = await draw_role_card(uid, role_data)
-        best_flag, diff = check_best_role(role_name, event, img, score) if isinstance(event, GroupMessageEvent) else 0
+        msg = check_best_role(role_name, event, img, score)
         img = Image_build(img=img, quality=100, mode='RGB')
-        if best_flag:
-            await char_card.finish(f"恭喜成为本群最强{role_name}!\n" + img + f"\n可查询角色:{','.join(roles_list)}",
-                                   at_sender=True)
-        else:
-            await char_card.finish(f"距本群最强{role_name}还有{round(diff,2)}词条差距!\n" + img + f"\n可查询角色:{','.join(roles_list)}",
-                                   at_sender=True)
+        await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
 
 
 @update_card.handle()
@@ -276,19 +271,21 @@ async def update(uid: str):
 
 
 def check_best_role(role_name, event, img, score):
-    role_path = f'{group_info_path}/{event.group_id}/{role_name}/{score}-{event.user_id}.png'
-    role_path = Path(role_path)
-    role_path.parent.mkdir(parents=True, exist_ok=True)
-    if not os.listdir(role_path.parent):
-        img.save(role_path)
-    else:
-        role_score = os.listdir(role_path.parent)[0].split('-')[0]
-        if float(role_score) < score:
-            os.unlink(f'{role_path.parent}/{os.listdir(role_path.parent)[0]}')
+    if isinstance(event, GroupMessageEvent):
+        role_path = f'{group_info_path}/{event.group_id}/{role_name}/{score}-{event.user_id}.png'
+        role_path = Path(role_path)
+        role_path.parent.mkdir(parents=True, exist_ok=True)
+        if not os.listdir(role_path.parent):
             img.save(role_path)
+            return f"恭喜成为本群最强{role_name}!\n"
         else:
-            return False, float(role_score) - score
-    return True, 0
+            role_score = os.listdir(role_path.parent)[0].split('-')[0]
+            if float(role_score) < score:
+                os.unlink(f'{role_path.parent}/{os.listdir(role_path.parent)[0]}')
+                img.save(role_path)
+            else:
+                return f"距本群最强{role_name}还有{round(float(role_score) - score, 2)}词条差距!\n"
+    return ""
 
 
 @driver.on_bot_connect
