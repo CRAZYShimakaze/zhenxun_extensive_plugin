@@ -268,6 +268,12 @@ async def draw_role_card(uid, data):
     # 圣遗物
     effective = get_effective(data['名称'], data['武器']['名称'], data['圣遗物'],
                               data['元素'])
+    effect = []
+    for item in effective:
+        if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
+            name = item.replace('百分比', '').replace('元素', '')
+            effect.append(f'{name}:{effective.get(item)}')
+    effect = ','.join(effect)
     affix_weight, point_mark, max_mark = get_miao_score(data)
     total_all = 0
     total_cnt = 0
@@ -518,8 +524,8 @@ async def draw_role_card(uid, data):
                          font=get_font(36))
         bg.alpha_composite(artifact_path1, (76, 1130))
         bg.alpha_composite(artifact_path2, (76, 1255))
-
-    draw_center_text(bg_draw, f'更新于{data["更新时间"].replace("2022-", "")[:-3]}',
+    # ,更新于{data["更新时间"].replace("2022-", "")[:-3]}
+    draw_center_text(bg_draw, f'评分权重:{effect}',
                      0, 1080, bg.size[1] - 95, '#afafaf',
                      get_font(33, '优设标题黑.ttf'))
     bg_draw.text((24, bg.size[1] - 50),

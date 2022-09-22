@@ -62,7 +62,7 @@ reset_best = on_command("重置最强", permission=SUPERUSER, priority=4, block=
 
 alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
-headers = {"User-Agent": "Miao-Plugin/3.0"}
+
 
 @get_card.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
@@ -135,11 +135,10 @@ async def get_char(uid: int):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
-            req = await AsyncHttpx.get(
-            url=url, headers=headers, follow_redirects=True)
+            req = await AsyncHttpx.get(url=url, follow_redirects=True)
         except Exception as e:
             print(e)
-            await char_card.finish("服务器维护中,请稍后再试...")
+            await char_card.finish("更新出错,请重试...")
         if req.status_code != 200:
             await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
@@ -203,12 +202,12 @@ async def gen(event: MessageEvent, uid: int, role_name: str):
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(
-                url=url, headers=headers, 
+                url=url,
                 follow_redirects=True,
             )
         except Exception as e:
             print(e)
-            await char_card.finish("服务器维护中,请稍后再试...")
+            await char_card.finish("获取数据出错,请重试...")
         if req.status_code != 200:
             await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
@@ -260,12 +259,14 @@ async def update(uid: int):
         cd_time = int(time.time() - mod_time)
         if cd_time < 180:
             await char_card.finish(f'{180 - cd_time}秒后可再次更新!', at_sender=True)
-    
-    req = await AsyncHttpx.get(
+    try:
+        req = await AsyncHttpx.get(
             url=url,
             follow_redirects=True,
         )
-    
+    except Exception as e:
+        print(e)
+        await char_card.finish("更新出错,请重试...")
     if req.status_code != 200:
         await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
