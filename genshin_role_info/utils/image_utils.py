@@ -104,7 +104,7 @@ def load_image(
     return img
 
 
-def Image_build(img: Union[Image.Image, Path, str],
+def image_build(img: Union[Image.Image, Path, str],
                 *,
                 size: Optional[Union[Tuple[int, int], float]] = None,
                 crop: Optional[Tuple[int, int, int, int]] = None,
