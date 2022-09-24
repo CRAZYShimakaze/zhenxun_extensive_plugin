@@ -268,20 +268,17 @@ async def draw_role_card(uid, data):
     # 圣遗物
     effective = get_effective(data['名称'], data['武器']['名称'], data['圣遗物'],
                               data['元素'])
-    effect = []
-    for item in effective:
-        if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
-            name = item.replace('百分比', '').replace('元素', '')
-            effect.append(f'{name}:{effective.get(item)}')
-    effect = ','.join(effect)
     affix_weight, point_mark, max_mark = get_miao_score(data)
     total_all = 0
     total_cnt = 0
+    artifact_list = [[] for i in range(5)]
+    pos_name = ['生之花', '死之羽', '时之沙', '空之杯', '礼之冠']
+    for i in range(len(data['圣遗物'])):
+        artifact_list[pos_name.index(data['圣遗物'][i]['部位'])]=data['圣遗物'][i]
     # 第一排
     for i in range(2):
-        try:
-            artifact = data['圣遗物'][i]
-        except IndexError:
+        artifact = artifact_list[i]
+        if not artifact:
             continue
         artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
         total_all += grade
@@ -348,9 +345,8 @@ async def draw_role_card(uid, data):
                 font=get_font(25, 'number.ttf'))
     # 第二排
     for i in range(3):
-        try:
-            artifact = data['圣遗物'][i + 2]
-        except IndexError:
+        artifact = artifact_list[i + 2]
+        if not artifact:
             continue
         artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
         total_all += grade
@@ -524,6 +520,12 @@ async def draw_role_card(uid, data):
                          font=get_font(36))
         bg.alpha_composite(artifact_path1, (76, 1130))
         bg.alpha_composite(artifact_path2, (76, 1255))
+    effect = []
+    for item in effective:
+        if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
+            name = item.replace('百分比', '').replace('元素', '')
+            effect.append(f'{name}:{effective.get(item)}')
+    effect = ','.join(effect)
     # ,更新于{data["更新时间"].replace("2022-", "")[:-3]}
     draw_center_text(bg_draw, f'评分权重:{effect}',
                      0, 1080, bg.size[1] - 95, '#afafaf',
