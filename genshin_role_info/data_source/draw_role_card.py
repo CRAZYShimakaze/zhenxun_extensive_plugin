@@ -271,10 +271,10 @@ async def draw_role_card(uid, data):
     affix_weight, point_mark, max_mark = get_miao_score(data)
     total_all = 0
     total_cnt = 0
-    artifact_list = [[] for i in range(5)]
-    pos_name = ['生之花', '死之羽', '时之沙', '空之杯', '礼之冠']
+    artifact_list = [{} for _ in range(5)]
+    pos_name = ['生之花', '死之羽', '时之沙', '空之杯', '理之冠']
     for i in range(len(data['圣遗物'])):
-        artifact_list[pos_name.index(data['圣遗物'][i]['部位'])]=data['圣遗物'][i]
+        artifact_list[pos_name.index(data['圣遗物'][i]['部位'])] = data['圣遗物'][i]
     # 第一排
     for i in range(2):
         artifact = artifact_list[i]
@@ -437,7 +437,7 @@ async def draw_role_card(uid, data):
         bg_draw.text((250, 974),
                      str(total_int),
                      fill='white',
-                     font=get_font(60, 'number.ttf'))                     
+                     font=get_font(60, 'number.ttf'))
     elif len(total_rank) == 3:
         bg.alpha_composite(rank_icon, (95, 964))
         bg.alpha_composite(rank_icon, (145, 964))
