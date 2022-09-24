@@ -84,27 +84,19 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
     minute=random.randint(0, 59),
 )
 async def check_update():
-    url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommand/__init__.py"
+    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommand/__init__.py"
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url)
         version = re.search(r"__plugin_version__ = ([0-9.]{3})",
                             str(version.text))
     except Exception as e:
+        for admin in bot.config.superusers:
+            await bot.send_private_msg(
+                user_id=int(admin),
+                message=f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!")
         logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
-        url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main" \
-              "/genshin_recommand/__init__.py "
-        try:
-            version = await AsyncHttpx.get(url)
-            version = re.search(r"__plugin_version__ = ([0-9.]{3})",
-                                str(version.text))
-        except Exception as e:
-            for admin in bot.config.superusers:
-                await bot.send_private_msg(
-                    user_id=int(admin),
-                    message=f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!")
-            logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
-            return
+        return
     if float(version.group(1)) > __plugin_version__:
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),

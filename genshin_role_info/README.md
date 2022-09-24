@@ -13,12 +13,16 @@ zhenxun_bot 原神角色面板插件
 - 我的角色
 - 他的角色 @CRAZYShimakaze
 - 群最强XX (例:群最强甘雨)
-
+- 重置最强XX (仅超级用户可用)
 ## 效果图
 
-<img src="https://s3.bmp.ovh/imgs/2022/08/18/d9bd1c79152d1eed.jpg" height="700px">
+<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px">
 
 ### 更新
+**2022/9/22**[v1.4]
+
+1. 优化评分标准
+
 **2022/9/18**[v1.3]
 
 1. 激化反应适配

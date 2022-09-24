@@ -3,8 +3,8 @@ from typing import Dict, Union
 from PIL import Image, ImageDraw
 
 from .damage_cal import get_role_dmg
-from ..utils.artifact_utils import get_effective, get_expect_score, artifact_total_value, check_effective, \
-    get_artifact_suit
+from ..utils.artifact_utils import get_effective, check_effective, \
+    get_artifact_suit, get_miao_score, get_artifact_score
 from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, regoin_path, outline_path, \
     res_path, talent_path, weapon_path, reli_path
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img
@@ -268,14 +268,21 @@ async def draw_role_card(uid, data):
     # 圣遗物
     effective = get_effective(data['名称'], data['武器']['名称'], data['圣遗物'],
                               data['元素'])
-    average = get_expect_score(effective)
-    total_score = 0
+    affix_weight, point_mark, max_mark = get_miao_score(data)
+    total_all = 0
+    total_cnt = 0
+    artifact_list = [{} for _ in range(5)]
+    pos_name = ['生之花', '死之羽', '时之沙', '空之杯', '理之冠']
+    for i in range(len(data['圣遗物'])):
+        artifact_list[pos_name.index(data['圣遗物'][i]['部位'])] = data['圣遗物'][i]
     # 第一排
     for i in range(2):
-        try:
-            artifact = data['圣遗物'][i]
-        except IndexError:
-            break
+        artifact = artifact_list[i]
+        if not artifact:
+            continue
+        artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
+        total_all += grade
+        total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
                                  size=(100, 100))
         bg.alpha_composite(artifact_bg, (587 + 317 * i, 1002))
@@ -291,11 +298,8 @@ async def draw_role_card(uid, data):
                      artifact['名称'],
                      fill='white',
                      font=get_font(40))
-        value, score = artifact_total_value(data['属性'], artifact, effective)
-        total_score += value
-        rank = 'SSS' if score >= 140 else 'SS' if 120 <= score < 140 else 'S' if 100 <= score < 120 else 'A' if 75 <= score < 100 else 'B' if 50 <= score < 75 else 'C'
         bg_draw.text((412 + 317 * i, 998),
-                     f'{rank}-{value}',
+                     f'{artifact_score}-{round(grade, 1)}',
                      fill='#ffde6b',
                      font=get_font(28, 'number.ttf'))
         bg.alpha_composite(level_mask.resize((98, 30)), (412 + 317 * i, 1032))
@@ -341,10 +345,12 @@ async def draw_role_card(uid, data):
                 font=get_font(25, 'number.ttf'))
     # 第二排
     for i in range(3):
-        try:
-            artifact = data['圣遗物'][i + 2]
-        except IndexError:
-            break
+        artifact = artifact_list[i + 2]
+        if not artifact:
+            continue
+        artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
+        total_all += grade
+        total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
                                  size=(100, 100))
         bg.alpha_composite(artifact_bg, (270 + 317 * i, 1439))
@@ -360,11 +366,8 @@ async def draw_role_card(uid, data):
                      artifact['名称'],
                      fill='white',
                      font=get_font(40))
-        value, score = artifact_total_value(data['属性'], artifact, effective)
-        total_score += value
-        rank = 'SSS' if score >= 140 else 'SS' if 120 <= score < 140 else 'S' if 100 <= score < 120 else 'A' if 75 <= score < 100 else 'B' if 50 <= score < 75 else 'C'
         bg_draw.text((95 + 317 * i, 1435),
-                     f'{rank}-{value}',
+                     f'{artifact_score}-{round(grade, 1)}',
                      fill='#ffde6b',
                      font=get_font(28, 'number.ttf'))
         bg.alpha_composite(level_mask.resize((98, 30)), (95 + 317 * i, 1469))
@@ -410,31 +413,50 @@ async def draw_role_card(uid, data):
                 font=get_font(25, 'number.ttf'))
 
     # 圣遗物评分
-    bg_draw.text((119, 1057), '总有效词条数', fill='#afafaf', font=get_font(36))
-    score_pro = total_score / (average * 5) * 100
-    # total_rank = 'SSS' if score_pro >= 140 else 'SS' if 120 <= score_pro < 140 else 'S' if 100 <= score_pro < 120 else 'A' if 75 <= score_pro < 100 else 'B' if 50 <= score_pro < 75 else 'C '
-    total_rank = 'SSS' if total_score >= 33.6 else 'SS' if 28.8 <= total_score else 'S' if 24 <= total_score else 'A' if 18 <= total_score else 'B' if 12 <= total_score else 'C'
+    if total_cnt and total_all <= 66 * total_cnt:
+        score_ave = total_all / total_cnt
+        total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
+            else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
+            if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
+    else:
+        total_rank = 'D'
+    total_int = int(total_all)
+    bg_draw.text((119, 1057), '圣遗物总评分', fill='#afafaf', font=get_font(36))
     rank_icon = load_image(f'{other_path}/评分{total_rank[0]}.png',
                            mode='RGBA')
-    if len(total_rank) == 3:
+    if total_rank == 'ACE':
+        rank_icon = load_image(f'{other_path}/ACE-A.png',
+                               mode='RGBA')
+        bg.alpha_composite(rank_icon, (95, 964))
+        rank_icon = load_image(f'{other_path}/ACE-C.png',
+                               mode='RGBA')
+        bg.alpha_composite(rank_icon, (145, 964))
+        rank_icon = load_image(f'{other_path}/ACE-E.png',
+                               mode='RGBA')
+        bg.alpha_composite(rank_icon, (195, 964))
+        bg_draw.text((250, 974),
+                     str(total_int),
+                     fill='white',
+                     font=get_font(60, 'number.ttf'))
+    elif len(total_rank) == 3:
         bg.alpha_composite(rank_icon, (95, 964))
         bg.alpha_composite(rank_icon, (145, 964))
         bg.alpha_composite(rank_icon, (195, 964))
         bg_draw.text((250, 974),
-                     str(round(total_score, 1)),
+                     str(total_int),
                      fill='white',
                      font=get_font(60, 'number.ttf'))
     elif len(total_rank) == 2:
         bg.alpha_composite(rank_icon, (125, 964))
         bg.alpha_composite(rank_icon, (175, 964))
         bg_draw.text((235, 974),
-                     str(round(total_score, 1)),
+                     str(total_int),
                      fill='white',
                      font=get_font(60, 'number.ttf'))
     else:
         bg.alpha_composite(rank_icon, (143, 964))
         bg_draw.text((217, 974),
-                     str(round(total_score, 1)),
+                     str(total_int),
                      fill='white',
                      font=get_font(60, 'number.ttf'))
 
@@ -498,12 +520,18 @@ async def draw_role_card(uid, data):
                          font=get_font(36))
         bg.alpha_composite(artifact_path1, (76, 1130))
         bg.alpha_composite(artifact_path2, (76, 1255))
-
-    draw_center_text(bg_draw, f'更新于{data["更新时间"].replace("2022-", "")[:-3]}',
+    effect = []
+    for item in effective:
+        if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
+            name = item.replace('百分比', '').replace('元素', '')
+            effect.append(f'{name}:{effective.get(item)}')
+    effect = ','.join(effect)
+    # ,更新于{data["更新时间"].replace("2022-", "")[:-3]}
+    draw_center_text(bg_draw, f'评分权重:{effect}',
                      0, 1080, bg.size[1] - 95, '#afafaf',
                      get_font(33, '优设标题黑.ttf'))
     bg_draw.text((24, bg.size[1] - 50),
                  '  Migrated by CRAZY | Powered by Enka.Network',
                  fill='white',
                  font=get_font(36, '优设标题黑.ttf'))
-    return bg, total_score
+    return bg, total_all
