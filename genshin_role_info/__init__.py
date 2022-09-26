@@ -81,6 +81,8 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
         await get_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
+    if not check_uid(uid):
+        await my_card.finish(f"绑定的uid{uid}不合法，请重新绑定!")
     if role == "更新":
         await update(uid)
     else:
@@ -128,6 +130,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
         await my_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
+    if not check_uid(uid):
+        await my_card.finish(f"绑定的uid{uid}不合法，请重新绑定!")
     await get_char(uid)
 
 
@@ -162,8 +166,8 @@ async def get_char(uid: int):
     if not roles_list:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await my_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
-                             at_sender=True)
+        await char_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+                               at_sender=True)
     else:
         await my_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
                              at_sender=True)
@@ -185,6 +189,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     except Exception as e:
         print(e)
         await char_card.finish("请输入正确uid+角色名(uid与角色名需要用空格隔开)", at_sender=True)
+    if not check_uid(uid):
+        await my_card.finish(f"uid{uid}不合法!")
     if len(msg) != 2:
         await char_card.finish("请输入正确角色名...", at_sender=True)
     role = msg[1]
@@ -248,7 +254,9 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         uid = int(msg)
     except Exception as e:
         print(e)
-        await char_card.finish("请输入正确uid...", at_sender=True)
+        await update_card.finish("请输入正确uid...", at_sender=True)
+    if not check_uid(uid):
+        await update_card.finish(f"uid{uid}不合法!")
     await update(uid)
 
 
@@ -309,6 +317,10 @@ def check_best_role(role_name, event, img, score):
             else:
                 return f"距本群最强{role_name}还有{round(float(role_info[0]) - score, 2)}分差距!\n"
     return ""
+
+
+def check_uid(uid: int):
+    return re.search(r'^[12589]\d{8}$', str(uid)) is not None
 
 
 @driver.on_bot_connect
