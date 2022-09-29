@@ -5,10 +5,12 @@ import re
 from typing import Tuple
 
 import nonebot
+from PIL import Image, ImageDraw, ImageFont
 from nonebot import on_command, Driver, on_regex
 from nonebot.adapters.onebot.v11 import Message
 from nonebot.params import RawCommand, RegexGroup
 
+from configs.path_config import FONT_PATH
 from services import logger
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
@@ -26,11 +28,12 @@ usage：
         武器推荐
         深渊配队
         XX攻略
+        XX素材
 """.strip()
 __plugin_des__ = "查询角色攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 0.6
+__plugin_version__ = 0.7
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -43,9 +46,11 @@ __plugin_cd_limit__ = {
 }
 
 get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队"}, priority=15, block=True)
-role_guide = on_regex(r".*?(.*)攻略", priority=15)
-common_guide = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
-genshin_role_guide = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
+role_guide = on_regex(r"(.*)攻略", priority=15)
+role_break = on_regex(r"(.*)素材", priority=15)
+common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
+genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
+genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
 
 
@@ -70,9 +75,32 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
     try:
         await AsyncHttpx.download_file(genshin_role_guide.format(role), save_path, follow_redirects=True)
     except TimeoutError:
-        return await role_guide.send("获取推荐超时")
+        return await role_guide.send("获取攻略超时")
     try:
         await role_guide.send(image(save_path))
+    except:
+        os.unlink(save_path)
+
+
+@role_break.handle()
+async def _(args: Tuple[str, ...] = RegexGroup()):
+    role = args[0].strip()
+    save_path = f'{RES_PATH}/{role}.jpg'
+    if os.path.exists(save_path):
+        await role_break.finish(image(save_path))
+    try:
+        await AsyncHttpx.download_file(genshin_role_break.format(role), save_path, follow_redirects=True)
+    except TimeoutError:
+        return await role_break.send("获取素材超时")
+    img = Image.open(save_path)
+    img_draw = ImageDraw.Draw(img)
+    img_draw.text((200, 1823),
+                  "数据来源于米游社'再无四月的友人A.'",
+                  fill='white',
+                  font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
+    img.save(save_path)
+    try:
+        await role_break.send(image(save_path))
     except:
         os.unlink(save_path)
 
