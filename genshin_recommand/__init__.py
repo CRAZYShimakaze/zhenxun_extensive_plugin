@@ -44,8 +44,8 @@ __plugin_cd_limit__ = {
 
 get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队"}, priority=15, block=True)
 role_guide = on_regex(r".*?(.*)攻略", priority=15)
-common_guide = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
-genshin_role_guide = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
+common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
+genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
 
 
