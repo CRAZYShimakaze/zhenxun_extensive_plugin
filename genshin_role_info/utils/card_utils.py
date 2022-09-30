@@ -181,7 +181,7 @@ class PlayerInfo:
                         artifact['flat']['reliquaryMainstat']['statValue']
                 }
                 artifact_info['词条'] = []
-                for reliquary in artifact['flat']['reliquarySubstats']:
+                for reliquary in artifact['flat'].get('reliquarySubstats', []):
                     artifact_info['词条'].append({
                         '属性名':
                             prop_list[reliquary['appendPropId']],
