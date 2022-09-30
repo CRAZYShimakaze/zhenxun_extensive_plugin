@@ -465,6 +465,7 @@ async def draw_role_card(uid, data):
     if not suit:
         bg_draw.text((184, 1168), '未激活套装', fill='white', font=get_font(36))
         bg_draw.text((184, 1292), '未激活套装', fill='white', font=get_font(36))
+        total_all = str(total_all)+'*'
     elif len(suit) == 1:
         artifact_path = f'{reli_path}/{suit[0][1]}.png'
         artifact_path = await get_img(
@@ -479,6 +480,7 @@ async def draw_role_card(uid, data):
                      fill='white',
                      font=get_font(36))
         bg_draw.text((184, 1292), '未激活套装', fill='white', font=get_font(36))
+        total_all = str(total_all)+'*'
     else:
         if suit[0][0] == suit[1][0]:
             artifact_path1 = f'{reli_path}/{suit[0][1]}.png'
@@ -523,7 +525,8 @@ async def draw_role_card(uid, data):
     effect = []
     for item in effective:
         if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
-            name = item.replace('百分比', '').replace('元素', '')
+            name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace(
+                '暴击伤害', '爆伤').replace('元素精通', '精通')
             effect.append(f'{name}:{effective.get(item)}')
     effect = ','.join(effect)
     # ,更新于{data["更新时间"].replace("2022-", "")[:-3]}
