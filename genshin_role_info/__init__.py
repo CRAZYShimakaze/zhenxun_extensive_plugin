@@ -40,7 +40,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.4
+__plugin_version__ = 1.5
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -56,7 +56,7 @@ his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, bloc
 
 driver: Driver = nonebot.get_driver()
 
-get_card = on_regex(r".*?(.*)面板(.*).*?", priority=4)
+get_card = on_regex(r"(.*)面板(.*?)", priority=4)
 group_best = on_regex(r"^群最强(.*)", priority=4)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=4, block=True)
 
@@ -297,7 +297,7 @@ async def update(uid: int):
 
 
 def check_best_role(role_name, event, img, score):
-    if isinstance(event, GroupMessageEvent):
+    if isinstance(event, GroupMessageEvent) and str(score)[-1] != '*':
         role_path = f'{group_info_path}/{event.group_id}/{role_name}/{score}-{event.user_id}.png'
         role_path = Path(role_path)
         role_path.parent.mkdir(parents=True, exist_ok=True)
