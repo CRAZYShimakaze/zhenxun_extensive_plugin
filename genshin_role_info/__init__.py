@@ -58,7 +58,7 @@ driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
-reset_best = on_command("重置最强", permission=SUPERUSER, priority=4, block=True)
+reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 
 alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
