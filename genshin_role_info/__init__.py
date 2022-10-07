@@ -35,7 +35,7 @@ usage：
         更新面板
         我的角色
         他的角色@XXX
-        群最强XX (例:群最强甘雨)
+        最强XX (例:最强甘雨)
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
@@ -56,8 +56,8 @@ his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, bloc
 
 driver: Driver = nonebot.get_driver()
 
-get_card = on_regex(r"(.*)面板(.*?)", priority=4)
-group_best = on_regex(r"^群最强(.*)", priority=4)
+get_card = on_regex(r"(.*)面板(.*)", priority=4)
+group_best = on_regex(r"最强(.*)", priority=4)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=4, block=True)
 
 alias_file = load_json(path=f'{json_path}/alias.json')
@@ -265,8 +265,8 @@ async def update(uid: int):
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
-        if cd_time < 180:
-            await char_card.finish(f'{180 - cd_time}秒后可再次更新!', at_sender=True)
+        if cd_time < 130:
+            await char_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
     try:
         req = await AsyncHttpx.get(
             url=url,

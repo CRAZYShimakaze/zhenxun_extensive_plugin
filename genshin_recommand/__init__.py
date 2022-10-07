@@ -27,13 +27,14 @@ usage：
         角色评级
         武器推荐
         深渊配队
+        每日素材
         XX攻略
         XX素材
 """.strip()
 __plugin_des__ = "查询角色攻略"
-__plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队"]
+__plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 0.7
+__plugin_version__ = 0.8
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -45,7 +46,7 @@ __plugin_cd_limit__ = {
     "rst": "正在查询中，请当前请求完成...",
 }
 
-get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队"}, priority=15, block=True)
+get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队", "每日素材"}, priority=14, block=True)
 role_guide = on_regex(r"(.*)攻略", priority=15)
 role_break = on_regex(r"(.*)素材", priority=15)
 common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
@@ -54,28 +55,27 @@ genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZ
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
 
 
+async def get_img(url, arg, save_path):
+    if not os.path.exists(save_path):
+        await AsyncHttpx.download_file(url.format(arg), save_path, follow_redirects=True)
+
+
 @get_guide.handle()
 async def _(arg: Message = RawCommand()):
-    save_path = f'{RES_PATH}/{arg}.jpg'
-    if os.path.exists(save_path):
-        await get_guide.finish(image(save_path))
-    try:
-        await AsyncHttpx.download_file(common_guide.format(arg), save_path, follow_redirects=True)
-    except TimeoutError:
-        return await get_guide.send("获取推荐超时")
-    await get_guide.send(image(save_path))
+    if arg != '每日材料':
+        save_path = [f'{RES_PATH}/{arg}.jpg']
+    else:
+        save_path = [f'{RES_PATH}/{arg}1.jpg', f'{RES_PATH}/{arg}2.jpg']
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item)
+        await get_guide.send(image(item))
 
 
 @role_guide.handle()
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     save_path = f'{RES_PATH}/{role}.png'
-    if os.path.exists(save_path):
-        await role_guide.finish(image(save_path))
-    try:
-        await AsyncHttpx.download_file(genshin_role_guide.format(role), save_path, follow_redirects=True)
-    except TimeoutError:
-        return await role_guide.send("获取攻略超时")
+    await get_img(genshin_role_guide, role, save_path)
     try:
         await role_guide.send(image(save_path))
     except:
@@ -86,12 +86,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     save_path = f'{RES_PATH}/{role}.jpg'
-    if os.path.exists(save_path):
-        await role_break.finish(image(save_path))
-    try:
-        await AsyncHttpx.download_file(genshin_role_break.format(role), save_path, follow_redirects=True)
-    except TimeoutError:
-        return await role_break.send("获取素材超时")
+    await get_img(genshin_role_break, role, save_path)
     img = Image.open(save_path)
     img_draw = ImageDraw.Draw(img)
     img_draw.text((200, 1823),
