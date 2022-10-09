@@ -43,7 +43,7 @@ __plugin_settings__ = {
     "cmd": __plugin_cmd__,
 }
 __plugin_cd_limit__ = {
-    "rst": "正在查询中，请当前请求完成...",
+    "rst": "正在查询中，请等待当前请求完成...",
 }
 
 get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队", "每日素材"}, priority=14, block=True)
@@ -62,13 +62,16 @@ async def get_img(url, arg, save_path):
 
 @get_guide.handle()
 async def _(arg: Message = RawCommand()):
-    if arg != '每日材料':
+    if arg != '每日素材':
         save_path = [f'{RES_PATH}/{arg}.jpg']
     else:
         save_path = [f'{RES_PATH}/{arg}1.jpg', f'{RES_PATH}/{arg}2.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item)
-        await get_guide.send(image(item))
+        try:
+            await get_guide.send(image(item))
+        except:
+            os.unlink(item)
 
 
 @role_guide.handle()
