@@ -40,7 +40,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.5
+__plugin_version__ = 1.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -166,7 +166,7 @@ async def get_char(uid: int):
     if not roles_list:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await char_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await char_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                                at_sender=True)
     else:
         await my_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
@@ -233,7 +233,7 @@ async def gen(event: MessageEvent, uid: int, role_name: str):
     if not roles_list:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await his_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await his_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                               at_sender=True)
     if role_name not in roles_list:
         await char_card.finish(
@@ -291,9 +291,8 @@ async def update(uid: int):
         await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     player_info.save()
     roles_list = player_info.get_roles_list()
-    await char_card.finish(
-        f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",
-        at_sender=True)
+    #await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
+    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!(注:数据更新有3分钟延迟)",at_sender=True)
 
 
 def check_best_role(role_name, event, img, score):
