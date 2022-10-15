@@ -291,8 +291,9 @@ async def update(uid: int):
         await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     player_info.save()
     roles_list = player_info.get_roles_list()
-    #await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
-    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!(注:数据更新有3分钟延迟)",at_sender=True)
+    # await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
+    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!(注:数据更新有3分钟延迟)",
+                           at_sender=True)
 
 
 def check_best_role(role_name, event, img, score):
