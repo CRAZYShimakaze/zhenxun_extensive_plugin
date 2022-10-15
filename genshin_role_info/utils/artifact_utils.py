@@ -35,8 +35,8 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     return calc_rank_str, calc_total
 
 
-def get_miao_score(data):
-    role_name = data['名称']
+def get_miao_score(data, weight_name):
+    role_name = weight_name
     grow_value = {  # 词条成长值
         "暴击率": 3.89,
         "暴击伤害": 7.77,
@@ -109,18 +109,15 @@ def get_miao_score(data):
     return affix_weight, pointmark, max_mark
 
 
-def get_effective(role_name: str,
-                  role_weapon: str,
-                  artifacts: list,
-                  element: str = '风'):
+def get_effective(data):
     """
     根据角色的武器、圣遗物来判断获取该角色有效词条列表
-    :param role_name: 角色名
-    :param role_weapon: 角色武器
-    :param artifacts: 角色圣遗物列表
-    :param element: 角色元素，仅需主角传入
+    :param data: 角色信息
     :return: 有效词条列表
     """
+    role_name = data['名称']
+    role_weapon = data['武器']['名称']
+    artifacts = data['圣遗物']
     try:
         if role_name in ['荧', '空']:
             role_name = '旅行者'
@@ -138,51 +135,29 @@ def get_effective(role_name: str,
                          (len(suit) == 2 and '冰' in suit[1][0])):
                 role_name = '甘雨-永冻'
         elif role_name == '刻晴':
-            mastery = 0
-            for i in range(5):
-                for j in range(len(artifacts[i]['词条'])):
-                    if artifacts[i]['词条'][j]['属性名'] == '元素精通':
-                        mastery += artifacts[i]['词条'][j]['属性值']
-            if mastery > 80:
+            if data['属性']['元素精通'] > 80:
                 role_name = '刻晴-精通'
         elif role_name == '神里凌人':
-            mastery = 0
-            for i in range(5):
-                for j in range(len(artifacts[i]['词条'])):
-                    if artifacts[i]['词条'][j]['属性名'] == '元素精通':
-                        mastery += artifacts[i]['词条'][j]['属性值']
-            if mastery > 120:
+            if data['属性']['元素精通'] > 120:
                 role_name = '神里绫人-精通'
         elif role_name == '温迪':
-            recharge = 0
-            for i in range(5):
-                if artifacts[i]['主属性']['属性名'] == '元素充能效率':
-                    recharge += artifacts[i]['主属性']['属性值']
-                for j in range(len(artifacts[i]['词条'])):
-                    if artifacts[i]['词条'][j]['属性名'] == '元素充能效率':
-                        recharge += artifacts[i]['词条'][j]['属性值']
-            if recharge > 240:
+            if data['属性']['元素充能效率'] > 120:
                 role_name = '温迪-充能'
         elif role_name == '宵宫' and artifacts[2]['主属性']['属性名'] == '元素精通':
             role_name = '宵宫-精通'
         elif role_name == '行秋':
-            mastery = 0
-            for i in range(5):
-                for j in range(len(artifacts[i]['词条'])):
-                    if artifacts[i]['词条'][j]['属性名'] == '元素精通':
-                        mastery += artifacts[i]['词条'][j]['属性值']
-            if mastery > 120:
+            if data['属性']['元素精通'] > 120:
                 role_name = '行秋-蒸发'
         elif role_name == '云堇' and artifacts[3]['主属性']['属性名'] == '岩元素伤害加成':
             role_name = '云堇-输出'
         if role_name in role_score:
             print(f'采用{role_name}权重')
-            return role_score.get(role_name)
+            return role_score.get(role_name), role_name
         else:
             return {'百分比攻击力': 0.75, '暴击率': 1, '暴击伤害': 1}
     except:
         print(f'异常!采用{role_name}默认权重')
-        return role_score.get(role_name)
+        return role_score.get(role_name), role_name
 
 
 def check_effective(prop_name: str, effective: dict):
