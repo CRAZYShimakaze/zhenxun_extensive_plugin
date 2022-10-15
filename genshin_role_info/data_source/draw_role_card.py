@@ -266,9 +266,8 @@ async def draw_role_card(uid, data):
                  font=get_font(34, 'hywh.ttf'))
 
     # 圣遗物
-    effective = get_effective(data['名称'], data['武器']['名称'], data['圣遗物'],
-                              data['元素'])
-    affix_weight, point_mark, max_mark = get_miao_score(data)
+    effective, weight_name = get_effective(data)
+    affix_weight, point_mark, max_mark = get_miao_score(data, weight_name)
     total_all = 0
     total_cnt = 0
     artifact_list = [{} for _ in range(5)]

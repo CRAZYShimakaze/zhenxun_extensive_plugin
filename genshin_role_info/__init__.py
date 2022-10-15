@@ -35,12 +35,12 @@ usage：
         更新面板
         我的角色
         他的角色@XXX
-        群最强XX (例:群最强甘雨)
+        最强XX (例:最强甘雨)
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.5
+__plugin_version__ = 1.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -56,9 +56,9 @@ his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, bloc
 
 driver: Driver = nonebot.get_driver()
 
-get_card = on_regex(r"(.*)面板(.*?)", priority=4)
-group_best = on_regex(r"^群最强(.*)", priority=4)
-reset_best = on_command("重置最强", permission=SUPERUSER, priority=4, block=True)
+get_card = on_regex(r"(.*)面板(.*)", priority=4)
+group_best = on_regex(r"最强(.*)", priority=4)
+reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 
 alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
@@ -166,7 +166,7 @@ async def get_char(uid: int):
     if not roles_list:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await char_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await char_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                                at_sender=True)
     else:
         await my_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
@@ -233,7 +233,7 @@ async def gen(event: MessageEvent, uid: int, role_name: str):
     if not roles_list:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await his_card.finish(guide + "无角色信息,在游戏中打开显示详情选项并输入更新角色卡指令!",
+        await his_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                               at_sender=True)
     if role_name not in roles_list:
         await char_card.finish(
@@ -265,8 +265,8 @@ async def update(uid: int):
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
-        if cd_time < 180:
-            await char_card.finish(f'{180 - cd_time}秒后可再次更新!', at_sender=True)
+        if cd_time < 130:
+            await char_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
     try:
         req = await AsyncHttpx.get(
             url=url,
@@ -291,9 +291,9 @@ async def update(uid: int):
         await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     player_info.save()
     roles_list = player_info.get_roles_list()
-    await char_card.finish(
-        f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",
-        at_sender=True)
+    # await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
+    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!(注:数据更新有3分钟延迟)",
+                           at_sender=True)
 
 
 def check_best_role(role_name, event, img, score):
