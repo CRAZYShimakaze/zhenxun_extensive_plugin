@@ -113,7 +113,7 @@ async def guide_update():
     try:
         for item in arg:
             save_path = f'{RES_PATH}/{item}.jpg'
-            await get_img(common_guide, arg, save_path, 1)
+            await get_img(common_guide, item, save_path, 1)
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件更新攻略信息失败，请检查github连接性是否良好!: {e}")
 
