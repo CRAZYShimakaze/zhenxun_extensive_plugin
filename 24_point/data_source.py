@@ -11,7 +11,7 @@ class Draw_Handle:
     def __init__(self):
         self.question = []
         self.length = 4
-        self.block_size = (160, 160)  # 文字块尺寸
+        self.block_size = (100, 100)  # 文字块尺寸
         self.block_padding = (20, 20)  # 文字块之间间距
         self.padding = (40, 40)  # 边界间距
         self.border_width = 4  # 边框宽度
