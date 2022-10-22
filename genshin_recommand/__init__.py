@@ -55,8 +55,8 @@ genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZ
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
 
 
-async def get_img(url, arg, save_path):
-    if not os.path.exists(save_path):
+async def get_img(url, arg, save_path, ignore_exist):
+    if not os.path.exists(save_path) or ignore_exist:
         await AsyncHttpx.download_file(url.format(arg), save_path, follow_redirects=True)
 
 
@@ -67,7 +67,7 @@ async def _(arg: Message = RawCommand()):
     else:
         save_path = [f'{RES_PATH}/{arg}1.jpg', f'{RES_PATH}/{arg}2.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
         try:
             await get_guide.send(image(item))
         except:
@@ -78,7 +78,7 @@ async def _(arg: Message = RawCommand()):
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     save_path = f'{RES_PATH}/{role}.png'
-    await get_img(genshin_role_guide, role, save_path)
+    await get_img(genshin_role_guide, role, save_path, 0)
     try:
         await role_guide.send(image(save_path))
     except:
@@ -89,7 +89,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     save_path = f'{RES_PATH}/{role}.jpg'
-    await get_img(genshin_role_break, role, save_path)
+    await get_img(genshin_role_break, role, save_path, 0)
     img = Image.open(save_path)
     img_draw = ImageDraw.Draw(img)
     img_draw.text((200, 1823),
@@ -101,6 +101,21 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         await role_break.send(image(save_path))
     except:
         os.unlink(save_path)
+
+
+@scheduler.scheduled_job(
+    "cron",
+    hour=random.randint(9, 22),
+    minute=random.randint(0, 59),
+)
+async def guide_update():
+    arg = ['角色配装', '角色评级', '武器推荐', '深渊配队', '每日素材1', '每日素材2']
+    try:
+        for item in arg:
+            save_path = f'{RES_PATH}/{item}.jpg'
+            await get_img(common_guide, item, save_path, 1)
+    except Exception as e:
+        logger.warning(f"{__zx_plugin_name__}插件更新攻略信息失败，请检查github连接性是否良好!: {e}")
 
 
 @driver.on_bot_connect
