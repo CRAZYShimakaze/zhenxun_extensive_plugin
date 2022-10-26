@@ -34,7 +34,7 @@ usage：
 __plugin_des__ = "查询角色攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 0.8
+__plugin_version__ = 0.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -90,14 +90,14 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     save_path = f'{RES_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, 0)
-    img = Image.open(save_path)
-    img_draw = ImageDraw.Draw(img)
-    img_draw.text((200, 1823),
-                  "数据来源于米游社'再无四月的友人A.'",
-                  fill='white',
-                  font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
-    img.save(save_path)
     try:
+        img = Image.open(save_path)
+        img_draw = ImageDraw.Draw(img)
+        img_draw.text((200, 1823),
+                      "数据来源于米游社'再无四月的友人A.'",
+                      fill='white',
+                      font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
+        img.save(save_path)
         await role_break.send(image(save_path))
     except:
         os.unlink(save_path)
