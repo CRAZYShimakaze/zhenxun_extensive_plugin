@@ -278,7 +278,7 @@ async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, ar
                 if isinstance(event, GroupMessageEvent):
                     msg = f"恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
                     gold_weight = Config.get_config("minesweeper", "gold_weight")
-                    gold_all = game.mine_num * game.column * game.row * gold_weight
+                    gold_all = game.column * game.row * gold_weight
                     c_all = 0
                     for p, c in game.players.items():
                         c_all += c
@@ -309,7 +309,7 @@ async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, ar
             if isinstance(event, GroupMessageEvent):
                 msg = f"恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
                 gold_weight = Config.get_config("minesweeper", "gold_weight")
-                gold_all = game.mine_num * game.column * game.row // len(game.players) * gold_weight
+                gold_all = game.column * game.row // len(game.players) * gold_weight
                 c_all = 0
                 for p, c in game.players.items():
                     c_all += c

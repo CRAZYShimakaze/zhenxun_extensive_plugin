@@ -1,12 +1,10 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GROUP, Bot, GroupMessageEvent, Message, MessageSegment
-from nonebot.params import CommandArg, Command, ArgStr
-from utils.message_builder import at, image
+from nonebot.params import CommandArg
+
+from models.bag_user import BagUser
 from .data_source import Draw_Handle
 from .utils import random_question, check_result
-from models.bag_user import BagUser
-import asyncio
-from io import BytesIO
 
 __zx_plugin_name__ = "24点"
 __plugin_usage__ = """
@@ -66,7 +64,8 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
     if event.group_id in answer:
         if answer[event.group_id]:
             msg = arg.extract_plain_text().strip()
-            msg = msg.replace('（', '(').replace('）', ')').replace('×', '*').replace('x', '*').replace('×', '*').replace('÷', '/')
+            msg = msg.replace('（', '(').replace('）', ')').replace('×', '*').replace('x', '*').replace('×', '*').replace(
+                '÷', '/')
             mark = check_result(msg, question[event.group_id])
             bounce = 10
             if not mark:

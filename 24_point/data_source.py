@@ -1,9 +1,8 @@
-import random
-from enum import Enum
 from io import BytesIO
+
 from PIL import Image, ImageDraw
 from PIL.Image import Image as IMG
-from typing import Iterable, Tuple, List, Optional
+
 from .utils import save_jpg, load_font
 
 
