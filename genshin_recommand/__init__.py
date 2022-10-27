@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import os
 import random
 import re
@@ -53,6 +54,8 @@ common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShima
 genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
+alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r'))
+name_list = alias_file['roles']
 
 
 async def get_img(url, arg, save_path, ignore_exist):
@@ -68,39 +71,42 @@ async def _(arg: Message = RawCommand()):
         save_path = [f'{RES_PATH}/{arg}1.jpg', f'{RES_PATH}/{arg}2.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        try:
-            await get_guide.send(image(item))
-        except:
-            os.unlink(item)
+        await get_guide.send(image(item))
 
 
 @role_guide.handle()
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
+    for item in name_list:
+        if role in name_list.get(item):
+            role = name_list.get(item)[0]
+            break
+    else:
+        return
     save_path = f'{RES_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, 0)
-    try:
-        await role_guide.send(image(save_path))
-    except:
-        os.unlink(save_path)
+    await role_guide.send(image(save_path))
 
 
 @role_break.handle()
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
+    for item in name_list:
+        if role in name_list.get(item):
+            role = name_list.get(item)[0]
+            break
+    else:
+        return
     save_path = f'{RES_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, 0)
-    try:
-        img = Image.open(save_path)
-        img_draw = ImageDraw.Draw(img)
-        img_draw.text((200, 1823),
-                      "数据来源于米游社'再无四月的友人A.'",
-                      fill='white',
-                      font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
-        img.save(save_path)
-        await role_break.send(image(save_path))
-    except:
-        os.unlink(save_path)
+    img = Image.open(save_path)
+    img_draw = ImageDraw.Draw(img)
+    img_draw.text((200, 1823),
+                  "数据来源于米游社'再无四月的友人A.'",
+                  fill='white',
+                  font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
+    img.save(save_path)
+    await role_break.send(image(save_path))
 
 
 @scheduler.scheduled_job(
