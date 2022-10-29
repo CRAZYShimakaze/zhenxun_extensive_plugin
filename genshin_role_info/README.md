@@ -19,6 +19,10 @@ zhenxun_bot 原神角色面板插件
 <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px">
 
 ### 更新
+**2022/10/29**[v1.7]
+
+1. 新增多种配置的评分规则
+
 **2022/10/14**[v1.6]
 
 1. 适配妮露
