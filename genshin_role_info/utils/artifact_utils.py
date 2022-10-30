@@ -116,40 +116,71 @@ def get_effective(data):
     :return: 有效词条列表
     """
     role_name = data['名称']
-    role_weapon = data['武器']['名称']
     artifacts = data['圣遗物']
     try:
         if role_name in ['荧', '空']:
             role_name = '旅行者'
-        elif artifacts[2]['主属性']['属性名'] == '百分比生命值' and \
-                artifacts[3]['主属性']['属性名'] == '百分比生命值' and \
-                artifacts[4]['主属性']['属性名'] == '百分比生命值' and \
-                role_name == '钟离':
-            role_name = '钟离-血牛'
-        elif artifacts[4]['主属性']['属性名'] == '水元素伤害加成' and \
-                role_name == '芭芭拉':
-            role_name = '芭芭拉-暴力'
+        elif role_name == '钟离':
+            if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
+                    and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
+                    and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
+                    and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
+                    and data['属性']['基础生命'] + data['属性']['基础生命'] > 40000:
+                role_name = '钟离-血牛'
+        elif role_name == '芭芭拉':
+            if artifacts[3]['主属性']['属性名'] == '水元素伤害加成' and \
+                    data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] >= 1.8:
+                role_name = '芭芭拉-暴力'
         elif role_name == '甘雨':
             suit = get_artifact_suit(artifacts)
-            if suit and ('冰' in suit[0][0] or
-                         (len(suit) == 2 and '冰' in suit[1][0])):
+            if '冰' in suit[0][0] and '冰' in suit[1][0]:
                 role_name = '甘雨-永冻'
         elif role_name == '刻晴':
             if data['属性']['元素精通'] > 80:
                 role_name = '刻晴-精通'
-        elif role_name == '神里凌人':
+        elif role_name == '神里绫人':
             if data['属性']['元素精通'] > 120:
                 role_name = '神里绫人-精通'
         elif role_name == '温迪':
-            if data['属性']['元素充能效率'] > 120:
+            if data['属性']['元素充能效率'] > 240:
                 role_name = '温迪-充能'
-        elif role_name == '宵宫' and artifacts[2]['主属性']['属性名'] == '元素精通':
-            role_name = '宵宫-精通'
+        elif role_name == '宵宫':
+            if data['属性']['元素精通'] < 50 and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 3.2:
+                role_name = '宵宫-纯火'
+            if data['属性']['元素精通'] > 200 and artifacts[2]['主属性']['属性名'] == '元素精通':
+                role_name = '宵宫-精通'
         elif role_name == '行秋':
             if data['属性']['元素精通'] > 120:
                 role_name = '行秋-蒸发'
-        elif role_name == '云堇' and artifacts[3]['主属性']['属性名'] == '岩元素伤害加成':
-            role_name = '云堇-输出'
+        elif role_name == '云堇':
+            if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 1.8 \
+                    and artifacts[3]['主属性']['属性名'] == '岩元素伤害加成' \
+                    and artifacts[4]['主属性']['属性名'] in ['暴击率', '暴击伤害', '百分比防御力', '百分比攻击力']:
+                role_name = '云堇-输出'
+        elif role_name == '雷电将军':
+            if data['属性']['元素精通'] > 500:
+                role_name = '雷电将军-精通'
+            elif data['武器']['名称'] == '薙草之稻光' and data["武器"]["精炼等级"] >= 3:
+                role_name = '雷电将军-高精'
+        elif role_name == '胡桃':
+            if data['属性']['暴击率'] < 15 and data['属性']['暴击伤害'] > 2.8:
+                role_name = '胡桃-核爆'
+        elif role_name == '夜兰':
+            if data['属性']['元素精通'] > 120:
+                role_name = '夜兰-精通'
+            if data['武器']['名称'] == '若水':
+                role_name = '夜兰-若水'
+            if data['属性']['元素精通'] > 120 and data['武器']['名称'] == '若水':
+                role_name = '夜兰-精通若水'
+        elif role_name == '神里绫华':
+            if data['属性']['元素精通'] > 120:
+                role_name = '神里绫华-精通'
+        elif role_name == '可莉':
+            if data['属性']['元素精通'] < 50 and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 3.2:
+                role_name = '可莉-纯火'
+        elif role_name == '优菈':
+            if data['属性']['暴击率'] < 15 and data['属性']['暴击伤害'] > 2:
+                role_name = '优菈-核爆'
         if role_name in role_score:
             print(f'采用{role_name}权重')
             return role_score.get(role_name), role_name

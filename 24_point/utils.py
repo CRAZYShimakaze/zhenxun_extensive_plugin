@@ -1,10 +1,12 @@
-import random
 import itertools
+import random
 from io import BytesIO
-from PIL.Image import Image as IMG
-from configs.path_config import FONT_PATH
+
 from PIL import ImageFont
+from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
+
+from configs.path_config import FONT_PATH
 from utils.http_utils import AsyncHttpx
 
 

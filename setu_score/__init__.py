@@ -1,3 +1,4 @@
+import random
 import re
 
 from nonebot import on_command
@@ -16,12 +17,12 @@ __plugin_usage__ = """
 usage：
     色图打分
     指令：
-        评分+图片
+        打分+图片
 """.strip()
 __plugin_des__ = "色图打分"
 __plugin_cmd__ = ["打分"]
 __plugin_type__ = ("一些工具",)
-__plugin_version__ = 0.1
+__plugin_version__ = 0.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -86,17 +87,35 @@ async def setu_got(bot: Bot,
     elif s == 0:
         await bot.send(event, '你太菜了，这张也能称为色图？')
     elif s == 100:
-        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:社保!')  # (评分{s})')
+        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:'
+                       + random.choice([f'社保!',
+                                        f'刑!',
+                                        f'一阵哆嗦后索然无味!',
+                                        f'100分，我要报警拉!',
+                                        f'多发点,我去拿纸!',
+                                        f'我超太涩了(//// ^ ////)快撤回别让管理看见!']))  # (评分{s})')
         if Config.get_config("setu_score", "SEND_TO_ADMIN"):
             for admin in bot.config.superusers:
                 await bot.send_private_msg(user_id=int(admin),
                                            message=f"检测到社保色图一份！" + MessageSegment.image(pic_url))
     elif s > 80:
-        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:涩情!')  # (评分{s})')
+        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:'
+                       + random.choice([f'涩情!',
+                                        f'嗯了!',
+                                        f'是涩涩!好耶!']))  # (评分{s})')
     elif s > 50:
-        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:一般!')  # (评分{s})')
+        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:'
+                       + random.choice([f'一般!',
+                                        f'啧,一般~',
+                                        f'也就是处男才会嗯的水平吧~',
+                                        f'也就那样~']))  # (评分{s})')
     else:
-        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:就这?')  # (评分{s})')
+        await bot.send(event, f'{NICKNAME}看了一眼你发的图，鉴定为:'
+                       + random.choice([f'就这?',
+                                        f'就这就这?不要小瞧色图啊混蛋!',
+                                        f'不是吧不是吧，你平时就对着这种图冲?',
+                                        f'你发的是少儿频道的图吧?',
+                                        f'你太菜了，这张也能称为色图?']))  # (评分{s})')
         # await bot.send(event,
         #               message=MessageSegment.image(pic_url) + f'色图评分为{s}')
 
