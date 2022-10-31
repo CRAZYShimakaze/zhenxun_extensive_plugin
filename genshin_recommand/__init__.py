@@ -54,7 +54,7 @@ common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShima
 genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
-alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r'))
+alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r', encoding='utf-8'))
 name_list = alias_file['roles']
 
 

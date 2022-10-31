@@ -163,7 +163,7 @@ def get_effective(data):
             elif data['武器']['名称'] == '薙草之稻光' and data["武器"]["精炼等级"] >= 3:
                 role_name = '雷电将军-高精'
         elif role_name == '胡桃':
-            if data['属性']['暴击率'] < 15 and data['属性']['暴击伤害'] > 2.8:
+            if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2.8:
                 role_name = '胡桃-核爆'
         elif role_name == '夜兰':
             if data['属性']['元素精通'] > 120:
