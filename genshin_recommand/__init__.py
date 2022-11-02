@@ -85,7 +85,10 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{RES_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, 0)
-    await role_guide.send(image(save_path))
+    try:
+        await role_guide.send(image(save_path))
+    except:
+        os.unlink(save_path)
 
 
 @role_break.handle()
@@ -106,7 +109,10 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
                   fill='white',
                   font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
     img.save(save_path)
-    await role_break.send(image(save_path))
+    try:
+        await role_break.send(image(save_path))
+    except:
+        os.unlink(save_path)
 
 
 @scheduler.scheduled_job(
