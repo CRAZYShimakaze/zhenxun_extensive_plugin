@@ -18,8 +18,8 @@ role_url = 'https://enka.network/ui/{}.png'
 
 element_type = ['物理', '火元素', '雷元素', '水元素', '草元素', '风元素', '岩元素', '冰元素']
 
-role_data = load_json(f'{json_path}/role_data.json')
-role_name = load_json(f'{json_path}/role_name.json')
+role_data = load_json(f'{json_path}/roles_data.json')
+role_name = load_json(f'{json_path}/roles_name.json')
 
 
 def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
@@ -32,7 +32,10 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     mask_top = load_image(path=f'{other_path}/遮罩top.png')
     mask_body = load_image(path=f'{other_path}/遮罩body.png')
     mask_bottom = load_image(path=f'{other_path}/遮罩bottom.png')
-    height = 60 * len(dmg) - 20
+    if len(dmg.get('额外说明', [])[0]) >= 26:
+        height = 60 * (len(dmg) + 1) - 20
+    else:
+        height = 60 * len(dmg) - 20
     # 创建画布
     bg = Image.new('RGBA', (948, height + 80), (0, 0, 0, 0))
     bg.alpha_composite(mask_top, (0, 0))
@@ -52,12 +55,23 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     i = 1
     for describe, dmg_list in dmg.items():
         bg_draw.line((0, 60 * i, 948, 60 * i), (255, 255, 255, 75), 2)
-        draw_center_text(bg_draw, describe, 0, 250, 60 * i + 13, 'white',
-                         get_font(30, 'hywh.ttf'))
+        if describe == '额外说明' and len(dmg.get('额外说明', [])[0]) >= 26:
+            draw_center_text(bg_draw, describe, 0, 250, 60 * i + 13 + 30, 'white',
+                             get_font(30, 'hywh.ttf'))
+        else:
+            draw_center_text(bg_draw, describe, 0, 250, 60 * i + 13, 'white',
+                             get_font(30, 'hywh.ttf'))
         if len(dmg_list) == 1:
             if describe == '额外说明':
-                draw_center_text(bg_draw, dmg_list[0], 250, 948, 60 * i + 13,
-                                 'white', get_font(30, 'hywh.ttf'))
+                if len(dmg.get('额外说明', [])[0]) >= 26:
+                    first, second = dmg_list[0].split('，')[:2], dmg_list[0].split('，')[2:]
+                    draw_center_text(bg_draw, '，'.join(first), 250, 948, 60 * i + 13,
+                                     'white', get_font(30, 'hywh.ttf'))
+                    draw_center_text(bg_draw, '，'.join(second), 250, 948, 60 * i + 13 + 60,
+                                     'white', get_font(30, 'hywh.ttf'))
+                else:
+                    draw_center_text(bg_draw, dmg_list[0], 250, 948, 60 * i + 13,
+                                     'white', get_font(30, 'hywh.ttf'))
             else:
                 draw_center_text(bg_draw, dmg_list[0], 250, 948, 60 * i + 16,
                                  'white', get_font(30, 'number.ttf'))

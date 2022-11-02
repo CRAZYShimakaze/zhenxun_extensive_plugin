@@ -7,7 +7,7 @@ from ..utils.card_utils import json_path
 from ..utils.json_utils import load_json
 
 upheaval_value = load_json(path=f'{json_path}/upheaval.json')
-role_data = load_json(path=f'{json_path}/role_data.json')
+role_data = load_json(path=f'{json_path}/roles_data.json')
 
 
 def get_role_dmg(data: dict):
@@ -502,6 +502,11 @@ def weapon_common_fix(data: dict):
         extra_a['重击增伤'] += 0.15 + 0.05 * weapon['精炼等级']
     elif weapon['名称'] == '铁影阔剑':
         extra_a['重击增伤'] += 0.25 + 0.05 * weapon['精炼等级']
+    elif weapon['名称'] == '西福斯的月光':
+        attr['元素精通'] += attr['元素精通'] * (0.00027 + 0.00009 * weapon['精炼等级'])
+    elif weapon['名称'] == '圣显之钥':
+        attr['元素精通'] += attr['基础生命'] * (0.0009 + 0.0003 * weapon['精炼等级']) * 3
+        data['伤害描述'].append('圣显之钥满层')
 
     # 双手剑
     elif weapon['名称'] == '赤角石溃杵':
@@ -538,6 +543,8 @@ def weapon_common_fix(data: dict):
         extra_q['增伤'] += 0.09 + 0.03 * weapon['精炼等级']
     elif weapon['名称'] == '桂木斩长正':
         extra_e['增伤'] += 0.045 + 0.015 * weapon['精炼等级']
+    elif weapon['名称'] == '玛海菈的水色':
+        attr['额外攻击'] += attr['元素精通'] * (0.18 + 0.06 * weapon['精炼等级'])
     # 弓
     elif weapon['名称'] == '落霞':
         for i, k in enumerate(attr['伤害加成']):
@@ -622,6 +629,13 @@ def weapon_common_fix(data: dict):
     elif weapon['名称'] == '「渔获」':
         extra_q['增伤'] += 0.12 + 0.04 * weapon['精炼等级']
         extra_q['暴击率'] += 0.045 + 0.015 * weapon['精炼等级']
+    elif weapon['名称'] == '风信之锋':
+        attr['额外攻击'] += attr['基础攻击'] * (0.09 + 0.03 * weapon['精炼等级'])
+        attr['元素精通'] += 36 + 12 * weapon['精炼等级']
+        data['伤害描述'].append('风信之锋触发')
+    elif weapon['名称'] == '赤沙之杖':
+        attr['额外攻击'] += attr['元素精通'] * (1.02 + 0.34 * weapon['精炼等级'])
+        data['伤害描述'].append('赤沙之杖满层')
     # 法器
     elif weapon['名称'] == '证誓之明瞳':
         attr['元素充能效率'] += 0.18 + 0.06 * weapon['精炼等级']
@@ -678,7 +692,13 @@ def weapon_common_fix(data: dict):
         attr['元素精通'] += 5 * (21 + 3 * weapon['精炼等级'])
         attr['额外攻击'] -= 5 * 0.05 * attr['基础攻击']
         data['伤害描述'].append('盈满之实满层')
-
+    elif weapon['名称'] == '千夜浮梦':
+        attr['元素精通'] += 5 * (24 + 8 * weapon['精炼等级'])
+        for i, k in enumerate(attr['伤害加成']):
+            data['属性']['伤害加成'][i] = k + 2 * (0.06 + 0.04 * weapon['精炼等级'])
+        data['伤害描述'].append('千夜浮梦算1同2异')
+    elif weapon['名称'] == '流浪的晚星':
+        attr['额外攻击'] += attr['元素精通'] * (0.18 + 0.06 * weapon['精炼等级'])
     # 系列武器
     elif weapon['名称'].startswith('千岩'):
         attr['暴击率'] += (0.02 + 0.01 * weapon['精炼等级'])
@@ -1335,4 +1355,20 @@ def get_damage_multipiler(data: dict) -> dict:
                 skill_data['煌煌千道镇式']['数值']['天狗咒雷•金刚坏伤害'][level_q].replace('%', '')) / 100.0,
             'Q-e雷:大招雷砾': float(
                 skill_data['煌煌千道镇式']['数值']['天狗咒雷•雷砾伤害'][level_q].replace('%', '')) / 100.0,
+        }
+    if data['名称'] == '纳西妲':
+        c = 1 if len(data['命座']) == 0 else 2
+        data['属性']['元素精通'] += 160 if len(data['命座']) >= 4 else 0
+        eb = skill_data['所闻遍计']['数值']['灭净三业伤害'][level_e].split('+')
+        return {
+            'B:l0-增伤-E': (float(skill_data['心景幻成']['数值'][f'火：伤害提升{c}'][level_q].replace('%', '')) / 100.0,
+                            f'大招计算{c}名火元素'),
+            'B:l70-增伤-E': (0.8 if data['属性']['元素精通'] >= 1000 else (
+                    0.001 * (data['属性']['元素精通'] - 200)) if data['属性']['元素精通'] >= 200 else 0,),
+            'B:l70-暴击率-E': (0.24 if data['属性']['元素精通'] >= 1000 else (
+                    0.0003 * (data['属性']['元素精通'] - 200)) if data['属性']['元素精通'] >= 200 else 0,),
+            'B:c2-减防-*': (0.3, '二命减防触发'),
+            'B:l0-额外倍率-E': (float(eb[1].replace('%元素精通', '')) / 100.0 * data['属性']['元素精通'],),
+            'E-e草:灭净三业': float(eb[0].replace('%攻击力', '')) / 100.0,
+            'E-e草-j超激化:灭净三业超激化': float(eb[0].replace('%攻击力', '')) / 100.0
         }
