@@ -54,7 +54,7 @@ common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShima
 genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
-alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r'))
+alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r', encoding='utf-8'))
 name_list = alias_file['roles']
 
 
@@ -85,7 +85,10 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{RES_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, 0)
-    await role_guide.send(image(save_path))
+    try:
+        await role_guide.send(image(save_path))
+    except:
+        os.unlink(save_path)
 
 
 @role_break.handle()
@@ -99,14 +102,17 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{RES_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, 0)
-    img = Image.open(save_path)
-    img_draw = ImageDraw.Draw(img)
-    img_draw.text((200, 1823),
-                  "数据来源于米游社'再无四月的友人A.'",
-                  fill='white',
-                  font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
-    img.save(save_path)
-    await role_break.send(image(save_path))
+    try:
+        img = Image.open(save_path)
+        img_draw = ImageDraw.Draw(img)
+        img_draw.text((200, 1823),
+                      "数据来源于米游社'再无四月的友人A.'",
+                      fill='white',
+                      font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
+        img.save(save_path)
+        await role_break.send(image(save_path))
+    except:
+        os.unlink(save_path)
 
 
 @scheduler.scheduled_job(

@@ -21,9 +21,9 @@ talent_path = res_path + 'talent'
 weapon_path = res_path + 'weapon'
 reli_path = res_path + 'reli'
 font_path = res_path + 'fonts'
-role_data = load_json(path=f'{json_path}/role_data.json')
-role_skill = load_json(path=f'{json_path}/role_skill.json')
-role_talent = load_json(path=f'{json_path}/role_talent.json')
+role_data = load_json(path=f'{json_path}/roles_data.json')
+role_skill = load_json(path=f'{json_path}/roles_skill.json')
+role_talent = load_json(path=f'{json_path}/roles_talent.json')
 weapon = load_json(path=f'{json_path}/weapon.json')
 prop_list = load_json(path=f'{json_path}/prop.json')
 artifact_list = load_json(path=f'{json_path}/artifact.json')
