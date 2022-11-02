@@ -102,14 +102,14 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{RES_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, 0)
-    img = Image.open(save_path)
-    img_draw = ImageDraw.Draw(img)
-    img_draw.text((200, 1823),
-                  "数据来源于米游社'再无四月的友人A.'",
-                  fill='white',
-                  font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
-    img.save(save_path)
     try:
+        img = Image.open(save_path)
+        img_draw = ImageDraw.Draw(img)
+        img_draw.text((200, 1823),
+                      "数据来源于米游社'再无四月的友人A.'",
+                      fill='white',
+                      font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
+        img.save(save_path)
         await role_break.send(image(save_path))
     except:
         os.unlink(save_path)
