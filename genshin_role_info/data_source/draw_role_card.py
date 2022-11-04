@@ -32,7 +32,7 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     mask_top = load_image(path=f'{other_path}/遮罩top.png')
     mask_body = load_image(path=f'{other_path}/遮罩body.png')
     mask_bottom = load_image(path=f'{other_path}/遮罩bottom.png')
-    if len(dmg.get('额外说明', [])[0]) >= 26:
+    if len(dmg.get('额外说明', [''])[0]) >= 26:
         height = 60 * (len(dmg) + 1) - 20
     else:
         height = 60 * len(dmg) - 20
@@ -55,7 +55,7 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     i = 1
     for describe, dmg_list in dmg.items():
         bg_draw.line((0, 60 * i, 948, 60 * i), (255, 255, 255, 75), 2)
-        if describe == '额外说明' and len(dmg.get('额外说明', [])[0]) >= 26:
+        if describe == '额外说明' and len(dmg.get('额外说明', [''])[0]) >= 26:
             draw_center_text(bg_draw, describe, 0, 250, 60 * i + 13 + 30, 'white',
                              get_font(30, 'hywh.ttf'))
         else:
@@ -63,7 +63,7 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
                              get_font(30, 'hywh.ttf'))
         if len(dmg_list) == 1:
             if describe == '额外说明':
-                if len(dmg.get('额外说明', [])[0]) >= 26:
+                if len(dmg.get('额外说明', [''])[0]) >= 26:
                     first, second = dmg_list[0].split('，')[:2], dmg_list[0].split('，')[2:]
                     draw_center_text(bg_draw, '，'.join(first), 250, 948, 60 * i + 13,
                                      'white', get_font(30, 'hywh.ttf'))
