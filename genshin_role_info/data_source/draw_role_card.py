@@ -547,8 +547,8 @@ async def draw_role_card(uid, data):
     if '-' not in weight_name:
         weight_name += '-通用'
     draw_center_text(bg_draw, f'评分规则:{weight_name},更新于{data["更新时间"].replace("2022-", "")[:-3]}',
-                     0, 1080, bg.size[1] - 95, '#afafaf',
-                     get_font(33, '优设标题黑.ttf'))
+                     0, 1080, bg.size[1] - 85, '#afafaf',
+                     get_font(30, 'hywh.ttf'))
     bg_draw.text((24, bg.size[1] - 50),
                  '  Migrated by CRAZY | Powered by Enka.Network',
                  fill='white',
