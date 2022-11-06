@@ -179,7 +179,7 @@ def get_effective(data):
             if data['属性']['元素精通'] < 50 and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 3.2:
                 role_name = '可莉-纯火'
         elif role_name == '优菈':
-            if data['属性']['暴击率'] < 15 and data['属性']['暴击伤害'] > 2:
+            if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2:
                 role_name = '优菈-核爆'
         if role_name in role_score:
             print(f'采用{role_name}权重')
