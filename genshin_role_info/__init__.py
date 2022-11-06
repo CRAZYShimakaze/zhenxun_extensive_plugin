@@ -283,8 +283,11 @@ async def update(uid: int):
     if 'avatarInfoList' in data:
         update_role_list = []
         for role in data['avatarInfoList']:
-            player_info.set_role(role)
-            update_role_list.append(get_name_by_id(str(role['avatarId'])))
+            try:
+                player_info.set_role(role)
+                update_role_list.append(get_name_by_id(str(role['avatarId'])))
+            except Exception as e:
+                pass
     else:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
