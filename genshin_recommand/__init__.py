@@ -55,7 +55,7 @@ genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZ
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
 genshin_weapon_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_weapon_break/{}.png"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
-alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r', encoding='utf-8'))
+alias_file = json.load(open(f'{os.path.dirname(__file__)}/alias.json', 'r', encoding='utf-8'))
 role_list = alias_file['roles']
 weapon_list = alias_file['weapons']
 
