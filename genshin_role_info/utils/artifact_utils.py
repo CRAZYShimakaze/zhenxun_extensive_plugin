@@ -76,11 +76,14 @@ def get_miao_score(data, weight_name, base_info):
     )
     pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
     if pointmark.get("百分比攻击力"):
-        pointmark["攻击力"] = pointmark["百分比攻击力"] / int(base_info["atk"]['90']) * 100 / 2.7332682
+        pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
+        # pointmark["攻击力"] = pointmark["百分比攻击力"] / data['属性'].get("基础攻击", 1020) * 100
     if pointmark.get("百分比防御力"):
-        pointmark["防御力"] = pointmark["百分比防御力"] / int(base_info["def"]['90']) * 100
+        pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["def"]['90']) * 100
+        # pointmark["防御力"] = pointmark["百分比防御力"] / data['属性'].get("基础防御", 300) * 100
     if pointmark.get("百分比生命值"):
-        pointmark["生命值"] = pointmark["百分比生命值"] / int(base_info["hp"]['90']) * 100
+        pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["hp"]['90']) * 100
+        # pointmark["生命值"] = pointmark["百分比生命值"] / data['属性'].get("基础生命", 400) * 100
     # 各位置圣遗物的总分理论最高分、主词条理论最高得分
     max_mark = {"0": {}, "1": {}, "2": {}, "3": {}, "4": {}}
     for posIdx in range(0, 5):
