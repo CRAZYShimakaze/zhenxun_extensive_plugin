@@ -281,7 +281,9 @@ async def draw_role_card(uid, data):
 
     # 圣遗物
     effective, weight_name = get_effective(data)
-    affix_weight, point_mark, max_mark = get_miao_score(data, weight_name)
+    if data['名称'] in ['荧', '空']:
+        data['名称'] = '旅行者'
+    affix_weight, point_mark, max_mark = get_miao_score(data, weight_name, role_data[data['名称']]['attribute'])
     total_all = 0
     total_cnt = 0
     artifact_list = [{} for _ in range(5)]
@@ -428,6 +430,7 @@ async def draw_role_card(uid, data):
     # 圣遗物评分
     if total_cnt and total_all <= 66 * total_cnt:
         score_ave = total_all / total_cnt
+        # score_ave = round(score_ave)
         total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
             else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
             if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
@@ -547,8 +550,8 @@ async def draw_role_card(uid, data):
     if '-' not in weight_name:
         weight_name += '-通用'
     draw_center_text(bg_draw, f'评分规则:{weight_name},更新于{data["更新时间"].replace("2022-", "")[:-3]}',
-                     0, 1080, bg.size[1] - 95, '#afafaf',
-                     get_font(33, '优设标题黑.ttf'))
+                     0, 1080, bg.size[1] - 85, '#afafaf',
+                     get_font(30, 'hywh.ttf'))
     bg_draw.text((24, bg.size[1] - 50),
                  '  Migrated by CRAZY | Powered by Enka.Network',
                  fill='white',

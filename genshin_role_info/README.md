@@ -1,9 +1,7 @@
 # genshin_role_info
-zhenxun_bot 原神角色面板插件
+真寻机器人的原神角色面板插件
 
 展示橱窗中角色的面板和伤害数据(与原神角色卡插件部分命令有冲突，建议只安装一个)
-
-移植自[LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon)
 
 ## 使用
 - 原神角色卡 uid 角色名
@@ -18,7 +16,18 @@ zhenxun_bot 原神角色面板插件
 
 <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px">
 
+# 致谢
+
+* [LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon)的基本框架
+* [Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)的评分规则 
+* [Enka](https://enka.network/)的玩家数据
+* [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
+
 ### 更新
+**2022/11/19**[v1.9]
+
+1. 适配莱依拉
+
 **2022/11/2**[v1.8]
 
 1. 适配纳西妲

@@ -19,10 +19,10 @@ from utils.utils import scheduler, get_bot
 
 driver: Driver = nonebot.get_driver()
 
-__zx_plugin_name__ = "原神角色攻略"
+__zx_plugin_name__ = "原神攻略"
 __plugin_usage__ = """
 usage：
-    查询角色攻略
+    查询原神攻略
     指令：
         角色配装
         角色评级
@@ -32,10 +32,10 @@ usage：
         XX攻略
         XX素材
 """.strip()
-__plugin_des__ = "查询角色攻略"
+__plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 0.9
+__plugin_version__ = 1.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -49,13 +49,15 @@ __plugin_cd_limit__ = {
 
 get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队", "每日素材"}, priority=14, block=True)
 role_guide = on_regex(r"(.*)攻略", priority=15)
-role_break = on_regex(r"(.*)素材", priority=15)
+break_material = on_regex(r"(.*)素材", priority=15)
 common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
 genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
+genshin_weapon_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_weapon_break/{}.png"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
-alias_file = json.load(open(f'{RES_PATH}/../alias.json', 'r', encoding='utf-8'))
-name_list = alias_file['roles']
+alias_file = json.load(open(f'{os.path.dirname(__file__)}/alias.json', 'r', encoding='utf-8'))
+role_list = alias_file['roles']
+weapon_list = alias_file['weapons']
 
 
 async def get_img(url, arg, save_path, ignore_exist):
@@ -77,9 +79,9 @@ async def _(arg: Message = RawCommand()):
 @role_guide.handle()
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in name_list:
-        if role in name_list.get(item):
-            role = name_list.get(item)[0]
+    for item in role_list:
+        if role in role_list.get(item):
+            role = role_list.get(item)[0]
             break
     else:
         return
@@ -91,26 +93,31 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         os.unlink(save_path)
 
 
-@role_break.handle()
+@break_material.handle()
 async def _(args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in name_list:
-        if role in name_list.get(item):
-            role = name_list.get(item)[0]
+    for item in role_list:
+        if role in role_list.get(item):
+            role = role_list.get(item)[0]
             break
     else:
+        for item in weapon_list:
+            if role in weapon_list.get(item) or role == item:
+                role = item
+                break
+        else:
+            return
+        save_path = f'{RES_PATH}/{role}.png'
+        await get_img(genshin_weapon_break, role, save_path, 0)
+        try:
+            await break_material.send(image(save_path))
+        except:
+            os.unlink(save_path)
         return
     save_path = f'{RES_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, 0)
     try:
-        img = Image.open(save_path)
-        img_draw = ImageDraw.Draw(img)
-        img_draw.text((200, 1823),
-                      "数据来源于米游社'再无四月的友人A.'",
-                      fill='white',
-                      font=ImageFont.truetype(f'{FONT_PATH}/HYWenHei-85W.ttf', 45))
-        img.save(save_path)
-        await role_break.send(image(save_path))
+        await break_material.send(image(save_path))
     except:
         os.unlink(save_path)
 
