@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 from nonebot.params import Message, CommandArg
-from .game import add_game, start_game, call_card, stop_card, get_game_ls
+from .game import add_game, start_game, call_card, stop_card, get_game_ls, check_game_point
 from typing import Dict, List
 from models.bag_user import BagUser
 
@@ -52,7 +52,7 @@ async def start_blackjack(event: GroupMessageEvent,
         await blackjack.finish("请输入正确的金币数！")
     point = int(point)
     user_point = await BagUser.get_gold(user_id, group_id)
-    if user_point < point:
+    if (user_point - await check_game_point(group_id, user_id, player1_name)) < point:  # type: ignore
         await blackjack.finish("你的金币不够！")
     deck_id = await add_game(group_id, user_id, point, player1_name)
     if deck_id >= 0:
