@@ -24,6 +24,10 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ### 更新
+**2022/12/7**[v2.0]
+
+1. 适配流浪者、珐露珊
+
 **2022/11/19**[v1.9]
 
 1. 适配莱依拉

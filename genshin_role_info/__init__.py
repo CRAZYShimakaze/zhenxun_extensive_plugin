@@ -40,7 +40,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.9
+__plugin_version__ = 2.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
