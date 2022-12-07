@@ -87,6 +87,15 @@ async def add_game(group: int, uid: int, point: int, player1_name: str) -> int:
         return game.deck_id
 
 
+async def check_game_point(group: int, uid: int, player1_name: str) -> int:
+    points = 0
+    if game_ls:
+        for deck in game_ls:
+            if deck.group == group and deck.player1 == uid and deck.player1_name == player1_name:
+                points += deck.point
+    return points
+
+
 async def start_game(deck_id: int, player2: int, player2_name: str,
                      group_id: int, user_point: int) -> str:
     if not game_ls:
