@@ -1,5 +1,21 @@
 from ..utils.card_utils import role_score
 
+grow_value = {  # 词条成长值
+    "暴击率": 3.89,
+    "暴击伤害": 7.77,
+    "元素精通": 23.31,
+    "百分比攻击力": 5.83,
+    "百分比生命值": 5.83,
+    "百分比防御力": 7.29,
+    "元素充能效率": 6.48,
+    "元素伤害加成": 5.825,
+    "物理伤害加成": 7.288,
+    "治疗加成": 4.487,
+    "攻击力": 15.56,
+    "生命值": 239.0,
+    "防御力": 18.52,
+}
+
 
 def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     # 主词条得分（与副词条计算规则一致，但只取 25%），角色元素属性与伤害属性不同时不得分，不影响物理伤害得分
@@ -11,7 +27,7 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
         # [词条名, 词条数值, 词条得分]
         [s['属性名'], s['属性值'],
          point_mark.get(s['属性名'], 0) * s[
-             '属性值'] * 46.6 / 6 / 100, ] for s in
+             '属性值'] * 46.6 / 6 / 100, s['属性值'] // grow_value.get(s['属性名'])] for s in
         artifact['词条']]
     '''
     for sub in calc_subs:
@@ -34,26 +50,12 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     calc_rank_str = 'ACE*' if calc_total > 66 else 'ACE*' if calc_total > 56.1 else 'ACE' if calc_total > 49.5 \
         else 'SSS' if calc_total > 42.9 else 'SS' if calc_total > 36.3 else 'S' if calc_total > 29.7 else 'A' \
         if calc_total > 23.1 else 'B' if calc_total > 16.5 else 'C' if calc_total > 10 else 'D'
-    return calc_rank_str, calc_total
+    return calc_rank_str, calc_total, [int(item[3]) for item in calc_subs]
 
 
 def get_miao_score(data, weight_name, base_info):
     role_name = weight_name
-    grow_value = {  # 词条成长值
-        "暴击率": 3.89,
-        "暴击伤害": 7.77,
-        "元素精通": 23.31,
-        "百分比攻击力": 5.83,
-        "百分比生命值": 5.83,
-        "百分比防御力": 7.29,
-        "元素充能效率": 6.48,
-        "元素伤害加成": 5.825,
-        "物理伤害加成": 7.288,
-        "治疗加成": 4.487,
-        "攻击力": 15.56,
-        "生命值": 239.0,
-        "防御力": 18.52,
-    }
+
     main_affixs = {  # 可能的主词条
         "2": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素充能效率".split(","),  # EQUIP_SHOES
         "3": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素伤害加成,物理伤害加成".split(","),  # EQUIP_RING

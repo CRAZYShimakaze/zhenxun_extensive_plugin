@@ -295,7 +295,7 @@ async def draw_role_card(uid, data):
         artifact = artifact_list[i]
         if not artifact:
             continue
-        artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
+        artifact_score, grade, mark_num = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
         total_all += grade
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
@@ -340,6 +340,10 @@ async def draw_role_card(uid, data):
                 text = artifact['词条'][j]['属性名'].replace('百分比', '')
             else:
                 text = artifact['词条'][j]['属性名']
+            if mark_num[j] != 0:
+                mark = '¹' if mark_num[j] == 1 else '²' if mark_num[j] == 2 else '³' if mark_num[j] == 3 else '⁴' if \
+                    mark_num[j] == 4 else '⁵'
+                text += mark
             bg_draw.text(
                 (411 + 317 * i, 1163 + 50 * j),
                 text,
@@ -363,7 +367,7 @@ async def draw_role_card(uid, data):
         artifact = artifact_list[i + 2]
         if not artifact:
             continue
-        artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
+        artifact_score, grade, mark_num = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
         total_all += grade
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
@@ -408,6 +412,10 @@ async def draw_role_card(uid, data):
                 text = artifact['词条'][j]['属性名'].replace('百分比', '')
             else:
                 text = artifact['词条'][j]['属性名']
+            if mark_num[j] != 0:
+                mark = '¹' if mark_num[j] == 1 else '²' if mark_num[j] == 2 else '³' if mark_num[j] == 3 else '⁴' if \
+                    mark_num[j] == 4 else '⁵'
+                text += mark
             bg_draw.text(
                 (94 + 317 * i, 1600 + 50 * j),
                 text,
