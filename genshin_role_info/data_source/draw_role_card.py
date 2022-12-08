@@ -341,8 +341,8 @@ async def draw_role_card(uid, data):
             else:
                 text = artifact['词条'][j]['属性名']
             if mark_num[j] != 0:
-                mark = '¹' if mark_num[j] == 1 else '²' if mark_num[j] == 2 else '³' if mark_num[j] == 3 else '⁴' if \
-                    mark_num[j] == 4 else '⁵'
+                mark = '①' if mark_num[j] == 1 else '②' if mark_num[j] == 2 else '③' if mark_num[j] == 3 else '④' if \
+                    mark_num[j] == 4 else '⑤'
                 text += mark
             bg_draw.text(
                 (411 + 317 * i, 1163 + 50 * j),
@@ -413,8 +413,8 @@ async def draw_role_card(uid, data):
             else:
                 text = artifact['词条'][j]['属性名']
             if mark_num[j] != 0:
-                mark = '¹' if mark_num[j] == 1 else '²' if mark_num[j] == 2 else '³' if mark_num[j] == 3 else '⁴' if \
-                    mark_num[j] == 4 else '⁵'
+                mark = '①' if mark_num[j] == 1 else '②' if mark_num[j] == 2 else '③' if mark_num[j] == 3 else '④' if \
+                    mark_num[j] == 4 else '⑤'
                 text += mark
             bg_draw.text(
                 (94 + 317 * i, 1600 + 50 * j),

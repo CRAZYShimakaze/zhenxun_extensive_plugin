@@ -16,6 +16,18 @@ grow_value = {  # 词条成长值
     "防御力": 18.52,
 }
 
+max_value = {  # 词条最大值
+    "暴击率": 3.9,
+    "暴击伤害": 7.8,
+    "元素精通": 23,
+    "百分比攻击力": 5.8,
+    "百分比生命值": 5.8,
+    "百分比防御力": 7.3,
+    "元素充能效率": 6.5,
+    "攻击力": 19,
+    "生命值": 299,
+    "防御力": 23,
+}
 
 def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     # 主词条得分（与副词条计算规则一致，但只取 25%），角色元素属性与伤害属性不同时不得分，不影响物理伤害得分
@@ -27,7 +39,7 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
         # [词条名, 词条数值, 词条得分]
         [s['属性名'], s['属性值'],
          point_mark.get(s['属性名'], 0) * s[
-             '属性值'] * 46.6 / 6 / 100, s['属性值'] // grow_value.get(s['属性名'])] for s in
+             '属性值'] * 46.6 / 6 / 100, (((s['属性值'] - 1) if s['属性值'] == max_value.get(s['属性名']) * 6 else s['属性值']) // max_value.get(s['属性名'])) if (s['属性值'] > max_value.get(s['属性名'])) else 0] for s in
         artifact['词条']]
     '''
     for sub in calc_subs:
