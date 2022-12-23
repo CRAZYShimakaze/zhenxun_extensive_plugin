@@ -30,7 +30,7 @@ usage：
         深渊配队
         每日素材
         XX攻略
-        XX素材
+        XX素材/XX材料
 """.strip()
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
@@ -49,7 +49,7 @@ __plugin_cd_limit__ = {
 
 get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队", "每日素材"}, priority=14, block=True)
 role_guide = on_regex(r"(.*)攻略", priority=15)
-break_material = on_regex(r"(.*)素材", priority=15)
+break_material = on_regex(r"(.*)(素材|材料)", priority=15)
 common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
 genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
