@@ -1,23 +1,25 @@
+import asyncio
 import re
 import shlex
-import asyncio
-from io import BytesIO
-from dataclasses import dataclass
 from asyncio import TimerHandle
+from dataclasses import dataclass
+from io import BytesIO
 from typing import Dict, List, Optional, NoReturn
-from models.bag_user import BagUser
-from nonebot.matcher import Matcher
-from nonebot.exception import ParserExit
-from nonebot.typing import T_State
-from nonebot.rule import Rule, to_me, ArgumentParser
+
 from nonebot import on_command, on_shell_command, on_message
-from nonebot.params import ShellCommandArgv, CommandArg, EventPlainText, State
 from nonebot.adapters.onebot.v11 import (
     MessageEvent,
     GroupMessageEvent,
     Message,
     MessageSegment,
 )
+from nonebot.exception import ParserExit
+from nonebot.matcher import Matcher
+from nonebot.params import ShellCommandArgv, CommandArg, EventPlainText
+from nonebot.rule import Rule, ArgumentParser
+from nonebot.typing import T_State
+
+from models.bag_user import BagUser
 from .data_source import Handle, GuessResult
 from .utils import random_idiom, load_font
 
@@ -35,7 +37,7 @@ usage：
         可发送“结束猜成语”结束游戏；可发送“提示”查看提示。
 """.strip()
 __plugin_des__ = "猜成语"
-__plugin_type__ = ("群内小游戏", )
+__plugin_type__ = ("群内小游戏",)
 __plugin_cmd__ = ["猜成语", "提示", "结束猜成语"]
 __plugin_version__ = 0.1
 __plugin_author__ = "yajiwa"
@@ -93,7 +95,7 @@ def match_idiom(msg: str) -> bool:
     return bool(re.fullmatch(r"[\u4e00-\u9fa5]{4}", msg))
 
 
-def get_idiom_input(state: T_State = State(),
+def get_idiom_input(state: T_State,
                     msg: str = EventPlainText()) -> bool:
     if match_idiom(msg):
         state["idiom"] = msg
@@ -125,7 +127,7 @@ idiom_matcher = on_message(Rule(game_running) & get_idiom_input,
 
 
 @idiom_matcher.handle()
-async def _(matcher: Matcher, event: MessageEvent, state: T_State = State()):
+async def _(matcher: Matcher, event: MessageEvent, state: T_State):
     idiom: str = state["idiom"]
     await handle_handle(matcher, event, [idiom])
 
@@ -225,7 +227,7 @@ async def handle_handle(matcher: Matcher, event: MessageEvent,
                                    bounce_coin[len(game.guessed_idiom)])
         await send(
             (f"恭喜你猜出了成语！奖励你{bounce_coin[len(game.guessed_idiom)]}金币!" if result
-             == GuessResult.WIN else "很遗憾，没有人猜出来呢") + f"\n{game.result}",
+                                                                                      == GuessResult.WIN else "很遗憾，没有人猜出来呢") + f"\n{game.result}",
             game.draw(),
         )
     elif result == GuessResult.DUPLICATE:
