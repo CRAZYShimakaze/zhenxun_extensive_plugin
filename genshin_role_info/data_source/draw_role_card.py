@@ -295,7 +295,7 @@ async def draw_role_card(uid, data):
         artifact = artifact_list[i]
         if not artifact:
             continue
-        artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
+        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
         total_all += grade
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
@@ -336,10 +336,16 @@ async def draw_role_card(uid, data):
                          fill='white',
                          font=get_font(48, 'number.ttf'))
         for j in range(len(artifact['词条'])):
-            if '百分比' in artifact['词条'][j]['属性名']:
-                text = artifact['词条'][j]['属性名'].replace('百分比', '')
-            else:
-                text = artifact['词条'][j]['属性名']
+            text = artifact['词条'][j]['属性名'].replace('百分比', '')
+            if mark[j] != 0:
+                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
+                x_offset = 25 * len(text)
+                bg_draw.text(
+                    (411 + 317 * i + x_offset, 1163 + 50 * j - 5),
+                    up_num,
+                    fill='white' if check_effective(artifact['词条'][j]['属性名'],
+                                                    effective) else '#afafaf',
+                    font=get_font(25, 'tahomabd.ttf'))
             bg_draw.text(
                 (411 + 317 * i, 1163 + 50 * j),
                 text,
@@ -363,7 +369,7 @@ async def draw_role_card(uid, data):
         artifact = artifact_list[i + 2]
         if not artifact:
             continue
-        artifact_score, grade = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
+        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
         total_all += grade
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
@@ -404,10 +410,19 @@ async def draw_role_card(uid, data):
                          fill='white',
                          font=get_font(48, 'number.ttf'))
         for j in range(len(artifact['词条'])):
-            if '百分比' in artifact['词条'][j]['属性名']:
-                text = artifact['词条'][j]['属性名'].replace('百分比', '')
-            else:
-                text = artifact['词条'][j]['属性名']
+            text = artifact['词条'][j]['属性名'].replace('百分比', '')
+            if mark[j] != 0:
+                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
+                x_offset = 25 * len(text)
+                bg_draw.text(
+                    (94 + 317 * i + x_offset, 1600 + 50 * j - 5),
+                    up_num,
+                    fill='white' if check_effective(artifact['词条'][j]['属性名'],
+                                                    effective) else '#afafaf',
+                    font=get_font(25, 'tahomabd.ttf'))
+                #text = f'{text:　<4} {"+" * mark[j]}'
+                #text = text.ljust(5,"　") + ">" * mark[j]
+                #text += f'{text:<12}'+'>' * mark[j]
             bg_draw.text(
                 (94 + 317 * i, 1600 + 50 * j),
                 text,
@@ -538,7 +553,7 @@ async def draw_role_card(uid, data):
                          font=get_font(36))
         bg.alpha_composite(artifact_path1, (76, 1130))
         bg.alpha_composite(artifact_path2, (76, 1255))
-    '''
+
     effect = []
     for item in effective:
         if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
@@ -546,14 +561,24 @@ async def draw_role_card(uid, data):
                 '暴击伤害', '爆伤').replace('元素精通', '精通')
             effect.append(f'{name}:{effective.get(item)}')
     effect = ','.join(effect)
-    '''
+
     if '-' not in weight_name:
         weight_name += '-通用'
+    '''
     draw_center_text(bg_draw, f'评分规则:{weight_name},更新于{data["更新时间"].replace("2022-", "")[:-3]}',
                      0, 1080, bg.size[1] - 85, '#afafaf',
                      get_font(30, 'hywh.ttf'))
+    '''
+    draw_center_text(bg_draw, f'{weight_name}:{effect}',
+                     0, 1080, bg.size[1] - 85, '#afafaf',
+                     get_font(30))
+    draw_center_text(bg_draw, f'Updated on {data["更新时间"].replace("2022-", "")[:-3]} | Powered by Enka.Network',
+                     0, 1080, bg.size[1] - 50, '#ffffff',
+                     get_font(36, '优设标题黑.ttf'))
+    '''
     bg_draw.text((24, bg.size[1] - 50),
-                 '  Migrated by CRAZY | Powered by Enka.Network',
+                 f'Updated on {data["更新时间"].replace("2022-", "")[:-3]} | Powered by Enka.Network',
                  fill='white',
                  font=get_font(36, '优设标题黑.ttf'))
+    '''
     return bg, total_all

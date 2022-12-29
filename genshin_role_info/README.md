@@ -24,6 +24,12 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ### 更新
+**2022/12/29**[v2.1]
+
+1. 新增圣遗物强化次数标记
+2. 对齐妮露圣遗物权重
+3. 查询非绑定角色不再计入群最强PK
+
 **2022/12/7**[v2.0]
 
 1. 适配流浪者、珐露珊

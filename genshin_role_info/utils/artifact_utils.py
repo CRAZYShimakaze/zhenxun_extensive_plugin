@@ -1,4 +1,34 @@
+import math
+
 from ..utils.card_utils import role_score
+
+grow_max_value = {  # 词条成长值
+    "暴击率": 3.89,
+    "暴击伤害": 7.77,
+    "元素精通": 23.31,
+    "百分比攻击力": 5.83,
+    "百分比生命值": 5.83,
+    "百分比防御力": 7.29,
+    "元素充能效率": 6.48,
+    "元素伤害加成": 5.825,
+    "物理伤害加成": 7.288,
+    "治疗加成": 4.487,
+    "攻击力": 19.45,
+    "生命值": 298.75,
+    "防御力": 23.15,
+}
+grow_min_value = {  # 词条成长值
+    "暴击率": 2.72,
+    "暴击伤害": 5.44,
+    "元素精通": 16.32,
+    "百分比攻击力": 4.08,
+    "百分比生命值": 4.08,
+    "百分比防御力": 5.1,
+    "元素充能效率": 4.53,
+    "攻击力": 13.62,
+    "生命值": 209.13,
+    "防御力": 16.2,
+}
 
 
 def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
@@ -30,15 +60,34 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     calc_total_pct = 66 / (max_mark[str(pos_idx)]["total"] * 46.6 / 6 / 100) * 100
     # 最终圣遗物总分
     calc_total = ((calc_main + sum(s[2] for s in calc_subs)) * calc_main_pct / 100 * calc_total_pct / 100)
+    # 圣遗物强化次数
+    mark = []
+    diff = []
+    for index, s in enumerate(artifact['词条']):
+        max_num = min(artifact['等级'] // 4, math.floor(round(s['属性值'] / grow_min_value.get(s['属性名']) * 1, 1)))
+        min_num = max(1, math.ceil(round(s['属性值'] / grow_max_value.get(s['属性名']) * 1, 1)))
+        avg_num = max(1,
+                      round(s['属性值'] * 2 / (grow_min_value.get(s['属性名']) + grow_max_value.get(s['属性名'])) * 1))
+        if max_num != min_num:
+            diff.append(index)
+            mark.append(avg_num - 1)
+        else:
+            mark.append(min_num - 1)
+    while sum(mark) > artifact['等级'] // 4 and len(diff) != 0:
+        mark[diff[0]] -= 1
+        diff.pop(0)
+    if calc_total > 42.9:
+        while sum(mark) < artifact['等级'] // 4 and len(diff) != 0:
+            mark[diff[0]] += 1
+            diff.pop(0)
     # 最终圣遗物评级
     calc_rank_str = 'ACE*' if calc_total > 66 else 'ACE*' if calc_total > 56.1 else 'ACE' if calc_total > 49.5 \
         else 'SSS' if calc_total > 42.9 else 'SS' if calc_total > 36.3 else 'S' if calc_total > 29.7 else 'A' \
         if calc_total > 23.1 else 'B' if calc_total > 16.5 else 'C' if calc_total > 10 else 'D'
-    return calc_rank_str, calc_total
+    return calc_rank_str, calc_total, mark
 
 
 def get_miao_score(data, weight_name, base_info):
-    role_name = weight_name
     grow_value = {  # 词条成长值
         "暴击率": 3.89,
         "暴击伤害": 7.77,
@@ -50,10 +99,11 @@ def get_miao_score(data, weight_name, base_info):
         "元素伤害加成": 5.825,
         "物理伤害加成": 7.288,
         "治疗加成": 4.487,
-        "攻击力": 15.56,
-        "生命值": 239.0,
-        "防御力": 18.52,
+        "攻击力": 19.45,
+        "生命值": 298.75,
+        "防御力": 23.15,
     }
+    role_name = weight_name
     main_affixs = {  # 可能的主词条
         "2": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素充能效率".split(","),  # EQUIP_SHOES
         "3": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素伤害加成,物理伤害加成".split(","),  # EQUIP_RING
@@ -77,12 +127,15 @@ def get_miao_score(data, weight_name, base_info):
     pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
     if pointmark.get("百分比攻击力"):
         pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
+        affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
         # pointmark["攻击力"] = pointmark["百分比攻击力"] / data['属性'].get("基础攻击", 1020) * 100
     if pointmark.get("百分比防御力"):
         pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["def"]['90']) * 100
+        affix_weight["攻击力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (float(base_info["def"]['90'])) * 100
         # pointmark["防御力"] = pointmark["百分比防御力"] / data['属性'].get("基础防御", 300) * 100
     if pointmark.get("百分比生命值"):
         pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["hp"]['90']) * 100
+        affix_weight["攻击力"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["hp"]['90'])) * 100
         # pointmark["生命值"] = pointmark["百分比生命值"] / data['属性'].get("基础生命", 400) * 100
     # 各位置圣遗物的总分理论最高分、主词条理论最高得分
     max_mark = {"0": {}, "1": {}, "2": {}, "3": {}, "4": {}}

@@ -57,7 +57,7 @@ his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, bloc
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
-group_best = on_regex(r"最强(.*)", priority=4)
+group_best = on_regex(r"^最强(.*)", priority=4)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 
 alias_file = load_json(path=f'{json_path}/alias.json')
@@ -86,7 +86,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     if role == "更新":
         await update(uid)
     else:
-        await gen(event, uid, role)
+        await gen(event, uid, role, at_user)
 
 
 @group_best.handle()
@@ -142,9 +142,9 @@ async def get_char(uid: int):
             req = await AsyncHttpx.get(url=url, follow_redirects=True)
         except Exception as e:
             print(e)
-            await char_card.finish("更新出错,请重试...")
+            return await char_card.finish("更新出错,请重试...")
         if req.status_code != 200:
-            await char_card.finish("服务器维护中,请稍后再试...")
+            return await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
         try:
@@ -188,11 +188,11 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         uid = int(msg[0])
     except Exception as e:
         print(e)
-        await char_card.finish("请输入正确uid+角色名(uid与角色名需要用空格隔开)", at_sender=True)
+        return await char_card.finish("请输入正确uid+角色名(uid与角色名需要用空格隔开)", at_sender=True)
     if not check_uid(uid):
-        await my_card.finish(f"uid{uid}不合法!")
+        return await my_card.finish(f"uid{uid}不合法!")
     if len(msg) != 2:
-        await char_card.finish("请输入正确角色名...", at_sender=True)
+        return await char_card.finish("请输入正确角色名...", at_sender=True)
     role = msg[1]
     for item in name_list:
         if role in name_list.get(item):
@@ -200,10 +200,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             break
     else:
         return
-    await gen(event, uid, role)
+    await gen(event, uid, role, 1)
 
 
-async def gen(event: MessageEvent, uid: int, role_name: str):
+async def gen(event: MessageEvent, uid: int, role_name: str, at_user):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
@@ -213,9 +213,9 @@ async def gen(event: MessageEvent, uid: int, role_name: str):
             )
         except Exception as e:
             print(e)
-            await char_card.finish("获取数据出错,请重试...")
+            return await char_card.finish("获取数据出错,请重试...")
         if req.status_code != 200:
-            await char_card.finish("服务器维护中,请稍后再试...")
+            return await char_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
         player_info.set_player(data['playerInfo'])
@@ -226,7 +226,7 @@ async def gen(event: MessageEvent, uid: int, role_name: str):
         else:
             guide = load_image(f'{other_path}/collections.png')
             guide = image_build(img=guide, quality=100, mode='RGB')
-            await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
+            return await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     else:
         player_info = PlayerInfo(uid)
     roles_list = player_info.get_roles_list()
@@ -242,7 +242,7 @@ async def gen(event: MessageEvent, uid: int, role_name: str):
     else:
         role_data = player_info.get_roles_info(role_name)
         img, score = await draw_role_card(uid, role_data)
-        msg = check_best_role(role_name, event, img, score)
+        msg = '' if at_user else check_best_role(role_name, event, img, score)
         img = image_build(img=img, quality=100, mode='RGB')
         await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
 
@@ -254,9 +254,9 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         uid = int(msg)
     except Exception as e:
         print(e)
-        await update_card.finish("请输入正确uid...", at_sender=True)
+        return await update_card.finish("请输入正确uid...", at_sender=True)
     if not check_uid(uid):
-        await update_card.finish(f"uid{uid}不合法!")
+        return await update_card.finish(f"uid{uid}不合法!")
     await update(uid)
 
 
@@ -274,7 +274,7 @@ async def update(uid: int):
         )
     except Exception as e:
         print(e)
-        await char_card.finish("更新出错,请重试...")
+        return await char_card.finish("更新出错,请重试...")
     if req.status_code != 200:
         await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
@@ -286,14 +286,14 @@ async def update(uid: int):
             try:
                 player_info.set_role(role)
                 update_role_list.append(get_name_by_id(str(role['avatarId'])))
-            except Exception as e:
+            except:
                 pass
     else:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
+        return await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     player_info.save()
-    roles_list = player_info.get_roles_list()
+    # roles_list = player_info.get_roles_list()
     # await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
     await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!(注:数据更新有3分钟延迟)",
                            at_sender=True)
@@ -325,7 +325,16 @@ def check_best_role(role_name, event, img, score):
 def check_uid(uid: int):
     return re.search(r'^[12589]\d{8}$', str(uid)) is not None
 
-
+async def get_update_info():
+    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
+    bot = get_bot()
+    try:
+        version = await AsyncHttpx.get(url)
+        version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
+    except Exception as e:
+        logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
+        return ''
+    return version.group(1).strip()
 @driver.on_bot_connect
 @scheduler.scheduled_job(
     "cron",
@@ -343,9 +352,10 @@ async def check_update():
         logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return
     if float(version.group(1)) > __plugin_version__:
+        update_info = await get_update_info()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin),
-                                       message=f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
+                                       message=f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！\n本次更新内容如下:\n{update_info}")
         logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
 
 # @trans_data.handle()
