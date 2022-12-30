@@ -87,7 +87,7 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     return bg
 
 
-async def draw_role_card(uid, data):
+async def draw_role_card(uid, data, plugin_version):
     bg_card = load_image(f'{bg_path}/背景_{data["元素"]}.png',
                          mode='RGBA')
     try:
@@ -420,9 +420,6 @@ async def draw_role_card(uid, data):
                     fill='white' if check_effective(artifact['词条'][j]['属性名'],
                                                     effective) else '#afafaf',
                     font=get_font(25, 'tahomabd.ttf'))
-                #text = f'{text:　<4} {"+" * mark[j]}'
-                #text = text.ljust(5,"　") + ">" * mark[j]
-                #text += f'{text:<12}'+'>' * mark[j]
             bg_draw.text(
                 (94 + 317 * i, 1600 + 50 * j),
                 text,
@@ -554,13 +551,14 @@ async def draw_role_card(uid, data):
         bg.alpha_composite(artifact_path1, (76, 1130))
         bg.alpha_composite(artifact_path2, (76, 1255))
 
-    effect = []
+    effect = {}
     for item in effective:
         if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
             name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace(
                 '暴击伤害', '爆伤').replace('元素精通', '精通')
-            effect.append(f'{name}:{effective.get(item)}')
-    effect = ','.join(effect)
+            if name not in effect:
+                effect[name] = effective.get(item)
+    effect = str(effect).replace("'", "").strip("{}")
 
     if '-' not in weight_name:
         weight_name += '-通用'
@@ -572,7 +570,7 @@ async def draw_role_card(uid, data):
     draw_center_text(bg_draw, f'{weight_name}:{effect}',
                      0, 1080, bg.size[1] - 85, '#afafaf',
                      get_font(30))
-    draw_center_text(bg_draw, f'Updated on {data["更新时间"].replace("2022-", "")[:-3]} | Powered by Enka.Network',
+    draw_center_text(bg_draw, f'Updated on {data["更新时间"].replace("2022-", "")[:-3]} | v{plugin_version} | Powered by Enka',
                      0, 1080, bg.size[1] - 50, '#ffffff',
                      get_font(36, '优设标题黑.ttf'))
     '''

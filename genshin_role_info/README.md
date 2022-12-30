@@ -10,8 +10,9 @@
 - 更新面板
 - 我的角色
 - 他的角色 @CRAZYShimakaze
-- 群最强XX (例:群最强甘雨)
+- 最强XX (例:群最强甘雨)
 - 重置最强XX (仅超级用户可用)
+- 检查面板更新 (仅超级用户可用)
 ## 效果图
 
 <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px">

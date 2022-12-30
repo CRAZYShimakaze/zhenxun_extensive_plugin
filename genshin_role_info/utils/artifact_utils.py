@@ -43,15 +43,6 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
          point_mark.get(s['属性名'], 0) * s[
              '属性值'] * 46.6 / 6 / 100, ] for s in
         artifact['词条']]
-    '''
-    for sub in calc_subs:
-        if '攻击力' in sub and sub[2] > 15:
-            sub[2] = sub[1] * 0.398 * 0.5 * 0.75
-        if '防御力' in sub and sub[2] > 15:
-            sub[2] = sub[1] * 0.335 * 0.66 * 0.75
-        if '生命值' in sub and sub[2] > 15:
-            sub[2] = sub[1] * 0.026 * 0.66 * 0.75
-    '''
     # 主词条收益系数（百分数），沙杯头位置主词条不正常时对圣遗物总分进行惩罚，最多扣除 50% 总分
     calc_main_pct = (100 if pos_idx < 2 else (100 - 50 * (
             1 - point_mark.get(main_name, 0) * artifact['主属性']['属性值'] /
@@ -112,6 +103,16 @@ def get_miao_score(data, weight_name, base_info):
     sub_affixs = "攻击力,百分比攻击力,防御力,百分比防御力,生命值,百分比生命值,元素精通,元素充能效率,暴击率,暴击伤害".split(
         ",")
     affix_weight = role_score.get(role_name, {"百分比攻击力": 75, "暴击率": 100, "暴击伤害": 100})
+    pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
+    if pointmark.get("百分比攻击力"):
+        pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
+        affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
+    if pointmark.get("百分比防御力"):
+        pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["def"]['90']) * 100
+        affix_weight["防御力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (float(base_info["def"]['90'])) * 100
+    if pointmark.get("百分比生命值"):
+        pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["hp"]['90']) * 100
+        affix_weight["生命值"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["hp"]['90'])) * 100
     affix_weight = dict(  # 排序影响最优主词条选择，通过特定排序使同等权重时非百分比的生命攻击防御词条优先级最低
         sorted(
             affix_weight.items(),
@@ -124,19 +125,6 @@ def get_miao_score(data, weight_name, base_info):
             reverse=True,
         )
     )
-    pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
-    if pointmark.get("百分比攻击力"):
-        pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
-        affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
-        # pointmark["攻击力"] = pointmark["百分比攻击力"] / data['属性'].get("基础攻击", 1020) * 100
-    if pointmark.get("百分比防御力"):
-        pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["def"]['90']) * 100
-        affix_weight["攻击力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (float(base_info["def"]['90'])) * 100
-        # pointmark["防御力"] = pointmark["百分比防御力"] / data['属性'].get("基础防御", 300) * 100
-    if pointmark.get("百分比生命值"):
-        pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["hp"]['90']) * 100
-        affix_weight["攻击力"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["hp"]['90'])) * 100
-        # pointmark["生命值"] = pointmark["百分比生命值"] / data['属性'].get("基础生命", 400) * 100
     # 各位置圣遗物的总分理论最高分、主词条理论最高得分
     max_mark = {"0": {}, "1": {}, "2": {}, "3": {}, "4": {}}
     for posIdx in range(0, 5):

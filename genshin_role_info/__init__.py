@@ -57,9 +57,9 @@ his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, bloc
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
-group_best = on_regex(r"^最强(.*)", priority=4)
+group_best = on_regex(r"最强(.*)", priority=4)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
-
+check_update = on_command("检查面板更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
 
@@ -241,7 +241,7 @@ async def gen(event: MessageEvent, uid: int, role_name: str, at_user):
             at_sender=True)
     else:
         role_data = player_info.get_roles_info(role_name)
-        img, score = await draw_role_card(uid, role_data)
+        img, score = await draw_role_card(uid, role_data, __plugin_version__)
         msg = '' if at_user else check_best_role(role_name, event, img, score)
         img = image_build(img=img, quality=100, mode='RGB')
         await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
@@ -325,9 +325,9 @@ def check_best_role(role_name, event, img, score):
 def check_uid(uid: int):
     return re.search(r'^[12589]\d{8}$', str(uid)) is not None
 
+
 async def get_update_info():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
-    bot = get_bot()
     try:
         version = await AsyncHttpx.get(url)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
@@ -335,13 +335,16 @@ async def get_update_info():
         logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
         return ''
     return version.group(1).strip()
+
+
 @driver.on_bot_connect
 @scheduler.scheduled_job(
     "cron",
     hour=random.randint(9, 22),
     minute=random.randint(0, 59),
 )
-async def check_update():
+@check_update.handle()
+async def _():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = get_bot()
     try:
@@ -353,11 +356,21 @@ async def check_update():
         return
     if float(version.group(1)) > __plugin_version__:
         update_info = await get_update_info()
-        for admin in bot.config.superusers:
-            await bot.send_private_msg(user_id=int(admin),
-                                       message=f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！\n本次更新内容如下:\n{update_info}")
-        logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
-
+        try:
+            await check_update.send(
+                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
+        except Exception:
+            for admin in bot.config.superusers:
+                await bot.send_private_msg(user_id=int(admin),
+                                           message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
+            logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
+    else:
+        try:
+            update_info = await get_update_info()
+            await check_update.send(
+                f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{update_info}")
+        except Exception:
+            pass
 # @trans_data.handle()
 # async def _():
 #    json_data = os.listdir(GENSHIN_CARD_PATH + f"/player_info_old/")
