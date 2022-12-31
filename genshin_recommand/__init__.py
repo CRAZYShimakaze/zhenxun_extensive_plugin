@@ -3,6 +3,7 @@ import json
 import os
 import random
 import re
+import shutil
 from typing import Tuple
 
 import nonebot
@@ -149,6 +150,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 @update_info.handle()
 async def _():
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
+    shutil.rmtree(RES_PATH)
     arg = ['角色配装', '角色评级', '武器推荐', '深渊配队', '每日素材1', '每日素材2']
     for item in arg:
         save_path = f'{COMMON_GUIDE_PATH}/{item}.jpg'
