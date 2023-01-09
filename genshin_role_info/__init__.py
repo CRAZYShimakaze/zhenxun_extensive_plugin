@@ -105,7 +105,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_info = os.listdir(role_path)[0]
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
-        await group_best.finish(f"本群最强{role}!由{role_info.split('-')[-1].rstrip('.png')}查询\n" + role_pic)
+        await group_best.finish(Message(f"本群最强{role}!由{at(int(role_info.split('-')[-1].rstrip('.png')))}查询\n") + role_pic)
 
 
 @reset_best.handle()
