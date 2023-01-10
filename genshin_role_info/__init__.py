@@ -475,7 +475,7 @@ async def get_update_info():
 
 
 @check_update.handle()
-async def _():
+async def _check_update():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = get_bot()
     try:
@@ -507,7 +507,7 @@ async def _():
 @driver.on_startup
 async def _():
     if Config.get_config("genshin_role_info", "CHECK_UPDATE"):
-        scheduler.add_job(check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59),
+        scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59),
                           id='genshin_role_info')
 
 # @trans_data.handle()
