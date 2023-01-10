@@ -867,9 +867,7 @@ def common_fix(data: dict):
 
 def get_damage_multipiler(data: dict) -> dict:
     skill_data = role_data[data['名称']]['skill']
-    level_q = data['天赋'][3]['等级'] - 1 if data['名称'] in [
-        '神里绫华', '莫娜'
-    ] else data['天赋'][2]['等级'] - 1
+    level_q = data['天赋'][2]['等级'] - 1
     level_e = data['天赋'][1]['等级'] - 1
     level_a = data['天赋'][0]['等级'] - 1
     attack = data['属性']['基础攻击'] + data['属性']['额外攻击']

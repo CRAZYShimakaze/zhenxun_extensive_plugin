@@ -78,7 +78,7 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     return calc_rank_str, calc_total, mark
 
 
-def get_miao_score(data, weight_name, base_info):
+def get_miao_score(weight_name, base_info):
     grow_value = {  # 词条成长值
         "暴击率": 3.89,
         "暴击伤害": 7.77,
@@ -106,10 +106,12 @@ def get_miao_score(data, weight_name, base_info):
     pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
     if pointmark.get("百分比攻击力"):
         pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
-        affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
+        affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (
+                float(base_info["atk"]['90']) + 520) * 100
     if pointmark.get("百分比防御力"):
         pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["def"]['90']) * 100
-        affix_weight["防御力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (float(base_info["def"]['90'])) * 100
+        affix_weight["防御力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (
+            float(base_info["def"]['90'])) * 100
     if pointmark.get("百分比生命值"):
         pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["hp"]['90']) * 100
         affix_weight["生命值"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["hp"]['90'])) * 100
@@ -164,9 +166,7 @@ def get_effective(data):
     role_name = data['名称']
     artifacts = data['圣遗物']
     try:
-        if role_name in ['荧', '空']:
-            role_name = '旅行者'
-        elif role_name == '钟离':
+        if role_name == '钟离':
             if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
@@ -228,12 +228,10 @@ def get_effective(data):
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2:
                 role_name = '优菈-核爆'
         if role_name in role_score:
-            print(f'采用{role_name}权重')
             return role_score.get(role_name), role_name
         else:
             return {'百分比攻击力': 0.75, '暴击率': 1, '暴击伤害': 1}
     except:
-        print(f'异常!采用{role_name}默认权重')
         return role_score.get(role_name), role_name
 
 

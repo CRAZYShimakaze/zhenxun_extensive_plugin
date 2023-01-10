@@ -1,3 +1,5 @@
+import copy
+import re
 from typing import Dict, Union
 
 from PIL import Image, ImageDraw
@@ -5,8 +7,8 @@ from PIL import Image, ImageDraw
 from .damage_cal import get_role_dmg
 from ..utils.artifact_utils import get_effective, check_effective, \
     get_artifact_suit, get_miao_score, get_artifact_score
-from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, regoin_path, outline_path, \
-    res_path, talent_path, weapon_path, reli_path
+from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, skill_path, regoin_path, \
+    outline_path, talent_path, weapon_path, reli_path
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img
 from ..utils.json_utils import load_json
 
@@ -87,205 +89,207 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     return bg
 
 
-async def draw_role_card(uid, data, plugin_version):
-    bg_card = load_image(f'{bg_path}/背景_{data["元素"]}.png',
-                         mode='RGBA')
-    try:
-        dmg_img = get_role_dmg(data)
-    except Exception as e:
-        print(e)
-        dmg_img = None
-    if dmg_img:
-        dmg_img = draw_dmg_pic(dmg_img)
-        bg = Image.new('RGBA', (1080, 1920 + dmg_img.size[1] + 20),
-                       (0, 0, 0, 0))
-        bg_card_center = bg_card.crop((0, 730, 1080, 1377)).resize(
-            (1080, dmg_img.size[1] + 667))
-        bg.alpha_composite(bg_card.crop((0, 0, 1080, 730)), (0, 0))
-        bg.alpha_composite(bg_card_center, (0, 730))
-        bg.alpha_composite(bg_card.crop((0, 1377, 1080, 1920)),
-                           (0, dmg_img.size[1] + 1397))
-        bg.alpha_composite(dmg_img, (71, 1846))
+async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
+    artifact_pk = player_info.data['圣遗物榜单']
+    if not only_cal:
+        bg_card = load_image(f'{bg_path}/背景_{data["元素"]}.png',
+                             mode='RGBA')
+        try:
+            dmg_img = get_role_dmg(data)
+        except Exception as e:
+            print(e)
+            dmg_img = None
+        if dmg_img:
+            dmg_img = draw_dmg_pic(dmg_img)
+            bg = Image.new('RGBA', (1080, 1920 + dmg_img.size[1] + 20),
+                           (0, 0, 0, 0))
+            bg_card_center = bg_card.crop((0, 730, 1080, 1377)).resize(
+                (1080, dmg_img.size[1] + 667))
+            bg.alpha_composite(bg_card.crop((0, 0, 1080, 730)), (0, 0))
+            bg.alpha_composite(bg_card_center, (0, 730))
+            bg.alpha_composite(bg_card.crop((0, 1377, 1080, 1920)),
+                               (0, dmg_img.size[1] + 1397))
+            bg.alpha_composite(dmg_img, (71, 1846))
+        else:
+            bg = Image.new('RGBA', (1080, 1920), (0, 0, 0, 0))
+            bg.alpha_composite(bg_card, (0, 0))
+        # 立绘
+        role_pic = f'{char_pic_path}/{data["名称"]}.png'
+        role_pic = await get_img(
+            url=role_url.format(
+                role_name["Name"][data["名称"]]),
+            save_path=role_pic,
+            mode='RGBA')
+        new_h = 872
+        new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
+        role_pic = role_pic.resize((new_w, new_h), Image.ANTIALIAS)
+        if data['名称'] == '荧':
+            bg.alpha_composite(role_pic, (450, 0))  # 234))
+        elif data['名称'] == '空':
+            bg.alpha_composite(role_pic, (400, 0))  # 234))
+        else:
+            bg.alpha_composite(role_pic, (-100, 0))  # 234))
+        base_mask = load_image(f'{other_path}/底遮罩.png')
+        bg.alpha_composite(base_mask, (0, 0))
+        if data['名称'] not in ['荧', '空', '埃洛伊']:
+            region_icon = load_image(path=f'{regoin_path}/{role_data[data["名称"]]["region"]}.png',
+                                     size=(130, 130))
+            bg.alpha_composite(region_icon, (0, 4))
+        bg_draw = ImageDraw.Draw(bg)
+        bg_draw.text((131, 100),
+                     f"UID{uid}",
+                     fill='white',
+                     font=get_font(48, 'number.ttf'))
+        bg_draw.text((134, 150),
+                     data['名称'],
+                     fill='white',
+                     font=get_font(72, '优设标题黑.ttf'))
+
+        level_mask = load_image(path=f'{other_path}/等级遮罩.png')
+        bg.alpha_composite(level_mask, (298 + 60 * (len(data['名称']) - 2), 172))
+        draw_center_text(bg_draw, f'LV{data["等级"]}',
+                         298 + 60 * (len(data['名称']) - 2),
+                         298 + 60 * (len(data['名称']) - 2) + 171, 174, 'black',
+                         get_font(48, 'number.ttf'))
+        # 属性值
+        prop = data['属性']
+        bg_draw.text((89, 262), '生命值', fill='white', font=get_font(34, 'hywh.ttf'))
+        text_length = bg_draw.textlength(f"+{prop['额外生命']}",
+                                         font=get_font(34, 'number.ttf'))
+        draw_right_text(bg_draw, f"{prop['基础生命']}", 480 - text_length - 5, 264,
+                        'white', get_font(34, 'number.ttf'))
+        draw_right_text(bg_draw, f"+{prop['额外生命']}", 480, 264, '#59c538',
+                        get_font(34, 'number.ttf'))
+
+        bg_draw.text((89, 319), '攻击力', fill='white', font=get_font(34, 'hywh.ttf'))
+        text_length = bg_draw.textlength(f"+{prop['额外攻击']}",
+                                         font=get_font(34, 'number.ttf'))
+        draw_right_text(bg_draw, f"{prop['基础攻击']}", 480 - text_length - 5, 321,
+                        'white', get_font(34, 'number.ttf'))
+        draw_right_text(bg_draw, f"+{prop['额外攻击']}", 480, 321, '#59c538',
+                        get_font(34, 'number.ttf'))
+
+        bg_draw.text((89, 377), '防御力', fill='white', font=get_font(34, 'hywh.ttf'))
+        text_length = bg_draw.textlength(f"+{prop['额外防御']}",
+                                         font=get_font(34, 'number.ttf'))
+        draw_right_text(bg_draw, f"{prop['基础防御']}", 480 - text_length - 5, 379,
+                        'white', get_font(34, 'number.ttf'))
+        draw_right_text(bg_draw, f"+{prop['额外防御']}", 480, 379, '#59c538',
+                        get_font(34, 'number.ttf'))
+
+        text = round(prop['暴击率'] * 100, 1)
+        bg_draw.text((89, 436), '暴击率', fill='white', font=get_font(34, 'hywh.ttf'))
+        draw_right_text(bg_draw, f"{text}%", 480, 438, 'white',
+                        get_font(34, 'number.ttf'))
+
+        text = round(prop['暴击伤害'] * 100, 1)
+        bg_draw.text((89, 493),
+                     '暴击伤害',
+                     fill='white',
+                     font=get_font(34, 'hywh.ttf'))
+        draw_right_text(bg_draw, f"{text}%", 480, 495, 'white',
+                        get_font(34, 'number.ttf'))
+
+        bg_draw.text((89, 551),
+                     '元素精通',
+                     fill='white',
+                     font=get_font(34, 'hywh.ttf'))
+        draw_right_text(bg_draw, str(prop['元素精通']), 480, 553, 'white',
+                        get_font(34, 'number.ttf'))
+
+        text = round(prop['元素充能效率'] * 100, 1)
+        bg_draw.text((89, 610),
+                     '元素充能效率',
+                     fill='white',
+                     font=get_font(34, 'hywh.ttf'))
+        draw_right_text(bg_draw, f"{text}%", 480, 612, 'white',
+                        get_font(34, 'number.ttf'))
+
+        max_element = max(prop['伤害加成'])
+        text = round(max_element * 100, 1)
+
+        bg_draw.text((89, 669),
+                     f'{element_type[prop["伤害加成"].index(max_element)]}伤害加成',
+                     fill='white',
+                     font=get_font(34, 'hywh.ttf'))
+        draw_right_text(bg_draw, f"{text}%", 480, 671, 'white',
+                        get_font(34, 'number.ttf'))
+
+        # 天赋
+        base_icon = load_image(f'{outline_path}/图标_{data["元素"]}.png',
+                               mode='RGBA')
+        base_icon_grey = load_image(f'{outline_path}/图标_灰.png',
+                                    mode='RGBA')
+        for i in range(3):
+            bg.alpha_composite(base_icon.resize((83, 90)),
+                               (595 + 147 * i, 253 + 495))
+            draw_center_text(bg_draw, str(data['天赋'][i]['等级']), 545 + 147 * i,
+                             587 + 147 * i, 310 + 470, 'white',
+                             get_font(34, 'number.ttf'))
+            skill_icon = f'{skill_path}/{data["天赋"][i]["图标"]}.png'
+            skill_icon = await get_img(
+                url=skill_url.format(
+                    data["天赋"][i]["图标"]),
+                size=(36, 36),
+                save_path=skill_icon,
+                mode='RGBA')
+            bg.alpha_composite(skill_icon, (619 + 147 * i, 776))
+
+        # 命座
+        lock = load_image(f'{other_path}/锁.png',
+                          mode='RGBA',
+                          size=(45, 45))
+        t = 0
+        for talent in data['命座']:
+            bg.alpha_composite(base_icon.resize((83, 90)),
+                               (510 + t * 84, 790 + 45))
+            talent_icon = f'{talent_path}/{talent["图标"]}.png'
+            talent_icon = await get_img(
+                url=talent_url.format(talent["图标"]),
+                size=(45, 45),
+                save_path=talent_icon,
+                mode='RGBA')
+            bg.alpha_composite(talent_icon, (529 + t * 84, 813 + 45))
+            t += 1
+        for t2 in range(t, 6):
+            bg.alpha_composite(base_icon_grey.resize((83, 90)),
+                               (510 + t2 * 84, 790 + 45))
+            bg.alpha_composite(lock, (530 + t2 * 84, 813 + 45))
+
+        # 武器
+        weapon_bg = load_image(f'{other_path}/star{data["武器"]["星级"]}.png',
+                               size=(150, 150))
+        bg.alpha_composite(weapon_bg, (91, 760))
+        weapon_icon = f'{weapon_path}/{data["武器"]["图标"]}.png'
+        weapon_icon = await get_img(
+            url=weapon_url.format(data["武器"]["图标"]),
+            size=(150, 150),
+            save_path=weapon_icon,
+            mode='RGBA')
+        bg.alpha_composite(weapon_icon, (91, 760))
+        bg_draw.text((268, 758),
+                     data['武器']['名称'],
+                     fill='white',
+                     font=get_font(34, 'hywh.ttf'))
+        star = load_image(f'{other_path}/star.png')
+        for i in range(data['武器']['星级']):
+            bg.alpha_composite(star, (267 + i * 30, 799))
+        draw_center_text(bg_draw, f'LV{data["武器"]["等级"]}', 268, 268 + 98, 835,
+                         'black', get_font(27, 'number.ttf'))
+        bg_draw.text((266, 869),
+                     f'精炼{data["武器"]["精炼等级"]}阶',
+                     fill='white',
+                     font=get_font(34, 'hywh.ttf'))
     else:
         bg = Image.new('RGBA', (1080, 1920), (0, 0, 0, 0))
-        bg.alpha_composite(bg_card, (0, 0))
-    # 立绘
-    role_pic = f'{char_pic_path}/{data["名称"]}.png'
-    role_pic = await get_img(
-        url=role_url.format(
-            role_name["Name"][data["名称"]]),
-        save_path=role_pic,
-        mode='RGBA')
-    new_h = 872
-    new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
-    role_pic = role_pic.resize((new_w, new_h), Image.ANTIALIAS)
-    if data['名称'] == '荧':
-        bg.alpha_composite(role_pic, (450, 0))  # 234))
-    elif data['名称'] == '空':
-        bg.alpha_composite(role_pic, (400, 0))  # 234))
-    else:
-        bg.alpha_composite(role_pic, (-100, 0))  # 234))
-    base_mask = load_image(f'{other_path}/底遮罩.png')
-    bg.alpha_composite(base_mask, (0, 0))
-    if data['名称'] not in ['荧', '空', '埃洛伊']:
-        region_icon = load_image(path=f'{regoin_path}/{role_data[data["名称"]]["region"]}.png',
-                                 size=(130, 130))
-        bg.alpha_composite(region_icon, (0, 4))
-    bg_draw = ImageDraw.Draw(bg)
-    bg_draw.text((131, 100),
-                 f"UID{uid}",
-                 fill='white',
-                 font=get_font(48, 'number.ttf'))
-    bg_draw.text((134, 150),
-                 data['名称'],
-                 fill='white',
-                 font=get_font(72, '优设标题黑.ttf'))
-
-    level_mask = load_image(path=f'{other_path}/等级遮罩.png')
-    bg.alpha_composite(level_mask, (298 + 60 * (len(data['名称']) - 2), 172))
-    draw_center_text(bg_draw, f'LV{data["等级"]}',
-                     298 + 60 * (len(data['名称']) - 2),
-                     298 + 60 * (len(data['名称']) - 2) + 171, 174, 'black',
-                     get_font(48, 'number.ttf'))
-    # 属性值
-    prop = data['属性']
-    bg_draw.text((89, 262), '生命值', fill='white', font=get_font(34, 'hywh.ttf'))
-    text_length = bg_draw.textlength(f"+{prop['额外生命']}",
-                                     font=get_font(34, 'number.ttf'))
-    draw_right_text(bg_draw, f"{prop['基础生命']}", 480 - text_length - 5, 264,
-                    'white', get_font(34, 'number.ttf'))
-    draw_right_text(bg_draw, f"+{prop['额外生命']}", 480, 264, '#59c538',
-                    get_font(34, 'number.ttf'))
-
-    bg_draw.text((89, 319), '攻击力', fill='white', font=get_font(34, 'hywh.ttf'))
-    text_length = bg_draw.textlength(f"+{prop['额外攻击']}",
-                                     font=get_font(34, 'number.ttf'))
-    draw_right_text(bg_draw, f"{prop['基础攻击']}", 480 - text_length - 5, 321,
-                    'white', get_font(34, 'number.ttf'))
-    draw_right_text(bg_draw, f"+{prop['额外攻击']}", 480, 321, '#59c538',
-                    get_font(34, 'number.ttf'))
-
-    bg_draw.text((89, 377), '防御力', fill='white', font=get_font(34, 'hywh.ttf'))
-    text_length = bg_draw.textlength(f"+{prop['额外防御']}",
-                                     font=get_font(34, 'number.ttf'))
-    draw_right_text(bg_draw, f"{prop['基础防御']}", 480 - text_length - 5, 379,
-                    'white', get_font(34, 'number.ttf'))
-    draw_right_text(bg_draw, f"+{prop['额外防御']}", 480, 379, '#59c538',
-                    get_font(34, 'number.ttf'))
-
-    text = round(prop['暴击率'] * 100, 1)
-    bg_draw.text((89, 436), '暴击率', fill='white', font=get_font(34, 'hywh.ttf'))
-    draw_right_text(bg_draw, f"{text}%", 480, 438, 'white',
-                    get_font(34, 'number.ttf'))
-
-    text = round(prop['暴击伤害'] * 100, 1)
-    bg_draw.text((89, 493),
-                 '暴击伤害',
-                 fill='white',
-                 font=get_font(34, 'hywh.ttf'))
-    draw_right_text(bg_draw, f"{text}%", 480, 495, 'white',
-                    get_font(34, 'number.ttf'))
-
-    bg_draw.text((89, 551),
-                 '元素精通',
-                 fill='white',
-                 font=get_font(34, 'hywh.ttf'))
-    draw_right_text(bg_draw, str(prop['元素精通']), 480, 553, 'white',
-                    get_font(34, 'number.ttf'))
-
-    text = round(prop['元素充能效率'] * 100, 1)
-    bg_draw.text((89, 610),
-                 '元素充能效率',
-                 fill='white',
-                 font=get_font(34, 'hywh.ttf'))
-    draw_right_text(bg_draw, f"{text}%", 480, 612, 'white',
-                    get_font(34, 'number.ttf'))
-
-    max_element = max(prop['伤害加成'])
-    text = round(max_element * 100, 1)
-
-    bg_draw.text((89, 669),
-                 f'{element_type[prop["伤害加成"].index(max_element)]}伤害加成',
-                 fill='white',
-                 font=get_font(34, 'hywh.ttf'))
-    draw_right_text(bg_draw, f"{text}%", 480, 671, 'white',
-                    get_font(34, 'number.ttf'))
-
-    # 天赋
-    base_icon = load_image(f'{outline_path}/图标_{data["元素"]}.png',
-                           mode='RGBA')
-    base_icon_grey = load_image(f'{outline_path}/图标_灰.png',
-                                mode='RGBA')
-    if data['名称'] in ['神里绫华', '莫娜']:
-        data['天赋'].pop(2)
-    for i in range(3):
-        bg.alpha_composite(base_icon.resize((83, 90)),
-                           (595 + 147 * i, 253 + 495))
-        draw_center_text(bg_draw, str(data['天赋'][i]['等级']), 545 + 147 * i,
-                         587 + 147 * i, 310 + 470, 'white',
-                         get_font(34, 'number.ttf'))
-        skill_icon = f'{res_path}/skill/{data["天赋"][i]["图标"]}.png'
-        skill_icon = await get_img(
-            url=skill_url.format(
-                data["天赋"][i]["图标"]),
-            size=(36, 36),
-            save_path=skill_icon,
-            mode='RGBA')
-        bg.alpha_composite(skill_icon, (619 + 147 * i, 776))
-
-    # 命座
-    lock = load_image(f'{res_path}/other/锁.png',
-                      mode='RGBA',
-                      size=(45, 45))
-    t = 0
-    for talent in data['命座']:
-        bg.alpha_composite(base_icon.resize((83, 90)),
-                           (510 + t * 84, 790 + 45))
-        talent_icon = f'{talent_path}/{talent["图标"]}.png'
-        talent_icon = await get_img(
-            url=talent_url.format(talent["图标"]),
-            size=(45, 45),
-            save_path=talent_icon,
-            mode='RGBA')
-        bg.alpha_composite(talent_icon, (529 + t * 84, 813 + 45))
-        t += 1
-    for t2 in range(t, 6):
-        bg.alpha_composite(base_icon_grey.resize((83, 90)),
-                           (510 + t2 * 84, 790 + 45))
-        bg.alpha_composite(lock, (530 + t2 * 84, 813 + 45))
-
-    # 武器
-    weapon_bg = load_image(f'{other_path}/star{data["武器"]["星级"]}.png',
-                           size=(150, 150))
-    bg.alpha_composite(weapon_bg, (91, 760))
-    weapon_icon = f'{weapon_path}/{data["武器"]["图标"]}.png'
-    weapon_icon = await get_img(
-        url=weapon_url.format(data["武器"]["图标"]),
-        size=(150, 150),
-        save_path=weapon_icon,
-        mode='RGBA')
-    bg.alpha_composite(weapon_icon, (91, 760))
-    bg_draw.text((268, 758),
-                 data['武器']['名称'],
-                 fill='white',
-                 font=get_font(34, 'hywh.ttf'))
-    star = load_image(f'{other_path}/star.png')
-    for i in range(data['武器']['星级']):
-        bg.alpha_composite(star, (267 + i * 30, 799))
-    draw_center_text(bg_draw, f'LV{data["武器"]["等级"]}', 268, 268 + 98, 835,
-                     'black', get_font(27, 'number.ttf'))
-    bg_draw.text((266, 869),
-                 f'精炼{data["武器"]["精炼等级"]}阶',
-                 fill='white',
-                 font=get_font(34, 'hywh.ttf'))
-
+        bg_draw = ImageDraw.Draw(bg)
     # 圣遗物
+    no_list = ''
     effective, weight_name = get_effective(data)
-    if data['名称'] in ['荧', '空']:
-        data['名称'] = '旅行者'
-    affix_weight, point_mark, max_mark = get_miao_score(data, weight_name, role_data[data['名称']]['attribute'])
+    affix_weight, point_mark, max_mark = get_miao_score(weight_name, role_data[data['名称']]['attribute'])
     total_all = 0
     total_cnt = 0
+    artifact_pk_info = {'角色': data["名称"]}
     artifact_list = [{} for _ in range(5)]
     pos_name = ['生之花', '死之羽', '时之沙', '空之杯', '理之冠']
     for i in range(len(data['圣遗物'])):
@@ -296,6 +300,21 @@ async def draw_role_card(uid, data, plugin_version):
         if not artifact:
             continue
         artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
+
+        player_info.data['大毕业圣遗物'] = player_info.data['大毕业圣遗物'] + 1 if artifact_score == 'ACE*' else \
+            player_info.data['大毕业圣遗物']
+        player_info.data['小毕业圣遗物'] = player_info.data['小毕业圣遗物'] + 1 if artifact_score == 'ACE' else \
+            player_info.data['小毕业圣遗物']
+
+        artifact_pk_info['星级'] = artifact["星级"]
+        artifact_pk_info['图标'] = artifact["图标"]
+        artifact_pk_info['名称'] = artifact['名称']
+        artifact_pk_info['评分'] = grade
+        artifact_pk_info['评级'] = artifact_score
+        artifact_pk_info['等级'] = artifact['等级']
+        artifact_pk_info['主属性'] = {'属性名': artifact['主属性']['属性名'], '属性值': artifact['主属性']['属性值']}
+        artifact_pk_info['副属性'] = []
+
         total_all += grade
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
@@ -317,7 +336,10 @@ async def draw_role_card(uid, data, plugin_version):
                      f'{artifact_score}-{round(grade, 1)}',
                      fill='#ffde6b',
                      font=get_font(28, 'number.ttf'))
+        level_mask = load_image(path=f'{other_path}/等级遮罩.png')
         bg.alpha_composite(level_mask.resize((98, 30)), (412 + 317 * i, 1032))
+        if artifact['等级'] != 20:
+            no_list = '*'
         draw_center_text(bg_draw, f"LV{artifact['等级']}", 412 + 317 * i,
                          412 + 317 * i + 98, 1033, 'black',
                          get_font(27, 'number.ttf'))
@@ -337,8 +359,10 @@ async def draw_role_card(uid, data, plugin_version):
                          font=get_font(48, 'number.ttf'))
         for j in range(len(artifact['词条'])):
             text = artifact['词条'][j]['属性名'].replace('百分比', '')
+            up_num = ''
             if mark[j] != 0:
-                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
+                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[
+                                                                                                               j] == 4 else '⁵'
                 x_offset = 25 * len(text)
                 bg_draw.text(
                     (411 + 317 * i + x_offset, 1163 + 50 * j - 5),
@@ -356,6 +380,9 @@ async def draw_role_card(uid, data, plugin_version):
                 num = '+' + str(artifact['词条'][j]['属性值']) + '%'
             else:
                 num = '+' + str(artifact['词条'][j]['属性值'])
+            artifact_pk_info['副属性'].append({'属性名': text, '属性值': num, '强化次数': up_num,
+                                               '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'],
+                                                                                  effective) else '#afafaf'})
             draw_right_text(
                 bg_draw,
                 num,
@@ -364,12 +391,30 @@ async def draw_role_card(uid, data, plugin_version):
                 fill='white' if check_effective(artifact['词条'][j]['属性名'],
                                                 effective) else '#afafaf',
                 font=get_font(25, 'number.ttf'))
+        if artifact_pk_info not in artifact_pk:
+            artifact_pk.append(copy.deepcopy(artifact_pk_info))
+
     # 第二排
     for i in range(3):
         artifact = artifact_list[i + 2]
         if not artifact:
             continue
         artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
+
+        player_info.data['大毕业圣遗物'] = player_info.data['大毕业圣遗物'] + 1 if artifact_score == 'ACE*' else \
+            player_info.data['大毕业圣遗物']
+        player_info.data['小毕业圣遗物'] = player_info.data['小毕业圣遗物'] + 1 if artifact_score == 'ACE' else \
+            player_info.data['小毕业圣遗物']
+
+        artifact_pk_info['星级'] = artifact["星级"]
+        artifact_pk_info['图标'] = artifact["图标"]
+        artifact_pk_info['名称'] = artifact['名称']
+        artifact_pk_info['评分'] = grade
+        artifact_pk_info['评级'] = artifact_score
+        artifact_pk_info['等级'] = artifact['等级']
+        artifact_pk_info['主属性'] = {'属性名': artifact['主属性']['属性名'], '属性值': artifact['主属性']['属性值']}
+        artifact_pk_info['副属性'] = []
+
         total_all += grade
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
@@ -391,7 +436,10 @@ async def draw_role_card(uid, data, plugin_version):
                      f'{artifact_score}-{round(grade, 1)}',
                      fill='#ffde6b',
                      font=get_font(28, 'number.ttf'))
+        level_mask = load_image(path=f'{other_path}/等级遮罩.png')
         bg.alpha_composite(level_mask.resize((98, 30)), (95 + 317 * i, 1469))
+        if artifact['等级'] != 20:
+            no_list = '*'
         draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + 317 * i,
                          95 + 317 * i + 98, 1470, 'black',
                          get_font(27, 'number.ttf'))
@@ -411,8 +459,10 @@ async def draw_role_card(uid, data, plugin_version):
                          font=get_font(48, 'number.ttf'))
         for j in range(len(artifact['词条'])):
             text = artifact['词条'][j]['属性名'].replace('百分比', '')
+            up_num = ''
             if mark[j] != 0:
-                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
+                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[
+                                                                                                               j] == 4 else '⁵'
                 x_offset = 25 * len(text)
                 bg_draw.text(
                     (94 + 317 * i + x_offset, 1600 + 50 * j - 5),
@@ -430,6 +480,9 @@ async def draw_role_card(uid, data, plugin_version):
                 num = '+' + str(artifact['词条'][j]['属性值']) + '%'
             else:
                 num = '+' + str(artifact['词条'][j]['属性值'])
+            artifact_pk_info['副属性'].append({'属性名': text, '属性值': num, '强化次数': up_num,
+                                               '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'],
+                                                                                  effective) else '#afafaf'})
             draw_right_text(
                 bg_draw,
                 num,
@@ -438,145 +491,139 @@ async def draw_role_card(uid, data, plugin_version):
                 fill='white' if check_effective(artifact['词条'][j]['属性名'],
                                                 effective) else '#afafaf',
                 font=get_font(25, 'number.ttf'))
-
-    # 圣遗物评分
-    if total_cnt and total_all <= 66 * total_cnt:
-        score_ave = total_all / total_cnt
-        # score_ave = round(score_ave)
-        total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
-            else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
-            if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
-    else:
-        total_rank = 'D'
-    total_int = int(total_all)
-    bg_draw.text((119, 1057), '圣遗物总评分', fill='#afafaf', font=get_font(36))
-    rank_icon = load_image(f'{other_path}/评分{total_rank[0]}.png',
-                           mode='RGBA')
-    if total_rank == 'ACE':
-        rank_icon = load_image(f'{other_path}/ACE-A.png',
-                               mode='RGBA')
-        bg.alpha_composite(rank_icon, (95, 964))
-        rank_icon = load_image(f'{other_path}/ACE-C.png',
-                               mode='RGBA')
-        bg.alpha_composite(rank_icon, (145, 964))
-        rank_icon = load_image(f'{other_path}/ACE-E.png',
-                               mode='RGBA')
-        bg.alpha_composite(rank_icon, (195, 964))
-        bg_draw.text((250, 974),
-                     str(total_int),
-                     fill='white',
-                     font=get_font(60, 'number.ttf'))
-    elif len(total_rank) == 3:
-        bg.alpha_composite(rank_icon, (95, 964))
-        bg.alpha_composite(rank_icon, (145, 964))
-        bg.alpha_composite(rank_icon, (195, 964))
-        bg_draw.text((250, 974),
-                     str(total_int),
-                     fill='white',
-                     font=get_font(60, 'number.ttf'))
-    elif len(total_rank) == 2:
-        bg.alpha_composite(rank_icon, (125, 964))
-        bg.alpha_composite(rank_icon, (175, 964))
-        bg_draw.text((235, 974),
-                     str(total_int),
-                     fill='white',
-                     font=get_font(60, 'number.ttf'))
-    else:
-        bg.alpha_composite(rank_icon, (143, 964))
-        bg_draw.text((217, 974),
-                     str(total_int),
-                     fill='white',
-                     font=get_font(60, 'number.ttf'))
-
-    # 圣遗物套装
-    suit = get_artifact_suit(data['圣遗物'])
-    if not suit:
-        bg_draw.text((184, 1168), '未激活套装', fill='white', font=get_font(36))
-        bg_draw.text((184, 1292), '未激活套装', fill='white', font=get_font(36))
-        total_all = str(total_all) + '*'
-    elif len(suit) == 1:
-        artifact_path = f'{reli_path}/{suit[0][1]}.png'
-        artifact_path = await get_img(
-            url=artifact_url.format(
-                suit[0][1]),
-            size=(110, 110),
-            save_path=artifact_path,
-            mode='RGBA')
-        bg.alpha_composite(artifact_path, (76, 1130))
-        bg_draw.text((184, 1168),
-                     f'{suit[0][0][:2]}二件套',
-                     fill='white',
-                     font=get_font(36))
-        bg_draw.text((184, 1292), '未激活套装', fill='white', font=get_font(36))
-        total_all = str(total_all) + '*'
-    else:
-        if suit[0][0] == suit[1][0]:
-            artifact_path1 = f'{reli_path}/{suit[0][1]}.png'
-            artifact_path1 = artifact_path2 = await get_img(
-                url=artifact_url.format(suit[0][1]),
-                size=(110, 110),
-                save_path=artifact_path1,
-                mode='RGBA')
-            bg_draw.text((184, 1168),
-                         f'{suit[0][0][:2]}四件套',
-                         fill='white',
-                         font=get_font(36))
-            bg_draw.text((184, 1292),
-                         f'{suit[0][0][:2]}四件套',
-                         fill='white',
-                         font=get_font(36))
+        if artifact_pk_info not in artifact_pk:
+            artifact_pk.append(copy.deepcopy(artifact_pk_info))
+    player_info.data['圣遗物榜单'] = sorted(player_info.data['圣遗物榜单'], key=lambda x: float(x['评分']),
+                                            reverse=True)[:20]
+    if not only_cal:
+        # 圣遗物评分
+        if total_cnt and total_all <= 66 * total_cnt:
+            score_ave = total_all / total_cnt
+            # score_ave = round(score_ave)
+            total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
+                else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
+                if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
         else:
-            artifact_path1 = f'{reli_path}/{suit[0][1]}.png'
-            artifact_path1 = await get_img(
+            total_rank = 'D'
+        total_int = int(total_all)
+        bg_draw.text((119, 1057), '圣遗物总评分', fill='#afafaf', font=get_font(36))
+        rank_icon = load_image(f'{other_path}/评分{total_rank[0]}.png',
+                               mode='RGBA')
+        if total_rank == 'ACE':
+            rank_icon = load_image(f'{other_path}/ACE-A.png',
+                                   mode='RGBA')
+            bg.alpha_composite(rank_icon, (95, 964))
+            rank_icon = load_image(f'{other_path}/ACE-C.png',
+                                   mode='RGBA')
+            bg.alpha_composite(rank_icon, (145, 964))
+            rank_icon = load_image(f'{other_path}/ACE-E.png',
+                                   mode='RGBA')
+            bg.alpha_composite(rank_icon, (195, 964))
+            bg_draw.text((250, 974),
+                         str(total_int),
+                         fill='white',
+                         font=get_font(60, 'number.ttf'))
+        elif len(total_rank) == 3:
+            bg.alpha_composite(rank_icon, (95, 964))
+            bg.alpha_composite(rank_icon, (145, 964))
+            bg.alpha_composite(rank_icon, (195, 964))
+            bg_draw.text((250, 974),
+                         str(total_int),
+                         fill='white',
+                         font=get_font(60, 'number.ttf'))
+        elif len(total_rank) == 2:
+            bg.alpha_composite(rank_icon, (125, 964))
+            bg.alpha_composite(rank_icon, (175, 964))
+            bg_draw.text((235, 974),
+                         str(total_int),
+                         fill='white',
+                         font=get_font(60, 'number.ttf'))
+        else:
+            bg.alpha_composite(rank_icon, (143, 964))
+            bg_draw.text((217, 974),
+                         str(total_int),
+                         fill='white',
+                         font=get_font(60, 'number.ttf'))
+
+        # 圣遗物套装
+        suit = get_artifact_suit(data['圣遗物'])
+        if not suit:
+            bg_draw.text((184, 1168), '未激活套装', fill='white', font=get_font(36))
+            bg_draw.text((184, 1292), '未激活套装', fill='white', font=get_font(36))
+            no_list = '*'
+        elif len(suit) == 1:
+            artifact_path = f'{reli_path}/{suit[0][1]}.png'
+            artifact_path = await get_img(
                 url=artifact_url.format(
                     suit[0][1]),
                 size=(110, 110),
-                save_path=artifact_path1,
+                save_path=artifact_path,
                 mode='RGBA')
-            artifact_path2 = f'{reli_path}/{suit[1][1]}.png'
-            artifact_path2 = await get_img(
-                url=artifact_url.format(
-                    suit[1][1]),
-                size=(110, 110),
-                save_path=artifact_path2,
-                mode='RGBA')
+            bg.alpha_composite(artifact_path, (76, 1130))
             bg_draw.text((184, 1168),
-                         f'{suit[0][0][:2]}两件套',
+                         f'{suit[0][0][:2]}二件套',
                          fill='white',
                          font=get_font(36))
-            bg_draw.text((184, 1292),
-                         f'{suit[1][0][:2]}两件套',
-                         fill='white',
-                         font=get_font(36))
-        bg.alpha_composite(artifact_path1, (76, 1130))
-        bg.alpha_composite(artifact_path2, (76, 1255))
+            bg_draw.text((184, 1292), '未激活套装', fill='white', font=get_font(36))
+            no_list = '*'
+        else:
+            if suit[0][0] == suit[1][0]:
+                artifact_path1 = f'{reli_path}/{suit[0][1]}.png'
+                artifact_path1 = artifact_path2 = await get_img(
+                    url=artifact_url.format(suit[0][1]),
+                    size=(110, 110),
+                    save_path=artifact_path1,
+                    mode='RGBA')
+                bg_draw.text((184, 1168),
+                             f'{suit[0][0][:2]}四件套',
+                             fill='white',
+                             font=get_font(36))
+                bg_draw.text((184, 1292),
+                             f'{suit[0][0][:2]}四件套',
+                             fill='white',
+                             font=get_font(36))
+            else:
+                artifact_path1 = f'{reli_path}/{suit[0][1]}.png'
+                artifact_path1 = await get_img(
+                    url=artifact_url.format(
+                        suit[0][1]),
+                    size=(110, 110),
+                    save_path=artifact_path1,
+                    mode='RGBA')
+                artifact_path2 = f'{reli_path}/{suit[1][1]}.png'
+                artifact_path2 = await get_img(
+                    url=artifact_url.format(
+                        suit[1][1]),
+                    size=(110, 110),
+                    save_path=artifact_path2,
+                    mode='RGBA')
+                bg_draw.text((184, 1168),
+                             f'{suit[0][0][:2]}两件套',
+                             fill='white',
+                             font=get_font(36))
+                bg_draw.text((184, 1292),
+                             f'{suit[1][0][:2]}两件套',
+                             fill='white',
+                             font=get_font(36))
+            bg.alpha_composite(artifact_path1, (76, 1130))
+            bg.alpha_composite(artifact_path2, (76, 1255))
 
-    effect = {}
-    for item in effective:
-        if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
-            name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace(
-                '暴击伤害', '爆伤').replace('元素精通', '精通')
-            if name not in effect:
-                effect[name] = effective.get(item)
-    effect = str(effect).replace("'", "").strip("{}")
+        effect = {}
+        for item in effective:
+            if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
+                name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace(
+                    '暴击伤害', '爆伤').replace('元素精通', '精通')
+                if name not in effect:
+                    effect[name] = effective.get(item)
+        effect = str(effect).replace("'", "").strip("{}")
 
-    if '-' not in weight_name:
-        weight_name += '-通用'
-    '''
-    draw_center_text(bg_draw, f'评分规则:{weight_name},更新于{data["更新时间"].replace("2022-", "")[:-3]}',
-                     0, 1080, bg.size[1] - 85, '#afafaf',
-                     get_font(30, 'hywh.ttf'))
-    '''
-    draw_center_text(bg_draw, f'{weight_name}:{effect}',
-                     0, 1080, bg.size[1] - 85, '#afafaf',
-                     get_font(30))
-    draw_center_text(bg_draw, f'Updated on {data["更新时间"].replace("2022-", "")[:-3]} | v{plugin_version} | Powered by Enka',
-                     0, 1080, bg.size[1] - 50, '#ffffff',
-                     get_font(36, '优设标题黑.ttf'))
-    '''
-    bg_draw.text((24, bg.size[1] - 50),
-                 f'Updated on {data["更新时间"].replace("2022-", "")[:-3]} | Powered by Enka.Network',
-                 fill='white',
-                 font=get_font(36, '优设标题黑.ttf'))
-    '''
-    return bg, total_all
+        if '-' not in weight_name:
+            weight_name += '-通用'
+        draw_center_text(bg_draw, f'{weight_name}:{effect}',
+                         0, 1080, bg.size[1] - 85, '#afafaf',
+                         get_font(30))
+        date = re.sub("\d{4}-", "", data["更新时间"])
+        draw_center_text(bg_draw, f'Updated on {date[:-3]} | v{plugin_version} | Powered by Enka',
+                         0, 1080, bg.size[1] - 50, '#ffffff',
+                         get_font(36, '优设标题黑.ttf'))
+    return bg, str(total_all) + no_list if no_list == '*' else total_all

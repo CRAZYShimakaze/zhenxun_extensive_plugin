@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import os
 import random
 import re
@@ -14,13 +15,15 @@ from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
 
+from configs.config import Config
 from plugins.genshin.query_user._models import Genshin
 from services.log import logger
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
+from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_role_card import draw_role_card
-from .utils.card_utils import load_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
+from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
     group_info_path
 from .utils.image_utils import load_image, image_build
 
@@ -36,11 +39,15 @@ usage：
         我的角色
         他的角色@XXX
         最强XX (例:最强甘雨)
+        最菜XX
+        圣遗物榜单
+        群圣遗物榜单
 """.strip()
 __plugin_des__ = "查询橱窗内角色的面板"
-__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "群最强XX"]
+__plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
+                  "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.1
+__plugin_version__ = 2.2
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -48,6 +55,13 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
+Config.add_plugin_config(
+    "genshin_role_info",
+    "CHECK_UPDATE",
+    True,
+    help_="定期自动检查更新",
+    default_value=True,
+)
 
 char_card = on_command("原神角色卡", priority=4, block=True)
 update_card = on_command("更新角色卡", priority=4, block=True)
@@ -58,10 +72,47 @@ driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
+group_worst = on_regex(r"最菜(.*)", priority=4)
+artifact_list = on_command("圣遗物榜单", priority=4, block=True)
+group_artifact_list = on_command("群圣遗物榜单", priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查面板插件更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(path=f'{json_path}/alias.json')
 name_list = alias_file['roles']
+
+
+@group_artifact_list.handle()
+async def _(event: GroupMessageEvent):
+    group_id = event.group_id
+    if not os.path.exists(f"{group_info_path}/{group_id}.json"):
+        return await group_artifact_list.finish('未收录任何圣遗物信息,请先进行查询!')
+    else:
+        group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
+        img = await draw_artifact_card(group_id, group_artifact_info, None, None, __plugin_version__, 1)
+        await group_artifact_list.finish(img)
+
+
+@artifact_list.handle()
+async def _(event: MessageEvent):
+    at_user = get_message_at(event.json())
+    if at_user:
+        uid = await Genshin.get_user_uid(int(at_user[0]))
+    else:
+        uid = await Genshin.get_user_uid(event.user_id)
+    if not uid:
+        await artifact_list.finish("请输入绑定uidXXXX进行绑定后再查询！")
+    if not check_uid(uid):
+        await artifact_list.finish(f"绑定的uid{uid}不合法，请重新绑定!")
+    if not os.path.exists(f"{player_info_path}/{uid}.json"):
+        return await artifact_list.finish('未收录任何角色信息,请先进行角色查询!', at_sender=True)
+    else:
+        player_info = PlayerInfo(uid)
+        if not player_info.data['圣遗物榜单']:
+            return await artifact_list.send("未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=True)
+        roles_list = player_info.get_roles_list()
+        img = await draw_artifact_card(uid, player_info.data['圣遗物榜单'], player_info.data['大毕业圣遗物'],
+                                       player_info.data['小毕业圣遗物'], __plugin_version__)
+        await artifact_list.finish(img + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
 
 
 @get_card.handle()
@@ -80,17 +131,19 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     else:
         uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
-        await get_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
+        await get_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
     if not check_uid(uid):
         await my_card.finish(f"绑定的uid{uid}不合法，请重新绑定!")
     if role == "更新":
-        await update(uid)
+        if at_user:
+            event.user_id = get_message_at(event.json())[0]
+        await update(event, uid, group_save=True)
     else:
         await gen(event, uid, role, at_user)
 
 
 @group_best.handle()
-async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for item in name_list:
         if role in name_list.get(item):
@@ -102,14 +155,35 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     if not os.path.exists(role_path):
         await group_best.finish(f"本群还没有{role}的数据收录哦！赶快去查询吧！", at_sender=True)
     else:
-        role_info = os.listdir(role_path)[0]
+        data = sorted(os.listdir(role_path), key=lambda x: float(x.split('-')[0]))
+        role_info = data[-1]
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
         await group_best.finish(f"本群最强{role}!由{role_info.split('-')[-1].rstrip('.png')}查询\n" + role_pic)
 
 
+@group_worst.handle()
+async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    role = args[0].strip()
+    for item in name_list:
+        if role in name_list.get(item):
+            role = name_list.get(item)[0]
+            break
+    else:
+        return
+    role_path = f'{group_info_path}/{event.group_id}/{role}'
+    if not os.path.exists(role_path) or len(os.listdir(role_path)) < 2:
+        await group_worst.finish(f"本群还没有最菜{role}的数据收录哦！赶快去查询吧！", at_sender=True)
+    else:
+        data = sorted(os.listdir(role_path), key=lambda x: float(x.split('-')[0]))
+        role_info = data[0]
+        role_pic = load_image(f'{role_path}/{role_info}')
+        role_pic = image_build(img=role_pic, quality=100, mode='RGB')
+        await group_worst.finish(f"本群最菜{role}!由{role_info.split('-')[-1].rstrip('.png')}查询\n" + role_pic)
+
+
 @reset_best.handle()
-async def _(event: MessageEvent, arg: Message = CommandArg()):
+async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
     role = arg.extract_plain_text().strip()
     for item in name_list:
         if role in name_list.get(item):
@@ -119,7 +193,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         return
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     shutil.rmtree(role_path, ignore_errors=True)
-    await reset_best.finish(f'重置群最强{role}成功!')
+    await reset_best.finish(f'重置群{role}成功!')
 
 
 @my_card.handle()
@@ -129,7 +203,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         return
     uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
-        await my_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
+        await my_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
     if not check_uid(uid):
         await my_card.finish(f"绑定的uid{uid}不合法，请重新绑定!")
     await get_char(uid)
@@ -177,7 +251,7 @@ async def get_char(uid: int):
 async def _(event: MessageEvent):
     uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
     if not uid:
-        await his_card.finish("请输入原神绑定uidXXXX进行绑定后再查询！")
+        await his_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
     await get_char(uid)
 
 
@@ -241,7 +315,7 @@ async def gen(event: MessageEvent, uid: int, role_name: str, at_user):
             at_sender=True)
     else:
         role_data = player_info.get_roles_info(role_name)
-        img, score = await draw_role_card(uid, role_data, __plugin_version__)
+        img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
         msg = '' if at_user else check_best_role(role_name, event, img, score)
         img = image_build(img=img, quality=100, mode='RGB')
         await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
@@ -257,10 +331,10 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         return await update_card.finish("请输入正确uid...", at_sender=True)
     if not check_uid(uid):
         return await update_card.finish(f"uid{uid}不合法!")
-    await update(uid)
+    await update(event, uid, group_save=False)
 
 
-async def update(uid: int):
+async def update(event, uid: int, group_save: bool):
     url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
@@ -276,12 +350,22 @@ async def update(uid: int):
         print(e)
         return await char_card.finish("更新出错,请重试...")
     if req.status_code != 200:
+        player_info = PlayerInfo(uid)
+        roles_list = player_info.get_roles_list()
+        player_info.data['大毕业圣遗物'] = 0
+        player_info.data['小毕业圣遗物'] = 0
+        for role_name in roles_list:
+            role_data = player_info.get_roles_info(role_name)
+            _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
+        player_info.save()
+        if group_save:
+            check_group_artifact(event, player_info)
         await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
     player_info = PlayerInfo(uid)
     player_info.set_player(data['playerInfo'])
+    update_role_list = []
     if 'avatarInfoList' in data:
-        update_role_list = []
         for role in data['avatarInfoList']:
             try:
                 player_info.set_role(role)
@@ -289,13 +373,30 @@ async def update(uid: int):
             except:
                 pass
     else:
+        roles_list = player_info.get_roles_list()
+        player_info.data['大毕业圣遗物'] = 0
+        player_info.data['小毕业圣遗物'] = 0
+        for role_name in roles_list:
+            role_data = player_info.get_roles_info(role_name)
+            _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=1)
+        player_info.save()
+        if group_save:
+            check_group_artifact(event, player_info)
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        return await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
+        await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
+    roles_list = player_info.get_roles_list()
+    player_info.data['大毕业圣遗物'] = 0
+    player_info.data['小毕业圣遗物'] = 0
+    for role_name in roles_list:
+        role_data = player_info.get_roles_info(role_name)
+        _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=1)
     player_info.save()
+    if group_save:
+        check_group_artifact(event, player_info)
     # roles_list = player_info.get_roles_list()
     # await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
-    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!(注:数据更新有3分钟延迟)",
+    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据和榜单信息完成!(注:数据更新有3分钟延迟)",
                            at_sender=True)
 
 
@@ -308,18 +409,54 @@ def check_best_role(role_name, event, img, score):
             img.save(role_path)
             return f"恭喜成为本群最强{role_name}!\n"
         else:
-            role_info = os.listdir(role_path.parent)[0].split('-')
-            if float(role_info[0]) <= score:
-                os.unlink(f'{role_path.parent}/{os.listdir(role_path.parent)[0]}')
+            data = sorted(os.listdir(role_path.parent), key=lambda x: float(x.split('-')[0]))
+            role_info_best = data[-1].split('-')
+            if len(os.listdir(role_path.parent)) == 1:
                 img.save(role_path)
-                old_best = int(role_info[1].rstrip('.png'))
-                if old_best != event.user_id:
-                    return Message(f"恭喜你击败{at(old_best)}成为本群最强{role_name}!\n")
+                if float(role_info_best[0]) <= score:
+                    old_best = int(role_info_best[1].rstrip('.png'))
+                    if old_best != event.user_id:
+                        return Message(f"恭喜你击败{at(old_best)}成为本群最强{role_name}!\n")
+                    else:
+                        return f"你仍然是本群最强{role_name}!\n"
                 else:
-                    return f"你仍然是本群最强{role_name}!\n"
+                    return f"恭喜你成为本群最菜{role_name}!\n距本群最强{role_name}还有{round(float(role_info_best[0]) - score, 2)}分差距!\n"
             else:
-                return f"距本群最强{role_name}还有{round(float(role_info[0]) - score, 2)}分差距!\n"
+                if float(role_info_best[0]) <= score:
+                    os.unlink(f'{role_path.parent}/{data[-1]}')
+                    img.save(role_path)
+                    old_best = int(role_info_best[1].rstrip('.png'))
+                    if old_best != event.user_id:
+                        return Message(f"恭喜你击败{at(old_best)}成为本群最强{role_name}!\n")
+                    else:
+                        return f"你仍然是本群最强{role_name}!\n"
+                else:
+                    role_info_worst = data[0].split('-')
+                    if float(role_info_worst[0]) >= score:
+                        os.unlink(f'{role_path.parent}/{data[0]}')
+                        img.save(role_path)
+                        old_worst = int(role_info_worst[1].rstrip('.png'))
+                        if old_worst != event.user_id:
+                            return Message(f"恭喜你帮助{at(old_worst)}摆脱最菜{role_name}的头衔!\n")
+                        else:
+                            return f"你仍然是本群最菜{role_name}!\n距本群最强{role_name}还有{round(float(role_info_best[0]) - score, 2)}分差距!\n"
+                    else:
+                        return f"距本群最强{role_name}还有{round(float(role_info_best[0]) - score, 2)}分差距!\n"
     return ""
+
+
+def check_group_artifact(event, player_info):
+    if not os.path.exists(f"{group_info_path}/{event.group_id}.json"):
+        group_artifact_info = []
+    else:
+        group_artifact_info = load_json(f"{group_info_path}/{event.group_id}.json")
+    group_player_info = copy.deepcopy(player_info.data['圣遗物榜单'])
+    for item in group_player_info:
+        item['QQ'] = event.user_id
+        if item not in group_artifact_info:
+            group_artifact_info.append(item)
+    group_artifact_info_20 = sorted(group_artifact_info, key=lambda x: float(x['评分']), reverse=True)[:20]
+    save_json(group_artifact_info_20, f"{group_info_path}/{event.group_id}.json")
 
 
 def check_uid(uid: int):
@@ -337,12 +474,6 @@ async def get_update_info():
     return version.group(1).strip()
 
 
-@driver.on_bot_connect
-@scheduler.scheduled_job(
-    "cron",
-    hour=random.randint(9, 22),
-    minute=random.randint(0, 59),
-)
 @check_update.handle()
 async def _():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
@@ -365,12 +496,20 @@ async def _():
                                            message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
             logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
     else:
+        update_info = await get_update_info()
         try:
-            update_info = await get_update_info()
             await check_update.send(
                 f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{update_info}")
         except Exception:
             pass
+
+
+@driver.on_startup
+async def _():
+    if Config.get_config("genshin_role_info", "CHECK_UPDATE"):
+        scheduler.add_job(check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59),
+                          id='genshin_role_info')
+
 # @trans_data.handle()
 # async def _():
 #    json_data = os.listdir(GENSHIN_CARD_PATH + f"/player_info_old/")

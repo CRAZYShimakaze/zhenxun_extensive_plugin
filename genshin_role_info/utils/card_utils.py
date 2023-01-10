@@ -4,23 +4,28 @@ import re
 
 from PIL import ImageFont
 
+from configs.path_config import DATA_PATH
 from ..utils.json_utils import load_json, save_json
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
-player_info_path = GENSHIN_CARD_PATH + '/player_info'
-group_info_path = GENSHIN_CARD_PATH + '/group_info'
-res_path = GENSHIN_CARD_PATH + '/res/'
-json_path = res_path + 'json_data'
-bg_path = res_path + 'background'
-char_pic_path = res_path + 'character'
-other_path = res_path + 'other'
-regoin_path = res_path + 'region'
-outline_path = res_path + 'outline'
-skill_path = res_path + 'skill'
-talent_path = res_path + 'talent'
-weapon_path = res_path + 'weapon'
-reli_path = res_path + 'reli'
-font_path = res_path + 'fonts'
+
+GENSHIN_DATA_PATH = str(DATA_PATH) + '/genshin_role_info'
+player_info_path = GENSHIN_DATA_PATH + '/player_info'
+group_info_path = GENSHIN_DATA_PATH + '/group_info'
+card_res_path = GENSHIN_CARD_PATH + '/res/'
+data_res_path = GENSHIN_DATA_PATH + '/res/'
+json_path = card_res_path + 'json_data'
+bg_path = card_res_path + 'background'
+char_pic_path = data_res_path + 'character'
+avatar_path = data_res_path + 'avatar'
+other_path = card_res_path + 'other'
+regoin_path = card_res_path + 'region'
+outline_path = card_res_path + 'outline'
+skill_path = data_res_path + 'skill'
+talent_path = data_res_path + 'talent'
+weapon_path = data_res_path + 'weapon'
+reli_path = data_res_path + 'reli'
+font_path = card_res_path + 'fonts'
 role_data = load_json(path=f'{json_path}/roles_data.json')
 role_skill = load_json(path=f'{json_path}/roles_skill.json')
 role_talent = load_json(path=f'{json_path}/roles_talent.json')
@@ -38,6 +43,12 @@ class PlayerInfo:
         self.data = load_json(path=self.path)
         self.player_info = self.data['玩家信息'] if '玩家信息' in self.data else {}
         self.roles = self.data['角色'] if '角色' in self.data else {}
+        if '圣遗物榜单' not in self.data:
+            self.data['圣遗物榜单'] = []
+        if '小毕业圣遗物' not in self.data:
+            self.data['小毕业圣遗物'] = 0
+        if '大毕业圣遗物' not in self.data:
+            self.data['大毕业圣遗物'] = 0
 
     def set_player(self, data: dict):
         self.player_info['昵称'] = data.get('nickname', 'unknown')
@@ -88,17 +99,19 @@ class PlayerInfo:
                 role_info['天赋'].append(skill_detail)
             if role_info['名称'] == '神里绫华':
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][
-                                                                  -1], role_info['天赋'][0]
+                    -1], role_info['天赋'][0]
                 role_info['天赋'][2], role_info['天赋'][-1] = role_info['天赋'][
-                                                                  -1], role_info['天赋'][2]
+                    -1], role_info['天赋'][2]
+            if role_info['名称'] in ['神里绫华', '莫娜']:
+                role_info['天赋'].pop(2)
             if role_info['名称'] == '安柏':
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][
-                                                                  -1], role_info['天赋'][0]
+                    -1], role_info['天赋'][0]
             if role_info['名称'] in ['空', '荧']:
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][
-                                                                  -1], role_info['天赋'][0]
+                    -1], role_info['天赋'][0]
                 role_info['天赋'][1], role_info['天赋'][-1] = role_info['天赋'][
-                                                                  -1], role_info['天赋'][1]
+                    -1], role_info['天赋'][1]
             if role_info['名称'] == '达达利亚':
                 role_info['天赋'][0]['等级'] += 1
 
@@ -239,4 +252,4 @@ def dictlist_to_list(data):
 
 
 def get_font(size, font='hywh.ttf'):
-    return ImageFont.truetype(str(res_path + 'fonts/' + font), size)
+    return ImageFont.truetype(str(font_path + '/' + font), size)

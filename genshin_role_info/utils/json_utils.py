@@ -19,7 +19,7 @@ def load_json(path: Union[Path, str], encoding: str = 'utf-8') -> dict:
     return json.load(path.open('r', encoding=encoding))
 
 
-def save_json(data: dict,
+def save_json(data: Union[dict, list],
               path: Union[Path, str] = None,
               encoding: str = 'utf-8'):
     """
