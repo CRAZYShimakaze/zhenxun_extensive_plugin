@@ -8,10 +8,10 @@ from typing import Tuple
 
 import nonebot
 from nonebot import on_command, Driver, on_regex
-from nonebot.adapters.onebot.v11 import Message
-from nonebot.params import RawCommand, RegexGroup
+from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 
+from configs.config import Config
 from services import logger
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
@@ -24,11 +24,11 @@ __plugin_usage__ = """
 usage：
     查询原神攻略
     指令：
-        角色配装
-        角色评级
-        武器推荐
-        深渊配队
-        每日素材
+        角色配装/出装
+        角色评级/推荐/建议
+        武器推荐/适配/评级
+        深渊配队/阵容
+        每日/今日素材
         XX攻略
         XX图鉴
         XX素材/XX材料
@@ -36,7 +36,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.1
+__plugin_version__ = 1.2
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -47,16 +47,28 @@ __plugin_settings__ = {
 __plugin_cd_limit__ = {
     "rst": "正在查询中，请等待当前请求完成...",
 }
+Config.add_plugin_config(
+    "genshin_role_recommand",
+    "CHECK_UPDATE",
+    True,
+    help_="定期自动检查更新",
+    default_value=True,
+)
 
-get_guide = on_command("角色配装", aliases={"角色评级", "武器推荐", "深渊配队", "每日素材"}, priority=14, block=True)
+common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
+common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
+common_weapon_grade = on_regex("^武器(推荐|适配|评级)$", priority=1, block=True)
+common_abyss = on_regex("^深渊(配队|阵容)$", priority=1, block=True)
+common_material = on_regex("^(每日|今日)素材$", priority=1, block=True)
+
 update_info = on_command("更新原神推荐", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查攻略插件更新", permission=SUPERUSER, priority=3, block=True)
 role_guide = on_regex(r"(.*)攻略", priority=15)
 genshin_info = on_regex(r"(.*)图鉴", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)", priority=15)
-common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
-genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
-genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
+common_guide = "https://gitee.com/CRAZYShimakaze/CRAZYShimakaze.gitee.io/raw/main/common_guide/{}.jpg"
+genshin_role_guide = "https://gitee.com/CRAZYShimakaze/CRAZYShimakaze.gitee.io/raw/main/genshin_role_guide/{}.png"
+genshin_role_break = "https://gitee.com/CRAZYShimakaze/CRAZYShimakaze.gitee.io/raw/main/genshin_role_break/{}.jpg"
 genshin_role_info = "https://gitee.com/Ctrlcvs/xiaoyao-plus/raw/main/juese_tujian/{}.png"
 genshin_weapon_info = "https://gitee.com/Ctrlcvs/xiaoyao-plus/raw/main/wuqi_tujian/{}.png"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
@@ -75,15 +87,49 @@ async def get_img(url, arg, save_path, ignore_exist):
         await AsyncHttpx.download_file(url.format(arg), save_path, follow_redirects=True)
 
 
-@get_guide.handle()
-async def _(arg: Message = RawCommand()):
-    if arg != '每日素材':
-        save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
-    else:
-        save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
+@common_role_equip.handle()
+async def _():
+    arg = '角色配装'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        await get_guide.send(image(item))
+        await common_role_equip.send(image(item))
+
+
+@common_role_grade.handle()
+async def _():
+    arg = '角色评级'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await common_role_grade.send(image(item))
+
+
+@common_weapon_grade.handle()
+async def _():
+    arg = '武器推荐'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await common_weapon_grade.send(image(item))
+
+
+@common_abyss.handle()
+async def _():
+    arg = '深渊配队'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await common_abyss.send(image(item))
+
+
+@common_material.handle()
+async def _():
+    arg = '每日素材'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await common_material.send(image(item))
 
 
 @role_guide.handle()
@@ -189,12 +235,6 @@ async def get_update_info():
     return version.group(1).strip()
 
 
-@driver.on_bot_connect
-@scheduler.scheduled_job(
-    "cron",
-    hour=random.randint(9, 22),
-    minute=random.randint(0, 59),
-)
 @check_update.handle()
 async def _():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommand/__init__.py"
@@ -223,3 +263,10 @@ async def _():
                 f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{modify_info}")
         except Exception:
             pass
+
+
+@driver.on_startup
+async def _():
+    if Config.get_config("genshin_role_recommand", "CHECK_UPDATE"):
+        scheduler.add_job(check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59),
+                          id='genshin_role_recommand')
