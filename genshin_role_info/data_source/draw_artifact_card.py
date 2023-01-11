@@ -4,6 +4,7 @@ import random
 import numpy as np
 from PIL import ImageDraw, Image
 
+from configs.config import Config
 from configs.path_config import TEMP_PATH
 from .draw_role_card import artifact_url
 from ..utils.card_utils import other_path, get_font, bg_path, reli_path, json_path, avatar_path
@@ -25,7 +26,7 @@ async def draw_qq_logo_mask(artifact, mask_bottom):
     # 获取遮罩的alpha通道
     mask_array = np.array(mask_bottom)[:, :, 3]
     max_val = np.max(mask_array)
-    mask_array[mask_array >= max_val] = 96
+    mask_array[mask_array >= max_val] = Config.get_config("genshin_role_info", "ALPHA")
     mask_alpha = Image.fromarray(mask_array)
 
     qq_logo_icon = qq_logo_pic

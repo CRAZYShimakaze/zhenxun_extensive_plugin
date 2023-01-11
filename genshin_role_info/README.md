@@ -18,6 +18,7 @@
 ## 效果图
 
 <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px">
+<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample2.jpg" height="700"/>
 
 # 致谢
 
@@ -26,11 +27,11 @@
 * [Enka](https://enka.network/)的玩家数据
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
-### 更新
+# 更新
 **2023/1/11**[v2.2]
 
 1. 新增圣遗物榜单和群圣遗物榜单功能
-2. 数据目录迁移至真寻data目录下
+2. 数据目录迁移至真寻data目录下(原有数据可手动拷贝至该目录下)
 3. 增加自动检测更新开关,可在config里配置
 
 **2022/12/29**[v2.1]

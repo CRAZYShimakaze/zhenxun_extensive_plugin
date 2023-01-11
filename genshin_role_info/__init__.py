@@ -62,6 +62,13 @@ Config.add_plugin_config(
     help_="定期自动检查更新",
     default_value=True,
 )
+Config.add_plugin_config(
+    "genshin_role_info",
+    "ALPHA",
+    83,
+    help_="群榜单背景透明度",
+    default_value=83,
+)
 
 char_card = on_command("原神角色卡", priority=4, block=True)
 update_card = on_command("更新角色卡", priority=4, block=True)
