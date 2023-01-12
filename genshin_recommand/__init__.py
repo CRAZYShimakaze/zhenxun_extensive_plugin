@@ -66,9 +66,9 @@ check_update = on_command("检查攻略插件更新", permission=SUPERUSER, prio
 role_guide = on_regex(r"(.*)攻略", priority=15)
 genshin_info = on_regex(r"(.*)图鉴", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)", priority=15)
-common_guide = "https://gitee.com/CRAZYShimakaze/CRAZYShimakaze.gitee.io/raw/main/common_guide/{}.jpg"
-genshin_role_guide = "https://gitee.com/CRAZYShimakaze/CRAZYShimakaze.gitee.io/raw/main/genshin_role_guide/{}.png"
-genshin_role_break = "https://gitee.com/CRAZYShimakaze/CRAZYShimakaze.gitee.io/raw/main/genshin_role_break/{}.jpg"
+common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
+genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
+genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
 genshin_role_info = "https://gitee.com/Ctrlcvs/xiaoyao-plus/raw/main/juese_tujian/{}.png"
 genshin_weapon_info = "https://gitee.com/Ctrlcvs/xiaoyao-plus/raw/main/wuqi_tujian/{}.png"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
