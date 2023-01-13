@@ -67,10 +67,10 @@ role_guide = on_regex(r"(.*)攻略", priority=15)
 genshin_info = on_regex(r"(.*)图鉴", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)", priority=15)
 common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
-genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_guide/{}.png"
-genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin_role_break/{}.jpg"
-genshin_role_info = "https://gitee.com/Ctrlcvs/xiaoyao-plus/raw/main/juese_tujian/{}.png"
-genshin_weapon_info = "https://gitee.com/Ctrlcvs/xiaoyao-plus/raw/main/wuqi_tujian/{}.png"
+genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_guide/{}.png"
+genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_break/{}.jpg"
+genshin_role_info = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_info/{}.png"
+genshin_weapon_info = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/weapon_info/{}.png"
 RES_PATH = os.path.join(os.path.dirname(__file__), "res")
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
