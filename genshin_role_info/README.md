@@ -1,9 +1,11 @@
 # genshin_role_info
+
 真寻机器人的原神角色面板插件
 
 展示橱窗中角色的面板和伤害数据(与原神角色卡插件部分命令有冲突，建议只安装一个)
 
 ## 使用
+
 - 原神角色卡 uid 角色名
 - 更新角色卡 uid
 - XX面板 (例:甘雨面板、甘雨面板@CRAZYShimakaze)
@@ -15,19 +17,20 @@
 - 群圣遗物榜单
 - 重置最强XX (仅超级用户可用)
 - 检查面板更新 (仅超级用户可用)
+
 ## 效果图
 
-<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px">
-<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample2.jpg" height="700"/>
+<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px"> <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample2.jpg" height="700px"/>
 
-# 致谢
+## 致谢
 
 * [LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon)的基本框架
-* [Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)的评分规则 
+* [Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)的评分规则
 * [Enka](https://enka.network/)的玩家数据
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
-# 更新
+## 更新
+
 **2023/1/11**[v2.2]
 
 1. 新增圣遗物榜单和群圣遗物榜单功能
