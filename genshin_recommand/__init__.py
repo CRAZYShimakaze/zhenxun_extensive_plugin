@@ -36,7 +36,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.2
+__plugin_version__ = 1.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -126,7 +126,8 @@ async def _():
 @common_material.handle()
 async def _():
     arg = '每日素材'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg',
+                 f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
         await common_material.send(image(item))
@@ -197,7 +198,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 async def _():
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     shutil.rmtree(RES_PATH)
-    arg = ['角色配装', '角色评级', '武器推荐', '深渊配队', '每日素材1', '每日素材2']
+    arg = ['角色配装', '角色评级', '武器推荐', '深渊配队', '每日素材1', '每日素材2', '每日素材3']
     for item in arg:
         save_path = f'{COMMON_GUIDE_PATH}/{item}.jpg'
         try:
