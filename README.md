@@ -22,6 +22,7 @@
 
 第三方插件交流群：217496217
 ## 列表
+- [插件管理](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/plugin_manager)
 - [舔狗日记](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/tgrj)
 - [图片打分](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/setu_score)
 - [原神角色面板](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/genshin_role_info)
