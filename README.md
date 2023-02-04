@@ -1,4 +1,4 @@
-# zhenxun_bot_plugin
+# 真寻的扩展插件库
 
 <p>
   <a href="https://www.oscs1024.com/cd/1535499661232435200?sign=e9655203">
@@ -17,7 +17,7 @@
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/CRAZYShimakaze/zhenxun_extensive_plugin?style=flat-square">
   </p>
 
-适用于zhenxun_bot的扩展插件
+适用于真寻的扩展插件库
 
 
 第三方插件交流群：217496217
