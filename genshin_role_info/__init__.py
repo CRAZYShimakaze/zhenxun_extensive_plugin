@@ -217,7 +217,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def get_char(uid: int):
-    url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
+    url = f'https://enka.network/api/uid/{uid}'
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(url=url, follow_redirects=True)
@@ -285,7 +285,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def gen(event: MessageEvent, uid: int, role_name: str, at_user):
-    url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
+    url = f'https://enka.network/api/uid/{uid}'
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(
@@ -342,7 +342,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def update(event, uid: int, group_save: bool):
-    url = f'https://enka.shinshin.moe/u/{uid}/__data.json'
+    url = f'https://enka.network/api/uid/{uid}'
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
