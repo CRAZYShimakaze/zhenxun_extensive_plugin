@@ -615,7 +615,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                     '暴击伤害', '爆伤').replace('元素精通', '精通')
                 if name not in effect:
                     effect[name] = effective.get(item)
-        effect = str(effect).replace("'", "").strip("{}")
+        effect = str(effect).replace("'", "").replace(" ", "").strip("{}")
 
         if '-' not in weight_name:
             weight_name += '-通用'

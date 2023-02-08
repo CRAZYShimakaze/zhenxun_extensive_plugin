@@ -1,6 +1,3 @@
-import os
-import random
-
 import numpy as np
 from PIL import ImageDraw, Image
 
@@ -14,6 +11,7 @@ from ..utils.json_utils import load_json
 avatar_url = 'https://enka.network/ui/{}.png'
 qq_logo_url = 'http://q1.qlogo.cn/g?b=qq&nk={}&s=640'
 role_name = load_json(f'{json_path}/roles_name.json')
+role_data = load_json(f'{json_path}/roles_data.json')
 
 
 async def draw_qq_logo_mask(artifact, mask_bottom):
@@ -57,7 +55,8 @@ async def draw_artifact_card(uid, artifact_info, ace2_num, ace_num, plugin_versi
     h = 5  # len(artifact_pk)//4
     wid = bounder_offset[0] + (mask_w * 4 + interval[0] * 3) + bounder_offset[0]
     hei = bounder_offset[1] + (mask_h * h + interval[1] * (h - 1)) + bounder_offset[1] + 50
-    bg = load_image(f'{bg_path}/{random.choice(os.listdir(bg_path))}', size=(wid, hei), mode='RGBA')
+    bg = load_image(f'{bg_path}/背景_{role_data[artifact_info[0]["角色"]]["element"]}.png', size=(wid, hei),
+                    mode='RGBA')
     bg_draw = ImageDraw.Draw(bg)
     artifact_pk = artifact_info
     # artifact_pk = sorted(artifact_info, key=lambda x: float(x['评分']), reverse=True)

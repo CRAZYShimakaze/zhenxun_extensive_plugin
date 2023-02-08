@@ -156,7 +156,7 @@ async def _(arg: Message = CommandArg()):
     branch = re.search(r'tree/(.*?)/', url).group(1)
     part_flag = len(url_list) > 5
     # 插件名
-    plugin_name = url_list[-1]
+    plugin_name = url_list[-1] if url_list[-1] else url_list[-2]
     # 仓库作者
     owner = url_list[3]
     # 仓库名（完成版下等于插件名）

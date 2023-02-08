@@ -72,7 +72,7 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
             mark[diff[0]] += 1
             diff.pop(0)
     # 最终圣遗物评级
-    calc_rank_str = 'ACE*' if calc_total > 66 else 'ACE*' if calc_total > 56.1 else 'ACE' if calc_total > 49.5 \
+    calc_rank_str = 'ACE*' if calc_total > 66.1 else 'ACE*' if calc_total > 56.1 else 'ACE' if calc_total > 49.5 \
         else 'SSS' if calc_total > 42.9 else 'SS' if calc_total > 36.3 else 'S' if calc_total > 29.7 else 'A' \
         if calc_total > 23.1 else 'B' if calc_total > 16.5 else 'C' if calc_total > 10 else 'D'
     return calc_rank_str, calc_total, mark
@@ -227,6 +227,8 @@ def get_effective(data):
         elif role_name == '优菈':
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2:
                 role_name = '优菈-核爆'
+        elif role_name == '艾尔海森' and data['武器']['名称'] == '磐岩结绿':
+            role_name = '艾尔海森-绿剑'
         if role_name in role_score:
             return role_score.get(role_name), role_name
         else:

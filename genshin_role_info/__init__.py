@@ -359,6 +359,7 @@ async def update(event, uid: int, group_save: bool):
     if req.status_code != 200:
         player_info = PlayerInfo(uid)
         roles_list = player_info.get_roles_list()
+        player_info.data['圣遗物榜单'] = []
         player_info.data['大毕业圣遗物'] = 0
         player_info.data['小毕业圣遗物'] = 0
         for role_name in roles_list:
@@ -381,6 +382,7 @@ async def update(event, uid: int, group_save: bool):
                 pass
     else:
         roles_list = player_info.get_roles_list()
+        player_info.data['圣遗物榜单'] = []
         player_info.data['大毕业圣遗物'] = 0
         player_info.data['小毕业圣遗物'] = 0
         for role_name in roles_list:
@@ -393,6 +395,7 @@ async def update(event, uid: int, group_save: bool):
         guide = image_build(img=guide, quality=100, mode='RGB')
         await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
     roles_list = player_info.get_roles_list()
+    player_info.data['圣遗物榜单'] = []
     player_info.data['大毕业圣遗物'] = 0
     player_info.data['小毕业圣遗物'] = 0
     for role_name in roles_list:

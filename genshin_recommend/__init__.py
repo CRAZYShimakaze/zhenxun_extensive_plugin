@@ -4,6 +4,7 @@ import os
 import random
 import re
 import shutil
+from pathlib import Path
 from typing import Tuple
 
 import nonebot
@@ -12,6 +13,7 @@ from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 
 from configs.config import Config
+from configs.path_config import DATA_PATH
 from services import logger
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
@@ -71,7 +73,7 @@ genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZ
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_break/{}.jpg"
 genshin_role_info = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_info/{}.png"
 genshin_weapon_info = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/weapon_info/{}.png"
-RES_PATH = os.path.join(os.path.dirname(__file__), "res")
+RES_PATH = str(DATA_PATH) + '/genshin_recommend'
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'
@@ -93,7 +95,7 @@ async def _():
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        await common_role_equip.send(image(item))
+        await common_role_equip.send(image(Path(item)))
 
 
 @common_role_grade.handle()
@@ -102,7 +104,7 @@ async def _():
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        await common_role_grade.send(image(item))
+        await common_role_grade.send(image(Path(item)))
 
 
 @common_weapon_grade.handle()
@@ -111,7 +113,7 @@ async def _():
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        await common_weapon_grade.send(image(item))
+        await common_weapon_grade.send(image(Path(item)))
 
 
 @common_abyss.handle()
@@ -120,7 +122,7 @@ async def _():
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        await common_abyss.send(image(item))
+        await common_abyss.send(image(Path(item)))
 
 
 @common_material.handle()
@@ -130,7 +132,7 @@ async def _():
                  f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
-        await common_material.send(image(item))
+        await common_material.send(image(Path(item)))
 
 
 @role_guide.handle()
@@ -145,7 +147,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
     save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, 0)
     try:
-        await role_guide.send(image(save_path))
+        await role_guide.send(image(Path(save_path)))
     except:
         os.unlink(save_path)
 
@@ -167,14 +169,14 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         save_path = f'{WEAPON_INFO_PATH}/{role}.png'
         await get_img(genshin_weapon_info, role, save_path, 0)
         try:
-            await genshin_info.send(image(save_path))
+            await genshin_info.send(image(Path(save_path)))
         except:
             os.unlink(save_path)
         return
     save_path = f'{ROLE_INFO_PATH}/{role}.png'
     await get_img(genshin_role_info, role, save_path, 0)
     try:
-        await genshin_info.send(image(save_path))
+        await genshin_info.send(image(Path(save_path)))
     except:
         os.unlink(save_path)
 
@@ -189,7 +191,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
     save_path = f'{ROLE_BREAK_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, 0)
     try:
-        await break_material.send(image(save_path))
+        await break_material.send(image(Path(save_path)))
     except:
         os.unlink(save_path)
 
@@ -226,7 +228,7 @@ async def _():
 
 
 async def get_update_info():
-    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommand/README.md"
+    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/README.md"
     try:
         version = await AsyncHttpx.get(url)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
@@ -238,7 +240,7 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update():
-    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommand/__init__.py"
+    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/__init__.py"
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url)
