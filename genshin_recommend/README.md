@@ -1,4 +1,4 @@
-# genshin_equip_recommand
+# genshin_equip_recommend
 
 zhenxun_bot 原神角色攻略
 

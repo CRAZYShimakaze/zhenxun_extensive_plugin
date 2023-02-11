@@ -36,7 +36,7 @@ usage：
         XX素材/XX材料
 """.strip()
 __plugin_des__ = "查询原神攻略"
-__plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
+__plugin_cmd__ = ["原神攻略", "角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
 __plugin_version__ = 1.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
@@ -50,7 +50,7 @@ __plugin_cd_limit__ = {
     "rst": "正在查询中，请等待当前请求完成...",
 }
 Config.add_plugin_config(
-    "genshin_role_recommand",
+    "genshin_role_recommend",
     "CHECK_UPDATE",
     True,
     help_="定期自动检查更新",
@@ -270,6 +270,6 @@ async def _check_update():
 
 @driver.on_startup
 async def _():
-    if Config.get_config("genshin_role_recommand", "CHECK_UPDATE"):
+    if Config.get_config("genshin_role_recommend", "CHECK_UPDATE"):
         scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59),
-                          id='genshin_role_recommand')
+                          id='genshin_role_recommend')

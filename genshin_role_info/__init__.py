@@ -55,6 +55,11 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
+__plugin_cd_limit__ = {
+    "limit_type": "group",
+    "rst": "正在查询中，请等待当前请求完成...",
+}
+
 Config.add_plugin_config(
     "genshin_role_info",
     "CHECK_UPDATE",
@@ -366,7 +371,7 @@ async def update(event, uid: int, group_save: bool):
             role_data = player_info.get_roles_info(role_name)
             _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
         player_info.save()
-        if group_save:
+        if group_save and isinstance(event, GroupMessageEvent):
             check_group_artifact(event, player_info)
         await char_card.finish("服务器维护中,请稍后再试...")
     data = req.json()
@@ -389,7 +394,7 @@ async def update(event, uid: int, group_save: bool):
             role_data = player_info.get_roles_info(role_name)
             _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=1)
         player_info.save()
-        if group_save:
+        if group_save and isinstance(event, GroupMessageEvent):
             check_group_artifact(event, player_info)
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
@@ -402,7 +407,7 @@ async def update(event, uid: int, group_save: bool):
         role_data = player_info.get_roles_info(role_name)
         _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=1)
     player_info.save()
-    if group_save:
+    if group_save and isinstance(event, GroupMessageEvent):
         check_group_artifact(event, player_info)
     # roles_list = player_info.get_roles_list()
     # await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
