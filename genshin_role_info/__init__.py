@@ -74,7 +74,7 @@ Config.add_plugin_config(
     help_="群榜单背景透明度",
     default_value=83,
 )
-
+enak_url = 'https://enka.network/api/uid/{}'
 char_card = on_command("原神角色卡", priority=4, block=True)
 update_card = on_command("更新角色卡", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
@@ -85,8 +85,8 @@ driver: Driver = nonebot.get_driver()
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
 group_worst = on_regex(r"最菜(.*)", priority=4)
-artifact_list = on_command("圣遗物榜单", priority=4, block=True)
-group_artifact_list = on_command("群圣遗物榜单", priority=4, block=True)
+artifact_list = on_command("圣遗物榜单", aliases={"圣遗物列表"},priority=4, block=True)
+group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物列表"},priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查面板插件更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(path=f'{json_path}/alias.json')
@@ -104,17 +104,88 @@ async def _(event: GroupMessageEvent):
         await group_artifact_list.finish(img)
 
 
-@artifact_list.handle()
-async def _(event: MessageEvent):
+def get_role_name(role):
+    role_name = ''
+    for item in name_list:
+        if role in name_list.get(item):
+            role_name = name_list.get(item)[0]
+            break
+    return role_name
+
+
+async def get_msg_uid(event):
     at_user = get_message_at(event.json())
     if at_user:
-        uid = await Genshin.get_user_uid(int(at_user[0]))
+        uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
     else:
         uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
         await artifact_list.finish("请输入绑定uidXXXX进行绑定后再查询！")
     if not check_uid(uid):
         await artifact_list.finish(f"绑定的uid{uid}不合法，请重新绑定!")
+    return uid
+
+
+async def get_enka_info(url, uid, update_info):
+    update_role_list = []
+    if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
+        try:
+            req = await AsyncHttpx.get(
+                url=url,
+                follow_redirects=True,
+            )
+        except Exception:
+            return await char_card.finish("获取数据出错,请重试...")
+        if req.status_code != 200:
+            return await char_card.finish("服务器维护中,请稍后再试...")
+        data = req.json()
+        player_info = PlayerInfo(uid)
+        player_info.set_player(data['playerInfo'])
+        if 'avatarInfoList' in data:
+            for role in data['avatarInfoList']:
+                try:
+                    player_info.set_role(role)
+                    update_role_list.append(get_name_by_id(str(role['avatarId'])))
+                except:
+                    pass
+            player_info.save()
+        else:
+            guide = load_image(f'{other_path}/collections.png')
+            guide = image_build(img=guide, quality=100, mode='RGB')
+            return await char_card.finish(guide + "在游戏中打开显示详情选项!")
+    else:
+        player_info = PlayerInfo(uid)
+    return player_info, update_role_list
+
+
+async def check_artifact(event, player_info, uid, group_save):
+    roles_list = player_info.get_roles_list()
+    player_info.data['圣遗物榜单'] = []
+    player_info.data['大毕业圣遗物'] = 0
+    player_info.data['小毕业圣遗物'] = 0
+    for role_name in roles_list:
+        role_data = player_info.get_roles_info(role_name)
+        _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
+    player_info.save()
+    if group_save and isinstance(event, GroupMessageEvent):
+        check_group_artifact(event, player_info)
+
+
+async def check_role_avaliable(role_name, roles_list):
+    if not roles_list:
+        guide = load_image(f'{other_path}/collections.png')
+        guide = image_build(img=guide, quality=100, mode='RGB')
+        await his_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
+                              at_sender=True)
+    if role_name not in roles_list:
+        await char_card.finish(
+            f"角色展柜里没有{role_name}的信息哦!可查询:{','.join(roles_list)}",
+            at_sender=True)
+
+
+@artifact_list.handle()
+async def _(event: MessageEvent):
+    uid = await get_msg_uid(event)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         return await artifact_list.finish('未收录任何角色信息,请先进行角色查询!', at_sender=True)
     else:
@@ -132,37 +203,18 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     at_user = args[1].strip()
     if role != "更新":
-        for item in name_list:
-            if role in name_list.get(item):
-                role = name_list.get(item)[0]
-                break
-        else:
-            return
-    if at_user:
-        uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
-    else:
-        uid = await Genshin.get_user_uid(event.user_id)
-    if not uid:
-        await get_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
-    if not check_uid(uid):
-        await my_card.finish(f"绑定的uid{uid}不合法，请重新绑定!")
+        role = get_role_name(role)
+    uid = await get_msg_uid(event)
     if role == "更新":
-        if at_user:
-            event.user_id = get_message_at(event.json())[0]
         await update(event, uid, group_save=True)
     else:
-        await gen(event, uid, role, at_user)
+        await gen(event, uid, role, at_user=at_user)
 
 
 @group_best.handle()
 async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in name_list:
-        if role in name_list.get(item):
-            role = name_list.get(item)[0]
-            break
-    else:
-        return
+    role = get_role_name(role)
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     if not os.path.exists(role_path):
         await group_best.finish(f"本群还没有{role}的数据收录哦！赶快去查询吧！", at_sender=True)
@@ -177,12 +229,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @group_worst.handle()
 async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in name_list:
-        if role in name_list.get(item):
-            role = name_list.get(item)[0]
-            break
-    else:
-        return
+    role = get_role_name(role)
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     if not os.path.exists(role_path) or len(os.listdir(role_path)) < 2:
         await group_worst.finish(f"本群还没有最菜{role}的数据收录哦！赶快去查询吧！", at_sender=True)
@@ -197,12 +244,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @reset_best.handle()
 async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
     role = arg.extract_plain_text().strip()
-    for item in name_list:
-        if role in name_list.get(item):
-            role = name_list.get(item)[0]
-            break
-    else:
-        return
+    role = get_role_name(role)
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     shutil.rmtree(role_path, ignore_errors=True)
     await reset_best.finish(f'重置群{role}成功!')
@@ -213,16 +255,12 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     msg = arg.extract_plain_text().strip().split()
     if msg:
         return
-    uid = await Genshin.get_user_uid(event.user_id)
-    if not uid:
-        await my_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
-    if not check_uid(uid):
-        await my_card.finish(f"绑定的uid{uid}不合法，请重新绑定!")
+    uid = await get_msg_uid(event)
     await get_char(uid)
 
 
-async def get_char(uid: int):
-    url = f'https://enka.network/api/uid/{uid}'
+async def get_char(uid):
+    url = enak_url.format(uid)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(url=url, follow_redirects=True)
@@ -280,57 +318,20 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     if len(msg) != 2:
         return await char_card.finish("请输入正确角色名...", at_sender=True)
     role = msg[1]
-    for item in name_list:
-        if role in name_list.get(item):
-            role = name_list.get(item)[0]
-            break
-    else:
-        return
-    await gen(event, uid, role, 1)
+    role = get_role_name(role)
+    await gen(event, uid, role, at_user=True)
 
 
-async def gen(event: MessageEvent, uid: int, role_name: str, at_user):
-    url = f'https://enka.network/api/uid/{uid}'
-    if not os.path.exists(f"{player_info_path}/{uid}.json"):
-        try:
-            req = await AsyncHttpx.get(
-                url=url,
-                follow_redirects=True,
-            )
-        except Exception as e:
-            print(e)
-            return await char_card.finish("获取数据出错,请重试...")
-        if req.status_code != 200:
-            return await char_card.finish("服务器维护中,请稍后再试...")
-        data = req.json()
-        player_info = PlayerInfo(uid)
-        player_info.set_player(data['playerInfo'])
-        if 'avatarInfoList' in data:
-            for role in data['avatarInfoList']:
-                player_info.set_role(role)
-            player_info.save()
-        else:
-            guide = load_image(f'{other_path}/collections.png')
-            guide = image_build(img=guide, quality=100, mode='RGB')
-            return await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
-    else:
-        player_info = PlayerInfo(uid)
+async def gen(event: MessageEvent, uid, role_name, at_user):
+    url = enak_url.format(uid)
+    player_info, _ = await get_enka_info(url, uid, update_info=False)
     roles_list = player_info.get_roles_list()
-    if not roles_list:
-        guide = load_image(f'{other_path}/collections.png')
-        guide = image_build(img=guide, quality=100, mode='RGB')
-        await his_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
-                              at_sender=True)
-    if role_name not in roles_list:
-        await char_card.finish(
-            f"角色展柜里没有{role_name}的信息哦!可查询:{','.join(roles_list)}",
-            at_sender=True)
-    else:
-        role_data = player_info.get_roles_info(role_name)
-        img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
-        msg = '' if at_user else check_best_role(role_name, event, img, score)
-        img = image_build(img=img, quality=100, mode='RGB')
-        await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
+    await check_role_avaliable(role_name, roles_list)
+    role_data = player_info.get_roles_info(role_name)
+    img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
+    msg = '' if at_user else check_role(role_name, event, img, score)
+    img = image_build(img=img, quality=100, mode='RGB')
+    await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
 
 
 @update_card.handle()
@@ -338,84 +339,27 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     msg = arg.extract_plain_text().strip()
     try:
         uid = int(msg)
-    except Exception as e:
-        print(e)
+    except Exception:
         return await update_card.finish("请输入正确uid...", at_sender=True)
     if not check_uid(uid):
         return await update_card.finish(f"uid{uid}不合法!")
     await update(event, uid, group_save=False)
 
 
-async def update(event, uid: int, group_save: bool):
-    url = f'https://enka.network/api/uid/{uid}'
+async def update(event, uid, group_save):
+    url = enak_url.format(uid)
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
         if cd_time < 130:
             await char_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
-    try:
-        req = await AsyncHttpx.get(
-            url=url,
-            follow_redirects=True,
-        )
-    except Exception as e:
-        print(e)
-        return await char_card.finish("更新出错,请重试...")
-    if req.status_code != 200:
-        player_info = PlayerInfo(uid)
-        roles_list = player_info.get_roles_list()
-        player_info.data['圣遗物榜单'] = []
-        player_info.data['大毕业圣遗物'] = 0
-        player_info.data['小毕业圣遗物'] = 0
-        for role_name in roles_list:
-            role_data = player_info.get_roles_info(role_name)
-            _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
-        player_info.save()
-        if group_save and isinstance(event, GroupMessageEvent):
-            check_group_artifact(event, player_info)
-        await char_card.finish("服务器维护中,请稍后再试...")
-    data = req.json()
-    player_info = PlayerInfo(uid)
-    player_info.set_player(data['playerInfo'])
-    update_role_list = []
-    if 'avatarInfoList' in data:
-        for role in data['avatarInfoList']:
-            try:
-                player_info.set_role(role)
-                update_role_list.append(get_name_by_id(str(role['avatarId'])))
-            except:
-                pass
-    else:
-        roles_list = player_info.get_roles_list()
-        player_info.data['圣遗物榜单'] = []
-        player_info.data['大毕业圣遗物'] = 0
-        player_info.data['小毕业圣遗物'] = 0
-        for role_name in roles_list:
-            role_data = player_info.get_roles_info(role_name)
-            _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=1)
-        player_info.save()
-        if group_save and isinstance(event, GroupMessageEvent):
-            check_group_artifact(event, player_info)
-        guide = load_image(f'{other_path}/collections.png')
-        guide = image_build(img=guide, quality=100, mode='RGB')
-        await char_card.finish(guide + "在游戏中打开显示详情选项!", at_sender=True)
-    roles_list = player_info.get_roles_list()
-    player_info.data['圣遗物榜单'] = []
-    player_info.data['大毕业圣遗物'] = 0
-    player_info.data['小毕业圣遗物'] = 0
-    for role_name in roles_list:
-        role_data = player_info.get_roles_info(role_name)
-        _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=1)
-    player_info.save()
-    if group_save and isinstance(event, GroupMessageEvent):
-        check_group_artifact(event, player_info)
-    # roles_list = player_info.get_roles_list()
-    # await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据完成!\n可查询:{','.join(roles_list)}(注:数据更新有3分钟延迟)",at_sender=True)
-    await char_card.finish(f"更新uid{uid}的{','.join(update_role_list)}数据和榜单信息完成!(注:数据更新有3分钟延迟)",
+    player_info, update_role_list = await get_enka_info(url, uid, update_info=True)
+    await check_artifact(event, player_info, uid, group_save)
+    await char_card.finish(f"获取uid{uid}的{','.join(update_role_list)}数据和榜单信息完成!(注:数据更新有3分钟延迟)",
                            at_sender=True)
 
 
-def check_best_role(role_name, event, img, score):
+def check_role(role_name, event, img, score):
     if isinstance(event, GroupMessageEvent) and str(score)[-1] != '*':
         role_path = f'{group_info_path}/{event.group_id}/{role_name}/{score}-{event.user_id}.png'
         role_path = Path(role_path)

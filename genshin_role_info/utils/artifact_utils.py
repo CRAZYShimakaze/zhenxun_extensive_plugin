@@ -212,11 +212,11 @@ def get_effective(data):
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2.8:
                 role_name = '胡桃-核爆'
         elif role_name == '夜兰':
-            if data['属性']['元素精通'] > 120:
+            if data['属性']['元素精通'] > 80:
                 role_name = '夜兰-精通'
             if data['武器']['名称'] == '若水':
                 role_name = '夜兰-若水'
-            if data['属性']['元素精通'] > 120 and data['武器']['名称'] == '若水':
+            if data['属性']['元素精通'] > 80 and data['武器']['名称'] == '若水':
                 role_name = '夜兰-精通若水'
         elif role_name == '神里绫华':
             if data['属性']['元素精通'] > 120:
