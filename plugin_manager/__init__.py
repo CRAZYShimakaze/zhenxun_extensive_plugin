@@ -151,16 +151,21 @@ async def _(arg: Message = CommandArg()):
             "未提供插件仓库地址；示例：安装插件https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin")
     elif not url.startswith("https://github.com/"):
         await updatePlugin.finish("目前仅支持github仓库")
-
+    owner, repo, branch, plugin_name, part_flag, upper_path = get_url_info(url)
+    '''
+    # 移除末尾.git    
+    elif url.endswith(".git"):
+        url = url[:-4]
     url_list = url.split('/')
-    branch = re.search(r'tree/(.*?)/', url).group(1)
+
     part_flag = len(url_list) > 5
     # 插件名
-    plugin_name = url_list[-1] if url_list[-1] else url_list[-2]
+    plugin_name = url_list[-1]
     # 仓库作者
     owner = url_list[3]
     # 仓库名（完成版下等于插件名）
     repo = url_list[4]
+    '''
 
     # 获取bot.py文件
     bot_path = Config.get_config("plugin_manager", "BOTPATH")  # 读取配置文件
@@ -215,12 +220,15 @@ async def _(arg: Message = CommandArg()):
     if part_flag:
         # 获取待下载的仓库路径 #TODO 已知如果len(url_list)大于7，会导致截取的path成为 xxxx/[插件名]，
         # 下载下来的文件结构会变成[插件目录]/xxxx/[插件名]，导致插件加载失败，但目前未发现相关案例，暂不兼容
+        '''
         path = ""
         for i in range(7, len(url_list)):
             path += url_list[i] + "/"
         path = path[:-1]
-        upper_path = '/'.join(url_list[7:-1])
-        index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}?ref={branch}"
+        '''
+        # upper_path = '/'.join(url_list[7:-1])
+        # branch = re.search(r'tree/(.*?)/', url).group(1)
+        index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{upper_path + plugin_name}?ref={branch}"
         try:
             if not await getfiles(index_url, plugin_folder_path, upper_path):
                 raise
@@ -324,6 +332,8 @@ async def _(arg: Message = CommandArg()):
             "未提供插件仓库地址；示例：安装插件https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin")
     elif not url.startswith("https://github.com/"):
         await installPlugin.finish("目前仅支持github仓库")
+    owner, repo, branch, plugin_name, part_flag, upper_path = get_url_info(url)
+    '''
     # 移除末尾.git    
     elif url.endswith(".git"):
         url = url[:-4]
@@ -336,6 +346,7 @@ async def _(arg: Message = CommandArg()):
     owner = url_list[3]
     # 仓库名（完成版下等于插件名）
     repo = url_list[4]
+    '''
 
     # 获取bot.py文件
     bot_path = Config.get_config("plugin_manager", "BOTPATH")  # 读取配置文件
@@ -388,13 +399,15 @@ async def _(arg: Message = CommandArg()):
     if part_flag:
         # 获取待下载的仓库路径 #TODO 已知如果len(url_list)大于7，会导致截取的path成为 xxxx/[插件名]，
         # 下载下来的文件结构会变成[插件目录]/xxxx/[插件名]，导致插件加载失败，但目前未发现相关案例，暂不兼容
+        '''
         path = ""
         for i in range(7, len(url_list)):
             path += url_list[i] + "/"
         path = path[:-1]
-        upper_path = '/'.join(url_list[7:-1])
-        branch = re.search(r'tree/(.*?)/', url).group(1)
-        index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}?ref={branch}"
+        '''
+        # upper_path = '/'.join(url_list[7:-1])
+        # branch = re.search(r'tree/(.*?)/', url).group(1)
+        index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{upper_path}/{plugin_name}?ref={branch}"
         try:
             if not await getfiles(index_url, plugin_folder_path, upper_path):
                 raise
@@ -408,10 +421,8 @@ async def _(arg: Message = CommandArg()):
                     msg = f"替换加载命令出错：{e}\n{traceback.format_exc()}"
                     logger.error(msg)
                     pic = await text_to_pic(text=msg)  # 日志转图片，依赖nonebot_plugin_htmlrender
-                    await installPlugin.finish(MessageSegment.image(pic))
-            await installPlugin.finish(f"{url}安装成功，请检查依赖并重启真寻。")
-        except FinishedException:
-            return
+                    return await installPlugin.send(MessageSegment.image(pic))
+            return await installPlugin.send(f"{url}安装成功，请检查依赖并重启真寻。")
         except Exception as e:
             pic = await text_to_pic(
                 text=f"{url}安装失败：\n{e}\n{traceback.format_exc()}")  # 日志转图片，依赖nonebot_plugin_htmlrender
@@ -742,10 +753,9 @@ async def getfiles(url, plugin_folder_path, upper_path):
             max_retry = 3
             relative_path = copy.deepcopy(i["path"])
             while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
-                                                                    os.path.join(plugin_folder_path,
-                                                                                 relative_path.replace(upper_path, '',
-                                                                                                       1)
-                                                                                 ),
+                                                                    plugin_folder_path + relative_path.replace(
+                                                                        upper_path, '',
+                                                                        1),
                                                                     headers=header,
                                                                     timeout=10)):
                 await asyncio.sleep(0.5)
@@ -859,3 +869,28 @@ def change_load_commond(plugin_folder, plugin_name, plugin_init):
             f2.write(regex.sub(new_load_str, line))
     os.remove(plugin_init)
     os.rename(f"{plugin_init}.bak", plugin_init)
+
+
+def get_url_info(url):
+    para = {}
+    u = url.strip("/").replace(".git", "") + '/'
+    reg = "https://github.com/(.*?)/(.*?)/(tree)?(.*)"
+    rs = re.match(reg, u)
+    para["owner"] = rs.group(1)
+    para["repo"] = rs.group(2)
+    if rs.group(3):
+        path_info = rs.group(4).strip('/')
+        path_info = path_info.split('/')
+        para["branch"] = path_info[0]
+        if len(path_info) == 1:
+            para["plugin_name"] = para["repo"]
+            para["part_flag"] = False
+        else:
+            para["plugin_name"] = path_info[-1]
+            para["path"] = "/".join(path_info[1:-1])
+            para["part_flag"] = True
+    else:
+        para["branch"] = ''
+        para["plugin_name"] = para["repo"]
+        para["part_flag"] = False
+    return para["owner"], para["repo"], para["branch"], para["plugin_name"], para["part_flag"], para["path"]
