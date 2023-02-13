@@ -530,7 +530,7 @@ async def _(arg: Message = CommandArg()):
             if update_pip_flag:
                 await installDependence.send("检测到新版本pip，正在升级pip")
                 # 更新pip
-                upd_cmd = re.search(r"To update, run: \w+", stderr).group().replace("To update, run: ", "")
+                upd_cmd = re.search(r"To update, run: (.*)", stderr).group(1)
                 try:
                     stdout2, stderr2, result2 = run_cmd(upd_cmd, sys)
                     if result2 != 0:
@@ -650,7 +650,7 @@ async def _(arg: Message = CommandArg()):
             if update_pip_flag:
                 await installDependence.send("检测到新版本pip，正在升级pip")
                 # 更新pip
-                upd_cmd = re.search(r"To update, run: \w+", stderr).group().replace("To update, run: ", "")
+                upd_cmd = re.search(r"To update, run: (.*)", stderr).group(1)
                 try:
                     stdout2, stderr2, result2 = run_cmd(upd_cmd, sys)
                     if result2 != 0:
