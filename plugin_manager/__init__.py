@@ -228,7 +228,7 @@ async def _(arg: Message = CommandArg()):
         '''
         # upper_path = '/'.join(url_list[7:-1])
         # branch = re.search(r'tree/(.*?)/', url).group(1)
-        index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{upper_path + plugin_name}?ref={branch}"
+        index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{upper_path}/{plugin_name}?ref={branch}"
         try:
             if not await getfiles(index_url, plugin_folder_path, upper_path):
                 raise
@@ -753,7 +753,7 @@ async def getfiles(url, plugin_folder_path, upper_path):
             max_retry = 3
             relative_path = copy.deepcopy(i["path"])
             while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
-                                                                    plugin_folder_path + relative_path.replace(
+                                                                    plugin_folder_path + '/' +  relative_path.replace(
                                                                         upper_path, '',
                                                                         1),
                                                                     headers=header,
