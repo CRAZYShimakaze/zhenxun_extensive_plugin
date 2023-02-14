@@ -88,8 +88,6 @@ __plugin_configs__ = {
         "default_value": None
     },
 }
-header = {'Authorization': 'token ' + str(Config.get_config("plugin_manager", "TOKEN")),
-          'Accept': 'application/vnd.github.v3+json'}
 installPlugin = on_command("下载插件", priority=5, permission=SUPERUSER, block=True)
 updatePlugin = on_command("更新插件", priority=5, permission=SUPERUSER, block=True)
 deletePlugin = on_command("删除插件", priority=5, permission=SUPERUSER, block=True)
@@ -230,7 +228,8 @@ async def _(arg: Message = CommandArg()):
         # branch = re.search(r'tree/(.*?)/', url).group(1)
         index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{upper_path}/{plugin_name}?ref={branch}"
         try:
-            if not await getfiles(index_url, plugin_folder_path, upper_path):
+            flag, info = await getfiles(index_url, plugin_folder_path, upper_path)
+            if not flag:
                 raise
             # 检查插件目录下是否有load_plugins命令
             plugin_init = os.path.join(plugin_folder_path, plugin_name, "__init__.py")
@@ -248,7 +247,7 @@ async def _(arg: Message = CommandArg()):
             return
         except Exception as e:
             pic = await text_to_pic(
-                text=f"{url}安装失败：\n{e}\n{traceback.format_exc()}")  # 日志转图片，依赖nonebot_plugin_htmlrender
+                text=f"{url}安装失败：\n{e}\n{traceback.format_exc()}\n{info}")  # 日志转图片，依赖nonebot_plugin_htmlrender
             await updatePlugin.finish(MessageSegment.image(pic))
     # 不使用git下载完整仓库
     elif not git_flag:
@@ -409,7 +408,8 @@ async def _(arg: Message = CommandArg()):
         # branch = re.search(r'tree/(.*?)/', url).group(1)
         index_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{upper_path}/{plugin_name}?ref={branch}"
         try:
-            if not await getfiles(index_url, plugin_folder_path, upper_path):
+            flag, info = await getfiles(index_url, plugin_folder_path, upper_path)
+            if not flag:
                 raise
             # 检查插件目录下是否有load_plugins命令
             plugin_init = os.path.join(plugin_folder_path, plugin_name, "__init__.py")
@@ -425,7 +425,7 @@ async def _(arg: Message = CommandArg()):
             return await installPlugin.send(f"{url}安装成功，请检查依赖并重启真寻。")
         except Exception as e:
             pic = await text_to_pic(
-                text=f"{url}安装失败：\n{e}\n{traceback.format_exc()}")  # 日志转图片，依赖nonebot_plugin_htmlrender
+                text=f"{url}安装失败：\n{e}\n{traceback.format_exc()}\n{info}")  # 日志转图片，依赖nonebot_plugin_htmlrender
             await installPlugin.finish(MessageSegment.image(pic))
     # 不使用git下载完整仓库
     elif not git_flag:
@@ -729,6 +729,12 @@ def run_cmd(command: str, sys):
 
 # 递归下载文件
 async def getfiles(url, plugin_folder_path, upper_path):
+    if not Config.get_config("plugin_manager", "TOKEN"):
+        logger.info(f'检测到github token未配置,请在config.yaml文件中进行配置!')
+        header = None
+    else:
+        header = {'Authorization': 'token ' + str(Config.get_config("plugin_manager", "TOKEN")),
+                  'Accept': 'application/vnd.github.v3+json'}
     # 获取资源下载信息
     max_retry = 3
     while max_retry:
@@ -745,30 +751,33 @@ async def getfiles(url, plugin_folder_path, upper_path):
     res.encoding = "utf8"
     data = json.loads(res.text)
     for i in data:
-        # 检查文件类型，文件夹需要递归下载子文件
-        if i["type"] == "dir":
-            if not await getfiles(i["url"], plugin_folder_path, upper_path):
-                return False
-        elif i["type"] == "file":
-            max_retry = 3
-            relative_path = copy.deepcopy(i["path"])
-            while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
-                                                                    plugin_folder_path + '/' +  relative_path.replace(
-                                                                        upper_path, '',
-                                                                        1),
-                                                                    headers=header,
-                                                                    timeout=10)):
-                await asyncio.sleep(0.5)
-                max_retry -= 1
-                logger.info(f'重试下载{i["download_url"]}第{3 - max_retry}次')
+        try:
+            # 检查文件类型，文件夹需要递归下载子文件
+            if i["type"] == "dir":
+                if not await getfiles(i["url"], plugin_folder_path, upper_path):
+                    return False, i
+            elif i["type"] == "file":
+                max_retry = 3
+                relative_path = copy.deepcopy(i["path"])
+                while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
+                                                                        plugin_folder_path + '/' + relative_path.replace(
+                                                                            upper_path, '',
+                                                                            1),
+                                                                        headers=header,
+                                                                        timeout=10)):
+                    await asyncio.sleep(0.5)
+                    max_retry -= 1
+                    logger.info(f'重试下载{i["download_url"]}第{3 - max_retry}次')
 
-            if not max_retry:
-                return False
-        else:
-            # 非预期的文件类型跳过处理
-            logger.error(f'未知的文件类型{i}')
-            return False
-    return True
+                if not max_retry:
+                    return False
+            else:
+                # 非预期的文件类型跳过处理
+                logger.error(f'未知的文件类型{i}')
+                return False, i
+        except:
+            return False, data
+    return True, data
 
 
 # 下载完整仓库
