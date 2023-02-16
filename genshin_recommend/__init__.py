@@ -29,6 +29,7 @@ usage：
         角色配装/出装
         角色评级/推荐/建议
         武器推荐/适配/评级
+        副本推荐/评级/分析
         深渊配队/阵容
         每日/今日素材
         XX攻略
@@ -36,9 +37,9 @@ usage：
         XX素材/材料
 """.strip()
 __plugin_des__ = "查询原神攻略"
-__plugin_cmd__ = ["原神攻略", "角色配装", "角色评级", "武器推荐", "深渊配队", "每日素材"]
+__plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.3
+__plugin_version__ = 1.4
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -60,14 +61,15 @@ Config.add_plugin_config(
 common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
 common_weapon_grade = on_regex("^武器(推荐|适配|评级)$", priority=1, block=True)
+common_artifact_guide = on_regex("^副本(推荐|评级|分析)$", priority=1, block=True)
 common_abyss = on_regex("^深渊(配队|阵容)$", priority=1, block=True)
 common_material = on_regex("^(每日|今日)素材$", priority=1, block=True)
 
 update_info = on_command("更新原神推荐", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查攻略插件更新", permission=SUPERUSER, priority=3, block=True)
-role_guide = on_regex(r"(.*)攻略", priority=15)
-genshin_info = on_regex(r"(.*)图鉴", priority=15)
-break_material = on_regex(r"(.*)(素材|材料)", priority=15)
+role_guide = on_regex(r"(.*)攻略$", priority=15)
+genshin_info = on_regex(r"(.*)图鉴$", priority=15)
+break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
 genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_guide/{}.png"
 genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_break/{}.jpg"
@@ -114,6 +116,15 @@ async def _():
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
         await common_weapon_grade.send(image(Path(item)))
+
+
+@common_artifact_guide.handle()
+async def _():
+    arg = '副本分析'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await common_artifact_guide.send(image(Path(item)))
 
 
 @common_abyss.handle()

@@ -204,6 +204,8 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     at_user = args[1].strip()
     if role != "更新":
         role = get_role_name(role)
+    if not role:
+        return
     uid = await get_msg_uid(event)
     if role == "更新":
         await update(event, uid, group_save=True)
@@ -215,6 +217,8 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     role = get_role_name(role)
+    if not role:
+        return
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     if not os.path.exists(role_path):
         await group_best.finish(f"本群还没有{role}的数据收录哦！赶快去查询吧！", at_sender=True)
@@ -226,13 +230,15 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         bot = get_bot()
         qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
-        await group_best.finish(f"本群最强{role}!仅根据圣遗物评分评判\n由'{qq_name}'查询\n" + role_pic)
+        await group_best.finish(f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
 
 @group_worst.handle()
 async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     role = get_role_name(role)
+    if not role:
+        return
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     if not os.path.exists(role_path) or len(os.listdir(role_path)) < 2:
         await group_worst.finish(f"本群还没有最菜{role}的数据收录哦！赶快去查询吧！", at_sender=True)
@@ -244,13 +250,15 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         bot = get_bot()
         qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
-        await group_worst.finish(f"本群最菜{role}!仅根据圣遗物评分评判\n由'{qq_name}'查询\n" + role_pic)
+        await group_worst.finish(f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
 
 @reset_best.handle()
 async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
     role = arg.extract_plain_text().strip()
     role = get_role_name(role)
+    if not role:
+        return
     role_path = f'{group_info_path}/{event.group_id}/{role}'
     shutil.rmtree(role_path, ignore_errors=True)
     await reset_best.finish(f'重置群{role}成功!')
@@ -325,6 +333,8 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         return await char_card.finish("请输入正确角色名...", at_sender=True)
     role = msg[1]
     role = get_role_name(role)
+    if not role:
+        return
     await gen(event, uid, role, at_user=True)
 
 

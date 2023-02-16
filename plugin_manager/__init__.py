@@ -42,7 +42,7 @@ __plugin_settings__ = {
     "level": 5,
     "default_status": True,
     "limit_superuser": False,
-    "cmd": ["插件管理"],
+    "cmd": __plugin_cmd__,
 }
 __plugin_configs__ = {
     "PLUGINFOLDER": {
