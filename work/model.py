@@ -1,20 +1,23 @@
-import math
-from services.db_context import db
+from tortoise import fields
+from services.db_context import Model
 from typing import List
 
-class Worker(db.Model):
-    __tablename__ = "workers"
-    __table_args__ = {'extend_existing': True}
+class Worker(Model):
 
-    id = db.Column(db.Integer(), primary_key=True)
-    user_qq = db.Column(db.BigInteger(), nullable=False)
-    group_id = db.Column(db.BigInteger(), nullable=False)
-    question_count = db.Column(db.Integer(), default=0)  # 答对题目数
-    work_count = db.Column(db.Integer(), default=0) # 打工次数
-    time_count = db.Column(db.Float(), default=0) # 工时（秒）
-    salary = db.Column(db.Integer(), default=0) # 工资总数
+    class Meta:
+        table = "workers"
+        table_description = "打工数据表"
+        unique_together = ("user_qq", "group_id")
 
-    _idx1 = db.Index("workers_group_users_idx1", "user_qq", "group_id", unique=True)
+    id = fields.IntField(pk=True, generated=True, auto_increment=True) # 自增id
+    user_qq = fields.BigIntField() # 用户id
+    group_id = fields.BigIntField() # 群聊id
+    question_count = fields.IntField(default=0) # 答对题目数
+    work_count = fields.IntField(default=0) # 打工次数
+    time_count = fields.FloatField(default=0) # 工时（秒）
+    salary = fields.FloatField(default=0) # 工资总数
+
+
 
     @classmethod
     async def ensure(cls, user_qq:int,group_id:int)->"Worker":
@@ -25,12 +28,8 @@ class Worker(db.Model):
             :param user_qq: qq号
             :param group_id: 群号
         """
-        user = (
-            await cls.query.where((cls.user_qq == user_qq) & (cls.group_id == group_id))
-            .with_for_update()
-            .gino.first()
-        )
-        return user or await cls.create(user_qq=user_qq, group_id=group_id)
+        user, _ = await cls.get_or_create(user_qq=user_qq, group_id=group_id)
+        return user
 
     @classmethod
     async def add_question_count(cls, user_qq: int, group_id: int, num:int) -> bool:
@@ -43,16 +42,9 @@ class Worker(db.Model):
             :num: 答对题目数
         """
         try:
-            user = (
-                await cls.query.where(
-                    (cls.user_qq == user_qq) & (cls.group_id == group_id)
-                )
-                .with_for_update()
-                .gino.first()
-            )
-            if not user:
-                user = await cls.create(user_qq=user_qq, group_id=group_id)
-            await user.update( question_count=user.question_count + num ).apply()
+            user, _ = await cls.get_or_create(user_qq=user_qq, group_id=group_id)
+            user.question_count = user.question_count + num
+            await user.save(update_fields=["question_count", ])
             return True
         except Exception:
             return False
@@ -67,16 +59,9 @@ class Worker(db.Model):
             :param group_id: 群号
         """
         try:
-            user = (
-                await cls.query.where(
-                    (cls.user_qq == user_qq) & (cls.group_id == group_id)
-                )
-                .with_for_update()
-                .gino.first()
-            )
-            if not user:
-                user = await cls.create(user_qq=user_qq, group_id=group_id)
-            await user.update( work_count=user.work_count + 1 ).apply()
+            user, _ = await cls.get_or_create(user_qq=user_qq, group_id=group_id)
+            user.work_count = user.work_count + 1
+            await user.save(update_fields=["work_count", ])
             return True
         except Exception:
             return False
@@ -92,16 +77,9 @@ class Worker(db.Model):
             :times: 此次工作耗时（秒）
         """
         try:
-            user = (
-                await cls.query.where(
-                    (cls.user_qq == user_qq) & (cls.group_id == group_id)
-                )
-                .with_for_update()
-                .gino.first()
-            )
-            if not user:
-                user = await cls.create(user_qq=user_qq, group_id=group_id)
-            await user.update( time_count=user.time_count + times ).apply()
+            user, _ = await cls.get_or_create(user_qq=user_qq, group_id=group_id)
+            user.time_count = user.time_count + times
+            await user.save(update_fields=["time_count", ])
             return True
         except Exception:
             return False
@@ -117,16 +95,9 @@ class Worker(db.Model):
             :salary: 此次工作所得工资
         """
         try:
-            user = (
-                await cls.query.where(
-                    (cls.user_qq == user_qq) & (cls.group_id == group_id)
-                )
-                .with_for_update()
-                .gino.first()
-            )
-            if not user:
-                user = await cls.create(user_qq=user_qq, group_id=group_id)
-            await user.update( salary=user.salary + salary ).apply()
+            user, _ = await cls.get_or_create(user_qq=user_qq, group_id=group_id)
+            user.salary = user.salary + salary
+            await user.save(update_fields=["salary", ])
             return True
         except Exception:
             return False
@@ -139,5 +110,5 @@ class Worker(db.Model):
         参数:
         :param group_id: 群号
         """
-        users = await cls.query.where((cls.group_id == group_id)).gino.all()
+        users = await cls.all(group_id = group_id)
         return users
