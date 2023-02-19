@@ -3,19 +3,19 @@ import json
 import os
 import random
 import re
-import shutil
 from pathlib import Path
 from typing import Tuple
 
 import nonebot
+from configs.config import Config
+from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
-
-from configs.config import Config
-from configs.path_config import DATA_PATH
 from services import logger
+
 from utils.http_utils import AsyncHttpx
+from utils.image_utils import get_img_hash
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
 
@@ -63,18 +63,19 @@ common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block
 common_weapon_grade = on_regex("^武器(推荐|适配|评级)$", priority=1, block=True)
 common_artifact_guide = on_regex("^副本(推荐|评级|分析)$", priority=1, block=True)
 common_abyss = on_regex("^深渊(配队|阵容)$", priority=1, block=True)
-common_material = on_regex("^(每日|今日)素材$", priority=1, block=True)
+common_material = on_regex("^每日素材$", priority=1, block=True)
 
 update_info = on_command("更新原神推荐", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查攻略插件更新", permission=SUPERUSER, priority=3, block=True)
 role_guide = on_regex(r"(.*)攻略$", priority=15)
 genshin_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
-common_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/common_guide/{}.jpg"
-genshin_role_guide = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_guide/{}.png"
-genshin_role_break = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_break/{}.jpg"
-genshin_role_info = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/role_info/{}.png"
-genshin_weapon_info = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/weapon_info/{}.png"
+src_url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/"
+common_guide = src_url + "common_guide/{}.jpg"
+genshin_role_guide = src_url + "role_guide/{}.png"
+genshin_role_break = src_url + "role_break/{}.jpg"
+genshin_role_info = src_url + "role_info/{}.png"
+genshin_weapon_info = src_url + "weapon_info/{}.png"
 RES_PATH = str(DATA_PATH) + '/genshin_recommend'
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
@@ -96,7 +97,7 @@ async def _():
     arg = '角色配装'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_role_equip.send(image(Path(item)))
 
 
@@ -105,7 +106,7 @@ async def _():
     arg = '角色评级'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_role_grade.send(image(Path(item)))
 
 
@@ -114,7 +115,7 @@ async def _():
     arg = '武器推荐'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_weapon_grade.send(image(Path(item)))
 
 
@@ -123,7 +124,7 @@ async def _():
     arg = '副本分析'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_artifact_guide.send(image(Path(item)))
 
 
@@ -132,7 +133,7 @@ async def _():
     arg = '深渊配队'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_abyss.send(image(Path(item)))
 
 
@@ -142,7 +143,7 @@ async def _():
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg',
                  f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, 0)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_material.send(image(Path(item)))
 
 
@@ -156,7 +157,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
     else:
         return
     save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
-    await get_img(genshin_role_guide, role, save_path, 0)
+    await get_img(genshin_role_guide, role, save_path, ignore_exist=False)
     try:
         await role_guide.send(image(Path(save_path)))
     except:
@@ -178,14 +179,14 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
         else:
             return
         save_path = f'{WEAPON_INFO_PATH}/{role}.png'
-        await get_img(genshin_weapon_info, role, save_path, 0)
+        await get_img(genshin_weapon_info, role, save_path, ignore_exist=False)
         try:
             await genshin_info.send(image(Path(save_path)))
         except:
             os.unlink(save_path)
         return
     save_path = f'{ROLE_INFO_PATH}/{role}.png'
-    await get_img(genshin_role_info, role, save_path, 0)
+    await get_img(genshin_role_info, role, save_path, ignore_exist=False)
     try:
         await genshin_info.send(image(Path(save_path)))
     except:
@@ -200,7 +201,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
             role = role_list.get(item)[0]
             break
     save_path = f'{ROLE_BREAK_PATH}/{role}.jpg'
-    await get_img(genshin_role_break, role, save_path, 0)
+    await get_img(genshin_role_break, role, save_path, ignore_exist=False)
     try:
         await break_material.send(image(Path(save_path)))
     except:
@@ -209,30 +210,51 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 
 @update_info.handle()
 async def _():
+    async def check_hash(path, name, url, hash_list):
+        try:
+            if not path.exists() or hash_list.get(name, '') != str(get_img_hash(path)):
+                try:
+                    await get_img(url, name, path, ignore_exist=True)
+                except:
+                    pass
+        except:
+            try:
+                await get_img(url, name, path, ignore_exist=True)
+            except:
+                pass
+
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
-    shutil.rmtree(RES_PATH)
-    arg = ['角色配装', '角色评级', '武器推荐', '深渊配队', '每日素材1', '每日素材2', '每日素材3']
-    for item in arg:
-        save_path = f'{COMMON_GUIDE_PATH}/{item}.jpg'
+    # shutil.rmtree(RES_PATH, ignore_errors=True)
+    common_guide_hash = (await AsyncHttpx.get(src_url + "common_guide/hash")).json()
+    role_break_hash = (await AsyncHttpx.get(src_url + "role_break/hash")).json()
+    role_guide_hash = (await AsyncHttpx.get(src_url + "role_guide/hash")).json()
+    role_info_hash = (await AsyncHttpx.get(src_url + "role_info/hash")).json()
+    weapon_info_hash = (await AsyncHttpx.get(src_url + "weapon_info/hash")).json()
+    for item in common_guide_hash.keys():
+        save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
+        await check_hash(save_path, item, common_guide, common_guide_hash)
+    for role in role_break_hash.keys():
+        save_path = Path(f'{ROLE_BREAK_PATH}/{role}.jpg')
         try:
-            await get_img(common_guide, item, save_path, 1)
+            await check_hash(save_path, role, genshin_role_break, role_break_hash)
         except:
             continue
-    for item in role_list:
-        role = role_list.get(item)[0]
+    for role in role_guide_hash.keys():
+        save_path = Path(f'{ROLE_GUIDE_PATH}/{role}.png')
         try:
-            save_path = f'{ROLE_BREAK_PATH}/{role}.jpg'
-            await get_img(genshin_role_break, role, save_path, 1)
-            save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
-            await get_img(genshin_role_guide, role, save_path, 1)
-            save_path = f'{ROLE_INFO_PATH}/{role}.png'
-            await get_img(genshin_role_info, role, save_path, 1)
+            await check_hash(save_path, role, genshin_role_guide, role_guide_hash)
         except:
             continue
-    for item in weapon_list:
-        save_path = f'{WEAPON_INFO_PATH}/{item}.png'
+    for role in role_info_hash.keys():
+        save_path = Path(f'{ROLE_INFO_PATH}/{role}.png')
         try:
-            await get_img(genshin_weapon_info, item, save_path, 1)
+            await check_hash(save_path, role, genshin_role_info, role_info_hash)
+        except:
+            continue
+    for item in weapon_info_hash.keys():
+        save_path = Path(f'{WEAPON_INFO_PATH}/{item}.png')
+        try:
+            await check_hash(save_path, item, genshin_weapon_info, weapon_info_hash)
         except:
             continue
     await update_info.send('更新原神推荐完成！')
