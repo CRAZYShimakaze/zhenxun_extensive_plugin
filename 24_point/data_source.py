@@ -22,7 +22,7 @@ class Draw_Handle:
 
     async def get_tff(self):
         font_size_char = 90  # 汉字字体大小
-        self.font_char = await load_font("Consolas.ttf", font_size_char)
+        self.font_char = await load_font("consola.ttf", font_size_char)
 
     def draw_block(self,
                    color: str,
