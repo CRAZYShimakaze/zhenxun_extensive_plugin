@@ -894,6 +894,7 @@ def get_url_info(url):
         if len(path_info) == 1:
             para["plugin_name"] = para["repo"]
             para["part_flag"] = False
+            para["path"] = ""
         else:
             para["plugin_name"] = path_info[-1]
             para["path"] = "/".join(path_info[1:-1])
@@ -902,4 +903,5 @@ def get_url_info(url):
         para["branch"] = ''
         para["plugin_name"] = para["repo"]
         para["part_flag"] = False
+        para["path"] = ""
     return para["owner"], para["repo"], para["branch"], para["plugin_name"], para["part_flag"], para["path"]
