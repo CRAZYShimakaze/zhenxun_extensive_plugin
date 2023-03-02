@@ -4,6 +4,10 @@
 
 chatgpt问答（支持上下文）
 
+需要登陆 https://platform.openai.com/account/api-keys
+
+获取API_KEY进行配置后才可使用
+
 ## 安装
 
 ```
