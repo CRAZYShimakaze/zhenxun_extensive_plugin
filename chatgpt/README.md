@@ -4,6 +4,12 @@
 
 chatgpt问答（支持上下文）
 
+## 安装
+
+```
+pip install openai
+```
+
 ## 使用
 
 - 问答：世界树+问题
