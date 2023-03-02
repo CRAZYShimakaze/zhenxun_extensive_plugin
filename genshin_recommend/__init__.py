@@ -39,7 +39,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.4
+__plugin_version__ = 1.5
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,

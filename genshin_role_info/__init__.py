@@ -47,7 +47,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.3
+__plugin_version__ = 2.4
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -120,7 +120,7 @@ async def get_msg_uid(event):
     else:
         uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
-        await artifact_list.finish("请输入绑定uidXXXX进行绑定后再查询！")
+        await artifact_list.finish("请绑定uid后再查询！")
     if not check_uid(uid):
         await artifact_list.finish(f"绑定的uid{uid}不合法，请重新绑定!")
     return uid

@@ -229,6 +229,13 @@ def get_effective(data):
                 role_name = '优菈-核爆'
         elif role_name == '艾尔海森' and data['武器']['名称'] == '磐岩结绿':
             role_name = '艾尔海森-绿剑'
+        elif role_name == '迪希雅':
+            if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
+                    and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
+                    and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
+                    and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
+                    and data['属性']['基础生命'] + data['属性']['基础生命'] > 40000:
+                role_name = '迪希雅-血牛'
         if role_name in role_score:
             return role_score.get(role_name), role_name
         else:
