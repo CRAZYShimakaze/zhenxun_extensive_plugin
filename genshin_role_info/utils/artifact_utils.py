@@ -1,3 +1,4 @@
+import copy
 import math
 
 from ..utils.card_utils import role_score
@@ -78,7 +79,7 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     return calc_rank_str, calc_total, mark
 
 
-def get_miao_score(weight_name, base_info):
+def get_miao_score(affix_weight, base_info):
     grow_value = {  # 词条成长值
         "暴击率": 3.89,
         "暴击伤害": 7.77,
@@ -94,7 +95,6 @@ def get_miao_score(weight_name, base_info):
         "生命值": 298.75,
         "防御力": 23.15,
     }
-    role_name = weight_name
     main_affixs = {  # 可能的主词条
         "2": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素充能效率".split(","),  # EQUIP_SHOES
         "3": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素伤害加成,物理伤害加成".split(","),  # EQUIP_RING
@@ -102,7 +102,6 @@ def get_miao_score(weight_name, base_info):
     }
     sub_affixs = "攻击力,百分比攻击力,防御力,百分比防御力,生命值,百分比生命值,元素精通,元素充能效率,暴击率,暴击伤害".split(
         ",")
-    affix_weight = role_score.get(role_name, {"百分比攻击力": 75, "暴击率": 100, "暴击伤害": 100})
     pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
     if pointmark.get("百分比攻击力"):
         pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
@@ -227,8 +226,6 @@ def get_effective(data):
         elif role_name == '优菈':
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2:
                 role_name = '优菈-核爆'
-        elif role_name == '艾尔海森' and data['武器']['名称'] == '磐岩结绿':
-            role_name = '艾尔海森-绿剑'
         elif role_name == '迪希雅':
             if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
@@ -236,10 +233,25 @@ def get_effective(data):
                     and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
                     and data['属性']['基础生命'] + data['属性']['基础生命'] > 40000:
                 role_name = '迪希雅-血牛'
-        if role_name in role_score:
+        if '-' in role_name:
             return role_score.get(role_name), role_name
+        elif role_name in role_score:
+            if '百分比攻击力' in (weight := copy.deepcopy(role_score.get(role_name))):
+                if data['武器']['名称'] == '磐岩结绿' and '百分比生命值' not in weight:
+                    weight['百分比生命值'] = 45
+                    role_name = f'{role_name}-绿剑'
+                if data['武器']['名称'] == '赤角石溃杵' and '百分比防御力' not in weight:
+                    weight['百分比防御力'] = 45
+                    role_name = f'{role_name}-赤角'
+                if data['武器']['名称'] == '猎人之径' and '元素精通' not in weight:
+                    weight['元素精通'] = 45
+                    role_name = f'{role_name}-猎人之径'
+                if data['武器']['名称'] == '薙草之稻光' and '元素充能效率' not in weight:
+                    weight['元素充能效率'] = 45
+                    role_name = f'{role_name}-薙刀'
+            return weight, role_name
         else:
-            return {'百分比攻击力': 0.75, '暴击率': 1, '暴击伤害': 1}
+            return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}
     except:
         return role_score.get(role_name), role_name
 

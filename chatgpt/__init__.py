@@ -50,11 +50,9 @@ ctx_len = 1
 @reset.handle()
 async def _(event: MessageEvent):
     global conversations
+    chat_id = str(event.group_id) if isinstance(event, GroupMessageEvent) else str(event.user_id)
     try:
-        if isinstance(event, GroupMessageEvent):
-            conversations.pop(str(event.group_id))
-        else:
-            conversations.pop(str(event.user_id))
+        conversations.pop(chat_id)
     except:
         pass
     await reset.send("世界树重置完毕")
@@ -115,12 +113,11 @@ def ask(msg, conversation):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=conversation + [{"role": "user", "content": msg}])
-    print(conversation)
     return response['choices'][0]['message']['content'].strip('\n')
 
 
 def init_chatbot():
     api_key = Config.get_config("ChatGPT", "API_KEY")
     if not api_key:
-        raise Exception("未配置ACCESS_TOKEN")
+        raise Exception("未配置API_KEY,请在config.yaml文件中进行配置")
     openai.api_key = api_key

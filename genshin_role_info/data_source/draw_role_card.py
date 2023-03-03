@@ -286,7 +286,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     # 圣遗物
     no_list = ''
     effective, weight_name = get_effective(data)
-    affix_weight, point_mark, max_mark = get_miao_score(weight_name, role_data[data['名称']]['attribute'])
+    affix_weight, point_mark, max_mark = get_miao_score(effective, role_data[data['名称']]['attribute'])
     total_all = 0
     total_cnt = 0
     artifact_pk_info = {'角色': data["名称"]}
@@ -498,7 +498,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     if not only_cal:
         # 圣遗物评分
         if total_cnt and total_all <= 66 * total_cnt:
-            score_ave = total_all / total_cnt
+            # score_ave = total_all / total_cnt
             # score_ave = round(score_ave)
             '''
             total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
