@@ -6,9 +6,11 @@ chatgpt问答（支持上下文）
 
 需要登陆 https://platform.openai.com/account/api-keys
 
-获取API_KEY进行配置后才可使用
+获取API_KEY在config.yaml中进行配置后才可使用
 
 ## 安装
+
+(如使用虚拟环境请先进入虚拟环境再进行安装)
 
 ```
 pip install openai
