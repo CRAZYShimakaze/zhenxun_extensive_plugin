@@ -170,7 +170,7 @@ def get_effective(data):
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
                     and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
-                    and data['属性']['基础生命'] + data['属性']['基础生命'] > 40000:
+                    and data['属性']['基础生命'] + data['属性']['额外生命'] > 40000:
                 role_name = '钟离-血牛'
         elif role_name == '芭芭拉':
             if artifacts[3]['主属性']['属性名'] == '水元素伤害加成' and \
@@ -231,7 +231,7 @@ def get_effective(data):
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
                     and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
-                    and data['属性']['基础生命'] + data['属性']['基础生命'] > 40000:
+                    and data['属性']['基础生命'] + data['属性']['额外生命'] > 40000:
                 role_name = '迪希雅-血牛'
         if '-' in role_name:
             return role_score.get(role_name), role_name
