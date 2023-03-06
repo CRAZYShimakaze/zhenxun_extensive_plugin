@@ -216,12 +216,11 @@ async def _():
                 try:
                     await get_img(url, name, path, ignore_exist=True)
                 except:
-                    pass
+                    return False
+                else:
+                    return True
         except:
-            try:
-                await get_img(url, name, path, ignore_exist=True)
-            except:
-                pass
+            return False
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
@@ -230,34 +229,30 @@ async def _():
     role_guide_hash = (await AsyncHttpx.get(src_url + "role_guide/hash")).json()
     role_info_hash = (await AsyncHttpx.get(src_url + "role_info/hash")).json()
     weapon_info_hash = (await AsyncHttpx.get(src_url + "weapon_info/hash")).json()
+    update_list = set()
     for item in common_guide_hash.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
-        await check_hash(save_path, item, common_guide, common_guide_hash)
+        if await check_hash(save_path, item, common_guide, common_guide_hash):
+            update_list.add(item)
     for role in role_break_hash.keys():
         save_path = Path(f'{ROLE_BREAK_PATH}/{role}.jpg')
-        try:
-            await check_hash(save_path, role, genshin_role_break, role_break_hash)
-        except:
-            continue
+        if await check_hash(save_path, role, genshin_role_break, role_break_hash):
+            update_list.add(role)
     for role in role_guide_hash.keys():
         save_path = Path(f'{ROLE_GUIDE_PATH}/{role}.png')
-        try:
-            await check_hash(save_path, role, genshin_role_guide, role_guide_hash)
-        except:
-            continue
+        if await check_hash(save_path, role, genshin_role_guide, role_guide_hash):
+            update_list.add(role)
     for role in role_info_hash.keys():
         save_path = Path(f'{ROLE_INFO_PATH}/{role}.png')
-        try:
-            await check_hash(save_path, role, genshin_role_info, role_info_hash)
-        except:
-            continue
+        if await check_hash(save_path, role, genshin_role_info, role_info_hash):
+            update_list.add(role)
     for item in weapon_info_hash.keys():
         save_path = Path(f'{WEAPON_INFO_PATH}/{item}.png')
-        try:
-            await check_hash(save_path, item, genshin_weapon_info, weapon_info_hash)
-        except:
-            continue
-    await update_info.send('更新原神推荐完成！')
+        if await check_hash(save_path, item, genshin_weapon_info, weapon_info_hash):
+            update_list.add(item)
+    if not update_list:
+        return await update_info.send(f'所有推荐信息均为最新！')
+    await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
 
 
 async def get_update_info():

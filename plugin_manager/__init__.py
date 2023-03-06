@@ -1,5 +1,6 @@
 import asyncio
 import copy
+import hashlib
 import json
 import os
 import platform
@@ -9,15 +10,15 @@ import subprocess
 import traceback
 import zipfile
 
+from configs.config import Config
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from nonebot.exception import FinishedException
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_htmlrender import text_to_pic
-
-from configs.config import Config
 from services.log import logger
+
 from utils.http_utils import AsyncHttpx
 
 __zx_plugin_name__ = "插件管理 [Superuser]"
@@ -180,11 +181,13 @@ async def _(arg: Message = CommandArg()):
     plugin_folder_path = os.path.join(bot_path, plugin_folder)
 
     # 检查插件是否已安装
+    '''
     if os.path.exists(os.path.join(plugin_folder_path, plugin_name)):
         await updatePlugin.send('删除旧版插件...')
         shutil.rmtree(os.path.join(plugin_folder_path, plugin_name))
     else:
         await updatePlugin.send('未找到旧版插件,直接进行下载...')
+    '''
     # 检查插件目录是否被加载
     # TODO 已知如果该行代码被注释，可能导致误判
     try:
@@ -759,15 +762,14 @@ async def getfiles(url, plugin_folder_path, upper_path):
             elif i["type"] == "file":
                 max_retry = 3
                 relative_path = copy.deepcopy(i["path"])
-                while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
-                                                                        plugin_folder_path + '/' + relative_path.replace(
-                                                                            upper_path, '',
-                                                                            1),
-                                                                        headers=header,
-                                                                        timeout=10)):
-                    await asyncio.sleep(0.5)
-                    max_retry -= 1
-                    logger.info(f'重试下载{i["download_url"]}第{3 - max_retry}次')
+                full_path = plugin_folder_path + '/' + relative_path.replace(upper_path, '', 1)
+                if not os.path.exists(full_path) or git_blob_hash(full_path) != i["sha"]:
+                    while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
+                                                                            full_path, headers=header,
+                                                                            timeout=10)):
+                        await asyncio.sleep(0.5)
+                        max_retry -= 1
+                        logger.info(f'重试下载{i["download_url"]}第{3 - max_retry}次')
 
                 if not max_retry:
                     return False
@@ -905,3 +907,12 @@ def get_url_info(url):
         para["part_flag"] = False
         para["path"] = ""
     return para["owner"], para["repo"], para["branch"], para["plugin_name"], para["part_flag"], para["path"]
+
+
+def git_blob_hash(file_path):
+    with open(file_path, 'rb') as f:
+        data = f.read()
+    data = b'blob ' + str(len(data)).encode() + b'\0' + data
+    h = hashlib.sha1()
+    h.update(data)
+    return h.hexdigest()
