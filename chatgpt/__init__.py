@@ -17,7 +17,7 @@ usage：
 __plugin_des__ = "ChatGPT"
 __plugin_cmd__ = ["世界树"]
 __plugin_type__ = ("一些工具",)
-__plugin_version__ = 0.1
+__plugin_version__ = 0.2
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -28,6 +28,7 @@ __plugin_settings__ = {
 }
 __plugin_cd_limit__ = {
     "cd": 10,
+    "limit_type": "group",
     "rst": "请求过快！"
 }
 Config.add_plugin_config(
@@ -96,8 +97,9 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
             conversation = [[], ctx_len]
             conversations[chat_id] = conversation
         # 获取GPT回复
-        loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, ask, msg, conversation[0])
+        # loop = asyncio.get_event_loop()
+        # response = await loop.run_in_executor(None, ask, msg, conversation[0])
+        response = await ask(msg, conversation[0])
     except Exception as e:
         return await ai.finish(str(e))
     conversation[0].append({"role": "user", "content": msg})
@@ -109,15 +111,17 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     await ai.send(response, at_sender=True)
 
 
-def ask(msg, conversation):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=conversation + [{"role": "user", "content": msg}])
+async def ask(msg, conversation):
+    response = await openai.ChatCompletion.acreate(model="gpt-3.5-turbo",
+                                                   messages=conversation + [{"role": "user", "content": msg}],
+                                                   temperature=0)
     return response['choices'][0]['message']['content'].strip('\n')
 
 
 def init_chatbot():
     api_key = Config.get_config("ChatGPT", "API_KEY")
+    proxy = Config.get_config("ChatGPT", "PROXY")
     if not api_key:
         raise Exception("未配置API_KEY,请在config.yaml文件中进行配置")
     openai.api_key = api_key
+    openai.proxy = proxy

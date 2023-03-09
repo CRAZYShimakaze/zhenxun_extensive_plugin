@@ -4,9 +4,9 @@
 
 chatgpt问答（支持上下文）
 
-需要登陆 https://platform.openai.com/account/api-keys
+需要登陆 https://platform.openai.com/account/api-keys 获取api-key
 
-获取API_KEY在config.yaml中进行配置后才可使用
+api-key和代理均在config.yaml中进行配置
 
 ## 安装
 
@@ -23,6 +23,10 @@ pip install openai
 - 清空历史记录：重置世界树 (仅超级用户可用)
 
 ## 更新
+
+**2023/3/10**[v0.2]
+
+1. 增加插件代理配置
 
 **2023/3/2**[v0.1]
 
