@@ -39,6 +39,14 @@ Config.add_plugin_config(
     help_="登陆https://platform.openai.com/account/api-keys获取",
     default_value=None,
 )
+Config.add_plugin_config(
+    "ChatGPT",
+    "PROXY",
+    None,
+    name="ChatGPT",
+    help_="如有代理需要，在此处填写你的代理地址",
+    default_value=None,
+)
 ai = on_command("世界树", priority=5, block=True)
 context_set = on_command("上下文长度", permission=SUPERUSER, priority=5, block=True)
 reset = on_command("重置世界树", permission=SUPERUSER, priority=5, block=True)
