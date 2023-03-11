@@ -18,34 +18,11 @@ __plugin_cmd__ = ["世界树"]
 __plugin_type__ = ("一些工具",)
 __plugin_version__ = 0.2
 __plugin_author__ = "CRAZYSHIMAKAZE"
-__plugin_settings__ = {
-    "level": 5,
-    "admin_level": 2,
-    "default_status": True,
-    "limit_superuser": False,
-    "cmd": __plugin_cmd__,
-}
-__plugin_cd_limit__ = {
-    "cd": 10,
-    "limit_type": "group",
-    "rst": "请求过快！"
-}
-Config.add_plugin_config(
-    "ChatGPT",
-    "API_KEY",
-    None,
-    name="ChatGPT",
-    help_="登陆https://platform.openai.com/account/api-keys获取",
-    default_value=None,
-)
-Config.add_plugin_config(
-    "ChatGPT",
-    "PROXY",
-    None,
-    name="ChatGPT",
-    help_="如有代理需要，在此处填写你的代理地址",
-    default_value=None,
-)
+__plugin_settings__ = {"level": 5, "admin_level": 2, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
+__plugin_cd_limit__ = {"cd": 10, "limit_type": "group", "rst": "请求过快！"}
+
+Config.add_plugin_config("ChatGPT", "API_KEY", None, name="ChatGPT", help_="登陆https://platform.openai.com/account/api-keys获取", default_value=None, )
+Config.add_plugin_config("ChatGPT", "PROXY", None, name="ChatGPT", help_="如有代理需要，在此处填写你的代理地址", default_value=None, )
 ai = on_command("世界树", priority=5, block=True)
 context_set = on_command("上下文长度", permission=SUPERUSER, priority=5, block=True)
 reset = on_command("重置世界树", permission=SUPERUSER, priority=5, block=True)
@@ -121,7 +98,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 async def ask(msg, conversation):
     if not (key := Config.get_config("ChatGPT", "API_KEY")):
         raise Exception("未配置API_KEY,请在config.yaml文件中进行配置")
-    proxies = {"https": proxies} if (proxies := Config.get_config("ChatGPT", "PROXY")) else None
+    proxies = {"https://": proxies} if (proxies := Config.get_config("ChatGPT", "PROXY")) else None
 
     header = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     data = {"model": "gpt-3.5-turbo", "messages": conversation + [{"role": "user", "content": msg}], "temperature": 0}
