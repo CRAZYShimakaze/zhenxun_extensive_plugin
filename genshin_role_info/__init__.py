@@ -9,15 +9,15 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
+from configs.config import Config
 from nonebot import Driver
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
-
-from configs.config import Config
-from plugins.genshin.query_user._models import Genshin
 from services.log import logger
+
+from plugins.genshin.query_user._models import Genshin
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at

@@ -8,14 +8,6 @@ chatgpt问答（支持上下文）
 
 api-key和代理均在config.yaml中进行配置
 
-## 安装
-
-(如使用虚拟环境请先进入虚拟环境再进行安装)
-
-```
-pip install openai
-```
-
 ## 使用
 
 - 问答：世界树+问题

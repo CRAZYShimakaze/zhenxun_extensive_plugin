@@ -1,11 +1,10 @@
-import asyncio
-
-import openai
 from configs.config import Config
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
+
+from utils.http_utils import AsyncHttpx
 
 __zx_plugin_name__ = "ChatGPT"
 __plugin_usage__ = """
@@ -51,9 +50,13 @@ ai = on_command("世界树", priority=5, block=True)
 context_set = on_command("上下文长度", permission=SUPERUSER, priority=5, block=True)
 reset = on_command("重置世界树", permission=SUPERUSER, priority=5, block=True)
 
-# 会话记录
+url = 'https://api.openai.com/v1/chat/completions'
+
 conversations = {}
 ctx_len = 1
+
+api_key = Config.get_config("ChatGPT", "API_KEY")
+proxy = Config.get_config("ChatGPT", "PROXY")
 
 
 @reset.handle()
@@ -78,8 +81,6 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     chat_id = str(event.group_id) if isinstance(event, GroupMessageEvent) else str(event.user_id)
     conversation = conversations.get(chat_id, [])
     try:
-        if not conversations:
-            init_chatbot()
         if not conversation:
             conversations[chat_id] = [[], msg]
         else:
@@ -99,8 +100,6 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
     chat_id = str(event.group_id) if isinstance(event, GroupMessageEvent) else str(event.user_id)
     conversation = conversations.get(chat_id, [])
     try:
-        if not conversations:
-            init_chatbot()
         if not conversation:
             conversation = [[], ctx_len]
             conversations[chat_id] = conversation
@@ -120,16 +119,14 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def ask(msg, conversation):
-    response = await openai.ChatCompletion.acreate(model="gpt-3.5-turbo",
-                                                   messages=conversation + [{"role": "user", "content": msg}],
-                                                   temperature=0)
-    return response['choices'][0]['message']['content'].strip('\n')
-
-
-def init_chatbot():
-    api_key = Config.get_config("ChatGPT", "API_KEY")
-    proxy = Config.get_config("ChatGPT", "PROXY")
-    if not api_key:
+    if not (key := Config.get_config("ChatGPT", "API_KEY")):
         raise Exception("未配置API_KEY,请在config.yaml文件中进行配置")
-    openai.api_key = api_key
-    openai.proxy = proxy
+    proxies = {"https": proxies} if (proxies := Config.get_config("ChatGPT", "PROXY")) else None
+
+    header = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    data = {"model": "gpt-3.5-turbo", "messages": conversation + [{"role": "user", "content": msg}], "temperature": 0}
+    response = await AsyncHttpx.post(url, json=data, headers=header, proxy=proxies)
+    if 'choices' in (response := response.json()):
+        return response['choices'][0]['message']['content'].strip('\n')
+    else:
+        return response
