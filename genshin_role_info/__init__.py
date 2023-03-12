@@ -115,10 +115,9 @@ def get_role_name(role):
 
 async def get_msg_uid(event):
     at_user = get_message_at(event.json())
-    if at_user:
-        uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
-    else:
-        uid = await Genshin.get_user_uid(event.user_id)
+    user_qq = at_user[0] if at_user else event.user_id
+    genshin_user = await Genshin.get_or_none(user_qq = user_qq)
+    uid = genshin_user.uid if genshin_user else None
     if not uid:
         await artifact_list.finish("请绑定uid后再查询！")
     if not check_uid(uid):
