@@ -22,6 +22,8 @@
 
 第三方插件交流群：217496217
 ## 列表
+- [Chatgpt](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/chatgpt)
+- [昵称检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/nickname_check)
 - [插件管理](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/plugin_manager)
 - [舔狗日记](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/tgrj)
 - [图片打分](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/setu_score)

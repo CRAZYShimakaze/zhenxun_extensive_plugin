@@ -286,7 +286,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     # 圣遗物
     no_list = ''
     effective, weight_name = get_effective(data)
-    affix_weight, point_mark, max_mark = get_miao_score(weight_name, role_data[data['名称']]['attribute'])
+    affix_weight, point_mark, max_mark = get_miao_score(effective, role_data[data['名称']]['attribute'])
     total_all = 0
     total_cnt = 0
     artifact_pk_info = {'角色': data["名称"]}
@@ -315,7 +315,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         artifact_pk_info['主属性'] = {'属性名': artifact['主属性']['属性名'], '属性值': artifact['主属性']['属性值']}
         artifact_pk_info['副属性'] = []
 
-        total_all += grade
+        total_all += round(grade, 1)
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
                                  size=(100, 100))
@@ -415,7 +415,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         artifact_pk_info['主属性'] = {'属性名': artifact['主属性']['属性名'], '属性值': artifact['主属性']['属性值']}
         artifact_pk_info['副属性'] = []
 
-        total_all += grade
+        total_all += round(grade, 1)
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
                                  size=(100, 100))
@@ -498,14 +498,19 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     if not only_cal:
         # 圣遗物评分
         if total_cnt and total_all <= 66 * total_cnt:
-            score_ave = total_all / total_cnt
+            # score_ave = total_all / total_cnt
             # score_ave = round(score_ave)
+            '''
             total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
                 else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
                 if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
+            '''
+            total_rank = 'ACE' if total_all > 66 * 5 else 'ACE' if total_all > 56.1 * 5 else 'ACE' if total_all > 49.5 * 5 \
+                else 'SSS' if total_all > 42.9 * 5 else 'SS' if total_all > 36.3 * 5 else 'S' if total_all > 29.7 * 5 else 'A' \
+                if total_all > 23.1 * 5 else 'B' if total_all > 16.5 * 5 else 'C' if total_all > 10 * 5 else 'D'
         else:
             total_rank = 'D'
-        total_int = int(total_all)
+        total_int = round(total_all)
         bg_draw.text((119, 1057), '圣遗物总评分', fill='#afafaf', font=get_font(36))
         rank_icon = load_image(f'{other_path}/评分{total_rank[0]}.png',
                                mode='RGBA')

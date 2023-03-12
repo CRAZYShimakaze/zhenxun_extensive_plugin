@@ -9,15 +9,15 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
+from configs.config import Config
 from nonebot import Driver
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
-
-from configs.config import Config
-from plugins.genshin.query_user._models import Genshin
 from services.log import logger
+
+from plugins.genshin.query_user._models import Genshin
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
@@ -35,7 +35,7 @@ usage：
         原神角色卡 uid 角色名
         更新角色卡 uid
         角色面板 (例:刻晴面板、刻晴面板@XXX)
-        更新面板
+        更新/刷新面板
         我的角色
         他的角色@XXX
         最强XX (例:最强甘雨)
@@ -47,7 +47,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.3
+__plugin_version__ = 2.4
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -75,7 +75,7 @@ Config.add_plugin_config(
     default_value=83,
 )
 enak_url = 'https://enka.network/api/uid/{}'
-char_card = on_command("原神角色卡", priority=4, block=True)
+char_card = on_regex("原神角色卡(\d+)(.*)", priority=4)
 update_card = on_command("更新角色卡", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
 his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, block=True)
@@ -85,8 +85,8 @@ driver: Driver = nonebot.get_driver()
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
 group_worst = on_regex(r"最菜(.*)", priority=4)
-artifact_list = on_command("圣遗物榜单", aliases={"圣遗物列表"},priority=4, block=True)
-group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物列表"},priority=4, block=True)
+artifact_list = on_command("圣遗物榜单", aliases={"圣遗物列表"}, priority=4, block=True)
+group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物列表"}, priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查面板插件更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(path=f'{json_path}/alias.json')
@@ -120,7 +120,7 @@ async def get_msg_uid(event):
     else:
         uid = await Genshin.get_user_uid(event.user_id)
     if not uid:
-        await artifact_list.finish("请输入绑定uidXXXX进行绑定后再查询！")
+        await artifact_list.finish("请绑定uid后再查询！")
     if not check_uid(uid):
         await artifact_list.finish(f"绑定的uid{uid}不合法，请重新绑定!")
     return uid
@@ -202,12 +202,12 @@ async def _(event: MessageEvent):
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     at_user = args[1].strip()
-    if role != "更新":
+    if role not in ["更新", "刷新"]:
         role = get_role_name(role)
     if not role:
         return
     uid = await get_msg_uid(event)
-    if role == "更新":
+    if role in ["更新", "刷新"]:
         await update(event, uid, group_save=True)
     else:
         await gen(event, uid, role, at_user=at_user)
@@ -228,7 +228,8 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
         bot = get_bot()
-        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split('-')[-1].rstrip('.png')))
+        qq_name = await bot.get_group_member_info(group_id=event.group_id,
+                                                  user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
         await group_best.finish(f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
@@ -248,7 +249,8 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
         bot = get_bot()
-        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split('-')[-1].rstrip('.png')))
+        qq_name = await bot.get_group_member_info(group_id=event.group_id,
+                                                  user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
         await group_worst.finish(f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
@@ -320,13 +322,13 @@ async def _(event: MessageEvent):
 
 
 @char_card.handle()
-async def _(event: MessageEvent, arg: Message = CommandArg()):
-    msg = arg.extract_plain_text().strip().split()
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    msg = args[0].strip(), args[1].strip()
     try:
         uid = int(msg[0])
     except Exception as e:
         print(e)
-        return await char_card.finish("请输入正确uid+角色名(uid与角色名需要用空格隔开)", at_sender=True)
+        return await char_card.finish("请输入正确uid+角色名", at_sender=True)
     if not check_uid(uid):
         return await my_card.finish(f"uid{uid}不合法!")
     if len(msg) != 2:
