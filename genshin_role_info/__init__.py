@@ -314,7 +314,8 @@ async def get_char(uid):
 
 @his_card.handle()
 async def _(event: MessageEvent):
-    uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
+    genshin_user = await Genshin.get_or_none(user_qq = get_message_at(event.json())[0])
+    uid = genshin_user.uid if genshin_user else None
     if not uid:
         await his_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
     await get_char(uid)
