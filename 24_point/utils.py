@@ -63,7 +63,7 @@ def random_question():
 # 检查正确性
 def check_result(submit: str, question) -> bool:
     try:
-        if eval(submit) == 24:
+        if not any(e.isalpha() for e in submit) and eval(submit) == 24:
             num = submit.replace("+", ",").replace("-", ",").replace(
                 "*", ",").replace("/", ",").replace("(", ",").replace(")", ",")
             num = num.split(",")
