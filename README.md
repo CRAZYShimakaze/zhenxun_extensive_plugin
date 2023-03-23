@@ -23,8 +23,7 @@
 第三方插件交流群：217496217
 ## 列表
 
-* [入群检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/jion_group_check)
-
+- [入群检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/jion_group_check)
 - [Chatgpt](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/chatgpt)
 - [昵称检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/nickname_check)
 - [插件管理](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/plugin_manager)
