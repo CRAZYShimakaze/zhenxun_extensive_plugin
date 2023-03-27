@@ -24,4 +24,4 @@ async def _(bot: Bot, event):
             if event.request_type == 'group':
                 stranger_info = await bot.get_stranger_info(user_id=event.user_id, no_cache=False)
                 await join_group_handle.finish(
-                    "[[_task|join_group]]" + f'{NICKNAME}检测到加群请求哟~管理员们快去看看叭！\nID：{event.user_id}\n昵称：{stranger_info["nickname"]}\n性别：{stranger_info["sex"] if stranger_info["sex"] != "unknown" else "保密"}\n年龄：{stranger_info["age"]}\nQQ等级：{stranger_info["level"]}\n描述：{event.comment}')
+                    "[[_task|join_group]]" + f'{NICKNAME}检测到加群请求哟~管理员们快去看看叭！\nID：{event.user_id}\n昵称：{stranger_info["nickname"]}\n性别：{"女" if "f" in stranger_info["sex"] else "男" if stranger_info["sex"] != "unknown" else "保密"}\n年龄：{stranger_info["age"]}\nQQ等级：{stranger_info["level"]}\n描述：{event.comment}')
