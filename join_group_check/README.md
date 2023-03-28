@@ -1,4 +1,4 @@
-# jion_group_check
+# join_group_check
 
 zhenxun_bot 入群检测
 
