@@ -102,6 +102,8 @@ support_sys = ["windows", "linux"]
 @deletePlugin.handle()
 async def _(arg: Message = CommandArg()):
     plugin_name = arg.extract_plain_text().strip()
+    if not plugin_name:  # 不存在插件名
+        await deletePlugin.finish("未提供插件名！")
     bot_path = Config.get_config("plugin_manager", "BOTPATH")  # 读取配置文件
     if not bot_path:
         logger.warning("未配置BOTPATH，将从当前目录上两级寻找bot.py")
