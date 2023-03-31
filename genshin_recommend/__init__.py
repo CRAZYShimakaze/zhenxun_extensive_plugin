@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import hashlib
 import json
 import os
 import random
@@ -15,7 +16,6 @@ from nonebot.permission import SUPERUSER
 from services import logger
 
 from utils.http_utils import AsyncHttpx
-from utils.image_utils import get_img_hash
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
 
@@ -39,7 +39,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.5
+__plugin_version__ = 1.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -85,6 +85,12 @@ WEAPON_INFO_PATH = RES_PATH + '/weapon_info'
 alias_file = json.load(open(f'{os.path.dirname(__file__)}/alias.json', 'r', encoding='utf-8'))
 role_list = alias_file['roles']
 weapon_list = alias_file['weapons']
+
+
+def get_img_md5(image_file):
+    with open(image_file, 'rb') as img:
+        md5_value = hashlib.md5(img.read()).hexdigest()
+    return md5_value
 
 
 async def get_img(url, arg, save_path, ignore_exist):
@@ -210,9 +216,9 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 
 @update_info.handle()
 async def _():
-    async def check_hash(path, name, url, hash_list):
+    async def check_md5(path, name, url, md5_list):
         try:
-            if not path.exists() or hash_list.get(name, '') != str(get_img_hash(path)):
+            if not path.exists() or md5_list.get(name, '') != str(get_img_md5(path)):
                 try:
                     await get_img(url, name, path, ignore_exist=True)
                 except:
@@ -224,31 +230,31 @@ async def _():
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
-    common_guide_hash = (await AsyncHttpx.get(src_url + "common_guide/hash")).json()
-    role_break_hash = (await AsyncHttpx.get(src_url + "role_break/hash")).json()
-    role_guide_hash = (await AsyncHttpx.get(src_url + "role_guide/hash")).json()
-    role_info_hash = (await AsyncHttpx.get(src_url + "role_info/hash")).json()
-    weapon_info_hash = (await AsyncHttpx.get(src_url + "weapon_info/hash")).json()
+    common_guide_md5 = (await AsyncHttpx.get(src_url + "common_guide/md5")).json()
+    role_break_md5 = (await AsyncHttpx.get(src_url + "role_break/md5")).json()
+    role_guide_md5 = (await AsyncHttpx.get(src_url + "role_guide/md5")).json()
+    role_info_md5 = (await AsyncHttpx.get(src_url + "role_info/md5")).json()
+    weapon_info_md5 = (await AsyncHttpx.get(src_url + "weapon_info/md5")).json()
     update_list = set()
-    for item in common_guide_hash.keys():
+    for item in common_guide_md5.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
-        if await check_hash(save_path, item, common_guide, common_guide_hash):
+        if await check_md5(save_path, item, common_guide, common_guide_md5):
             update_list.add(item)
-    for role in role_break_hash.keys():
+    for role in role_break_md5.keys():
         save_path = Path(f'{ROLE_BREAK_PATH}/{role}.jpg')
-        if await check_hash(save_path, role, genshin_role_break, role_break_hash):
+        if await check_md5(save_path, role, genshin_role_break, role_break_md5):
             update_list.add(role)
-    for role in role_guide_hash.keys():
+    for role in role_guide_md5.keys():
         save_path = Path(f'{ROLE_GUIDE_PATH}/{role}.png')
-        if await check_hash(save_path, role, genshin_role_guide, role_guide_hash):
+        if await check_md5(save_path, role, genshin_role_guide, role_guide_md5):
             update_list.add(role)
-    for role in role_info_hash.keys():
+    for role in role_info_md5.keys():
         save_path = Path(f'{ROLE_INFO_PATH}/{role}.png')
-        if await check_hash(save_path, role, genshin_role_info, role_info_hash):
+        if await check_md5(save_path, role, genshin_role_info, role_info_md5):
             update_list.add(role)
-    for item in weapon_info_hash.keys():
+    for item in weapon_info_md5.keys():
         save_path = Path(f'{WEAPON_INFO_PATH}/{item}.png')
-        if await check_hash(save_path, item, genshin_weapon_info, weapon_info_hash):
+        if await check_md5(save_path, item, genshin_weapon_info, weapon_info_md5):
             update_list.add(item)
     if not update_list:
         return await update_info.send(f'所有推荐信息均为最新！')

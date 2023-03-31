@@ -227,8 +227,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
         bot = get_bot()
-        qq_name = await bot.get_group_member_info(group_id=event.group_id,
-                                                  user_id=int(role_info.split('-')[-1].rstrip('.png')))
+        qq_name = await bot.get_stranger_info(user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
         await group_best.finish(f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
@@ -248,8 +247,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
         bot = get_bot()
-        qq_name = await bot.get_group_member_info(group_id=event.group_id,
-                                                  user_id=int(role_info.split('-')[-1].rstrip('.png')))
+        qq_name = await bot.get_stranger_info(user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
         await group_worst.finish(f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
@@ -314,7 +312,8 @@ async def get_char(uid):
 
 @his_card.handle()
 async def _(event: MessageEvent):
-    uid = await Genshin.get_user_uid(get_message_at(event.json())[0])
+    genshin_user = await Genshin.get_or_none(user_qq = get_message_at(event.json())[0])
+    uid = genshin_user.uid if genshin_user else None
     if not uid:
         await his_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
     await get_char(uid)
