@@ -75,7 +75,7 @@ Config.add_plugin_config(
     default_value=83,
 )
 enak_url = 'https://enka.network/api/uid/{}'
-char_card = on_regex("原神角色卡(\d+)(.*)", priority=4)
+char_card = on_regex("原神角色卡(.*?)(\d+)(.*?)([\u4e00-\u9fa5]+)", priority=4)
 update_card = on_command("更新角色卡", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
 his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, block=True)
@@ -321,7 +321,7 @@ async def _(event: MessageEvent):
 
 @char_card.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
-    msg = args[0].strip(), args[1].strip()
+    msg = args[1].strip(), args[3].strip()
     try:
         uid = int(msg[0])
     except Exception as e:
