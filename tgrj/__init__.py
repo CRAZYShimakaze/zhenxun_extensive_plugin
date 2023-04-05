@@ -24,7 +24,7 @@ __plugin_settings__ = {
 
 tgrj = on_regex("^(舔狗日记|tgrj)(.*)", priority=5, block=True)
 
-url = "http://ovooa.com/API/tgrj/api.php"
+url = "https://cloud.qqshabi.cn/api/tiangou/api.php"
 
 
 @tgrj.handle()
