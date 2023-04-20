@@ -57,7 +57,7 @@ async def _(arg: Message = CommandArg()):
             scrollHeight = await page.evaluate(
                 'window.document.body.scrollHeight')
             step = 500
-            if lazyload_test(url) or scrollHeight > 2000:
+            if await lazyload_test(url) or scrollHeight > 2000:
                 # 竖直滚动并等待页面加载
                 while (start_position < (scrollHeight)):
                     start_position += step
