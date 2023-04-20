@@ -3,6 +3,7 @@
 import re
 import nonebot
 from configs.path_config import TEMP_PATH
+from configs.config import Config
 from nonebot import Driver
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message
@@ -33,6 +34,14 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
+Config.add_plugin_config(
+    "call",
+    "IGNORE_LAZYLOAD",
+    True,
+    name="call",
+    help_="是否忽略懒加载，默认True（改为False后即可截长图，单个图片8M左右，酌情选择）",
+    default_value=True,
+)
 
 call = on_command("call",
                   aliases={"ck"},
@@ -47,6 +56,13 @@ async def _(arg: Message = CommandArg()):
     url = url if url.startswith(('https://', 'http://')) else f'https://{url}'
     path = TEMP_PATH / "call.png"
     timeout = 30000
+    if Config.get_config("call", "IGNORE_LAZYLOAD"):
+        try:
+            card = await AsyncPlaywright.screenshot(url, TEMP_PATH / "call.png", viewport_size=dict(width=1920, height=2048), element=[])
+            assert card
+        except Exception as e:
+            raise e
+        await call.finish(card)
     try:
         async with AsyncPlaywright.new_page(
                 viewport=dict(width=1920, height=1080)) as page:
@@ -87,9 +103,9 @@ async def _(arg: Message = CommandArg()):
                         "width": 1920,
                         "height": scrollHeight - 955
                     },
-                                          timeout=timeout,
-                                          full_page=True,
-                                          path=path)
+                                                 timeout=timeout,
+                                                 full_page=True,
+                                                 path=path)
             else:
                 card = await page.screenshot(timeout=timeout,
                                              full_page=True,
