@@ -23,6 +23,7 @@ from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_role_card import draw_role_card
+from .data_source.draw_update_card import draw_update_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
     group_info_path
 from .utils.image_utils import load_image, image_build
@@ -371,8 +372,7 @@ async def update(event, uid, group_save):
             await char_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
     player_info, update_role_list = await get_enka_info(url, uid, update_info=True)
     await check_artifact(event, player_info, uid, group_save)
-    await char_card.finish(f"获取uid{uid}的{','.join(update_role_list)}数据和榜单信息完成!(注:数据更新有3分钟延迟)",
-                           at_sender=True)
+    await char_card.finish(await draw_update_pic(uid, update_role_list, player_info))
 
 
 def check_role(role_name, event, img, score):
