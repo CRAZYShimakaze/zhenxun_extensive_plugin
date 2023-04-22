@@ -277,7 +277,7 @@ async def _check_update(is_cron=False):
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/__init__.py"
     bot = get_bot()
     try:
-        version = await AsyncHttpx.get(url)
+        version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"__plugin_version__ = ([0-9.]{3})",
                             str(version.text))
     except Exception as e:

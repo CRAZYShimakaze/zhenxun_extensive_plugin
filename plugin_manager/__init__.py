@@ -768,7 +768,7 @@ async def getfiles(url, plugin_folder_path, upper_path):
                 if not os.path.exists(full_path) or git_blob_hash(full_path) != i["sha"]:
                     while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
                                                                             full_path, headers=header,
-                                                                            timeout=10)):
+                                                                            timeout=10, follow_redirects=True)):
                         await asyncio.sleep(0.5)
                         max_retry -= 1
                         logger.info(f'重试下载{i["download_url"]}第{3 - max_retry}次')
