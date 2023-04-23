@@ -35,7 +35,7 @@ __plugin_cmd__ = [
     "打工排行/卷王排行/工时排行/工资排行/算数能手排行",
 ]
 __plugin_type__ = ("群内小游戏",)
-__plugin_version__ = 0.4
+__plugin_version__ = 0.5
 __plugin_author__ = "CRAZYShimakaze、Syozhi"
 __plugin_settings__ = {
     "level": 5,

@@ -1,26 +1,26 @@
-from tortoise import fields
-from services.db_context import Model
 from typing import List
 
-class Worker(Model):
+from tortoise import fields
 
+from services.db_context import Model
+
+
+class Worker(Model):
     class Meta:
         table = "workers"
         table_description = "打工数据表"
         unique_together = ("user_qq", "group_id")
 
-    id = fields.IntField(pk=True, generated=True, auto_increment=True) # 自增id
-    user_qq = fields.BigIntField() # 用户id
-    group_id = fields.BigIntField() # 群聊id
-    question_count = fields.IntField(default=0) # 答对题目数
-    work_count = fields.IntField(default=0) # 打工次数
-    time_count = fields.FloatField(default=0) # 工时（秒）
-    salary = fields.FloatField(default=0) # 工资总数
-
-
+    id = fields.IntField(pk=True, generated=True, auto_increment=True)  # 自增id
+    user_qq = fields.BigIntField()  # 用户id
+    group_id = fields.BigIntField()  # 群聊id
+    question_count = fields.IntField(default=0)  # 答对题目数
+    work_count = fields.IntField(default=0)  # 打工次数
+    time_count = fields.FloatField(default=0)  # 工时（秒）
+    salary = fields.FloatField(default=0)  # 工资总数
 
     @classmethod
-    async def ensure(cls, user_qq:int,group_id:int)->"Worker":
+    async def ensure(cls, user_qq: int, group_id: int) -> "Worker":
         """
         说明:
             获取用户对象
@@ -32,7 +32,7 @@ class Worker(Model):
         return user
 
     @classmethod
-    async def add_question_count(cls, user_qq: int, group_id: int, num:int) -> bool:
+    async def add_question_count(cls, user_qq: int, group_id: int, num: int) -> bool:
         """
         说明:
             添加用户答对题目数
@@ -110,5 +110,4 @@ class Worker(Model):
         参数:
         :param group_id: 群号
         """
-        users = await cls.all(group_id = group_id)
-        return users
+        return await cls.filter(group_id=group_id).all()
