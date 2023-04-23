@@ -1,8 +1,8 @@
 import numpy as np
 from PIL import ImageDraw, Image
-
 from configs.config import Config
 from configs.path_config import TEMP_PATH
+
 from .draw_role_card import artifact_url
 from ..utils.card_utils import other_path, get_font, bg_path, reli_path, json_path, avatar_path
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img, image_build
@@ -147,7 +147,7 @@ async def draw_artifact_card(uid, artifact_info, ace2_num, ace_num, plugin_versi
                      f'{"group" if is_group else "uid"}:{uid} | v{plugin_version} | Powered by Enka.Network',
                      0, wid, bg.size[1] - 70, '#ffffff',
                      get_font(46, '优设标题黑.ttf'))
-    text_info = '' if is_group else f"\n大毕业圣遗物{ace2_num}个,小毕业圣遗物{ace_num}个.\n最高评分为{artifact_pk[0]['角色']}的{artifact_pk[0]['名称']},高达{round(artifact_pk[0]['评分'], 2)}分!"
+    text_info = '' if is_group else f"\n大毕业圣遗物{ace2_num}个,小毕业圣遗物{ace_num}个.\n最高评分为{artifact_pk[0]['角色']}{round(artifact_pk[0]['评分'], 2)}分的{artifact_pk[0]['名称']}!"
 
     return image_build(img=bg, quality=100,
                        mode='RGB') + text_info

@@ -39,7 +39,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.6
+__plugin_version__ = 1.7
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -273,11 +273,11 @@ async def get_update_info():
 
 
 @check_update.handle()
-async def _check_update():
+async def _check_update(is_cron=False):
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/__init__.py"
     bot = get_bot()
     try:
-        version = await AsyncHttpx.get(url)
+        version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"__plugin_version__ = ([0-9.]{3})",
                             str(version.text))
     except Exception as e:
@@ -285,25 +285,23 @@ async def _check_update():
         return
     if float(version.group(1)) > __plugin_version__:
         modify_info = await get_update_info()
-        try:
+        if not is_cron:
             await check_update.send(
                 f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{modify_info}")
-        except Exception:
+        else:
             for admin in bot.config.superusers:
                 await bot.send_private_msg(user_id=int(admin),
                                            message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{modify_info}")
             logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
     else:
-        try:
+        if not is_cron:
             modify_info = await get_update_info()
             await check_update.send(
                 f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{modify_info}")
-        except Exception:
-            pass
 
 
 @driver.on_startup
 async def _():
     if Config.get_config("genshin_role_recommend", "CHECK_UPDATE"):
-        scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59),
+        scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59),
                           id='genshin_role_recommend')

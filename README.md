@@ -23,6 +23,7 @@
 
 ## 列表
 
+- [网页截图](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/call)
 - [入群检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/join_group_check)
 - [Chatgpt](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/chatgpt)
 - [昵称检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/nickname_check)

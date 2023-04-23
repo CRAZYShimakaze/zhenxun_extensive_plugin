@@ -615,15 +615,17 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
 
         effect = {}
         for item in effective:
-            if item not in ['元素伤害加成', '物理伤害加成', '治疗加成']:
+            if item not in ['元素伤害加成', '物理伤害加成']:
                 name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace(
-                    '暴击伤害', '爆伤').replace('元素精通', '精通')
+                    '暴击伤害', '爆伤').replace('元素精通', '精通').replace('治疗加成', '治疗')
                 if name not in effect:
                     effect[name] = effective.get(item)
         effect = str(effect).replace("'", "").replace(" ", "").strip("{}")
 
         if '-' not in weight_name:
-            weight_name += '-通用'
+            weight_name = '通用'
+        else:
+            weight_name = weight_name[-2:]
         draw_center_text(bg_draw, f'{weight_name}:{effect}',
                          0, 1080, bg.size[1] - 85, '#afafaf',
                          get_font(30))

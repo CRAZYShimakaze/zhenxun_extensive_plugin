@@ -23,6 +23,7 @@ from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_role_card import draw_role_card
+from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
     group_info_path
 from .utils.image_utils import load_image, image_build
@@ -47,7 +48,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.4
+__plugin_version__ = 2.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -75,7 +76,7 @@ Config.add_plugin_config(
     default_value=83,
 )
 enak_url = 'https://enka.network/api/uid/{}'
-char_card = on_regex("原神角色卡(\d+)(.*)", priority=4)
+char_card = on_regex("原神角色卡(.*?)(\d+)(.*?)([\u4e00-\u9fa5]+)", priority=4)
 update_card = on_command("更新角色卡", priority=4, block=True)
 my_card = on_command("我的角色", priority=4, block=True)
 his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, block=True)
@@ -306,7 +307,7 @@ async def get_char(uid):
         await char_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                                at_sender=True)
     else:
-        await my_card.finish(f"uid{uid}的角色:{','.join(roles_list)}",
+        await my_card.finish(await draw_role_pic(uid, roles_list, player_info),
                              at_sender=True)
 
 
@@ -321,7 +322,7 @@ async def _(event: MessageEvent):
 
 @char_card.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
-    msg = args[0].strip(), args[1].strip()
+    msg = args[1].strip(), args[3].strip()
     try:
         uid = int(msg[0])
     except Exception as e:
@@ -347,7 +348,7 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
     img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
     msg = '' if at_user else check_role(role_name, event, img, score)
     img = image_build(img=img, quality=100, mode='RGB')
-    await char_card.finish(msg + img + f"\n可查询角色:{','.join(roles_list)}", at_sender=True)
+    await char_card.finish(msg + img, at_sender=True)
 
 
 @update_card.handle()
@@ -371,8 +372,7 @@ async def update(event, uid, group_save):
             await char_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
     player_info, update_role_list = await get_enka_info(url, uid, update_info=True)
     await check_artifact(event, player_info, uid, group_save)
-    await char_card.finish(f"获取uid{uid}的{','.join(update_role_list)}数据和榜单信息完成!(注:数据更新有3分钟延迟)",
-                           at_sender=True)
+    await char_card.finish(await draw_role_pic(uid, update_role_list, player_info))
 
 
 def check_role(role_name, event, img, score):
@@ -441,7 +441,7 @@ def check_uid(uid: int):
 async def get_update_info():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
     try:
-        version = await AsyncHttpx.get(url)
+        version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
