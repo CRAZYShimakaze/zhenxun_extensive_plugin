@@ -34,7 +34,7 @@ usage：
 """.strip()
 __plugin_des__ = "网页截图"
 __plugin_cmd__ = ["call [url]"]
-__plugin_type__ = ("一些工具", )
+__plugin_type__ = ("一些工具",)
 __plugin_version__ = 0.3
 __plugin_author__ = "CRAZYSHIMAKAZE, unknownsno"
 __plugin_settings__ = {
@@ -94,8 +94,8 @@ async def _(event: Event, arg: Message = CommandArg()):
         await call.finish(card)
     try:
         async with AsyncPlaywright.new_page(viewport={
-                "width": 1920,
-                "height": 1080
+            "width": 1920,
+            "height": 1080
         }) as page:
             await page.goto(url, timeout=timeout)
 
@@ -105,7 +105,7 @@ async def _(event: Event, arg: Message = CommandArg()):
             step = 500
             if await lazyload_test(url, response) or scroll_height > 2000:
                 # 竖直滚动并等待页面加载
-                while (start_position < scroll_height):
+                while start_position < scroll_height:
                     start_position += step
                     position = str(start_position)
                     run_scroll = 'window.scrollTo(0,' + position + ')'
@@ -116,8 +116,8 @@ async def _(event: Event, arg: Message = CommandArg()):
             # 对bilibili特殊处理
             if "bilibili" in url:
                 for element in [
-                        ".bili-feed4 .bili-header .slide-down", ".login-tip",
-                        ".header-channel-fixed"
+                    ".bili-feed4 .bili-header .slide-down", ".login-tip",
+                    ".header-channel-fixed"
                 ]:
                     if await page.locator(f'{element}').is_visible():
                         await page.evaluate(f"window.document.querySelector('{element}') \
@@ -132,11 +132,11 @@ async def _(event: Event, arg: Message = CommandArg()):
                         "width": 1920,
                         "height": scroll_height - 955
                     },
-                                                 timeout=timeout,
-                                                 full_page=True,
-                                                 path=path)
-            else:
-                card = await page.screenshot(timeout=timeout, full_page=True, path=path)
+                        timeout=timeout,
+                        full_page=True,
+                        path=path)
+                else:
+                    card = await page.screenshot(timeout=timeout, full_page=True, path=path)
             assert card
     except Error:
         if not chardet.detect(response.content).get("encoding"):
@@ -149,7 +149,7 @@ async def _(event: Event, arg: Message = CommandArg()):
 
 
 async def lazyload_test(url: str, response: Response):
-    '''判断懒加载'''
+    """判断懒加载"""
     if response.status_code != 200:
         response = await AsyncHttpx.get(url, follow_redirects=True)
     soup = BeautifulSoup(response.content, "html.parser")
