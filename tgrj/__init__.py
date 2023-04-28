@@ -9,7 +9,8 @@ __plugin_usage__ = """
 usage：
     舔狗的一天
     指令：
-       舔狗日记|tgrj 昵称|at
+       舔狗日记 [被舔对象昵称]
+       tgrj [at]
 """.strip()
 __plugin_des__ = "舔狗的一天"
 __plugin_cmd__ = ["舔狗日记|tgrj"]
