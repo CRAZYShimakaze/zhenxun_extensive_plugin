@@ -1,4 +1,5 @@
 from nonebot import on_regex
+from nonebot.adapters.onebot.v11 import Message
 from nonebot.params import RegexGroup
 
 from utils.http_utils import AsyncHttpx
@@ -8,11 +9,11 @@ __plugin_usage__ = """
 usage：
     舔狗的一天
     指令：
-       舔狗日记|tgrj
+       舔狗日记|tgrj 昵称|at
 """.strip()
 __plugin_des__ = "舔狗的一天"
 __plugin_cmd__ = ["舔狗日记|tgrj"]
-__plugin_version__ = 0.1
+__plugin_version__ = 0.2
 __plugin_type__ = ("群内小游戏",)
 __plugin_author__ = 'CRAZYSHIMAKAZE'
 __plugin_settings__ = {
@@ -33,4 +34,4 @@ async def _(args=RegexGroup()):
     if name:
         data = await AsyncHttpx.get(url)
         data = data.text.replace('你', name).replace('您', name)
-        await tgrj.send(data)
+        await tgrj.send(Message(data))
