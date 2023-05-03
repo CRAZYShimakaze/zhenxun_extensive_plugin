@@ -11,6 +11,7 @@ import nonebot
 from configs.config import Config
 from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
+from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 from services import logger
@@ -66,11 +67,11 @@ common_abyss = on_regex("^深渊(配队|阵容)$", priority=1, block=True)
 common_material = on_regex("^每日素材$", priority=1, block=True)
 
 update_info = on_command("更新原神推荐", permission=SUPERUSER, priority=3, block=True)
-check_update = on_command("检查攻略插件更新", permission=SUPERUSER, priority=3, block=True)
+check_update = on_command("检查原神插件更新", permission=SUPERUSER, priority=3, block=True)
 role_guide = on_regex(r"(.*)攻略$", priority=15)
 genshin_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
-src_url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/"
+src_url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
 genshin_role_break = src_url + "role_break/{}.jpg"
@@ -99,7 +100,7 @@ async def get_img(url, arg, save_path, ignore_exist):
 
 
 @common_role_equip.handle()
-async def _():
+async def _(event: MessageEvent):
     arg = '角色配装'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
@@ -108,7 +109,7 @@ async def _():
 
 
 @common_role_grade.handle()
-async def _():
+async def _(event: MessageEvent):
     arg = '角色评级'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
@@ -117,7 +118,7 @@ async def _():
 
 
 @common_weapon_grade.handle()
-async def _():
+async def _(event: MessageEvent):
     arg = '武器推荐'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
@@ -126,7 +127,7 @@ async def _():
 
 
 @common_artifact_guide.handle()
-async def _():
+async def _(event: MessageEvent):
     arg = '副本分析'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
@@ -135,7 +136,7 @@ async def _():
 
 
 @common_abyss.handle()
-async def _():
+async def _(event: MessageEvent):
     arg = '深渊配队'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
@@ -144,7 +145,7 @@ async def _():
 
 
 @common_material.handle()
-async def _():
+async def _(event: MessageEvent):
     arg = '每日素材'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg',
                  f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
@@ -154,7 +155,7 @@ async def _():
 
 
 @role_guide.handle()
-async def _(args: Tuple[str, ...] = RegexGroup()):
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for item in role_list:
         if role in role_list.get(item):
@@ -171,7 +172,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 
 
 @genshin_info.handle()
-async def _(args: Tuple[str, ...] = RegexGroup()):
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for item in role_list:
         if role in role_list.get(item):
@@ -200,7 +201,7 @@ async def _(args: Tuple[str, ...] = RegexGroup()):
 
 
 @break_material.handle()
-async def _(args: Tuple[str, ...] = RegexGroup()):
+async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for item in role_list:
         if role in role_list.get(item):
@@ -230,11 +231,11 @@ async def _():
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
-    common_guide_md5 = (await AsyncHttpx.get(src_url + "common_guide/md5")).json()
-    role_break_md5 = (await AsyncHttpx.get(src_url + "role_break/md5")).json()
-    role_guide_md5 = (await AsyncHttpx.get(src_url + "role_guide/md5")).json()
-    role_info_md5 = (await AsyncHttpx.get(src_url + "role_info/md5")).json()
-    weapon_info_md5 = (await AsyncHttpx.get(src_url + "weapon_info/md5")).json()
+    common_guide_md5 = (await AsyncHttpx.get(src_url + "common_guide/md5", follow_redirects=True)).json()
+    role_break_md5 = (await AsyncHttpx.get(src_url + "role_break/md5", follow_redirects=True)).json()
+    role_guide_md5 = (await AsyncHttpx.get(src_url + "role_guide/md5", follow_redirects=True)).json()
+    role_info_md5 = (await AsyncHttpx.get(src_url + "role_info/md5", follow_redirects=True)).json()
+    weapon_info_md5 = (await AsyncHttpx.get(src_url + "weapon_info/md5", follow_redirects=True)).json()
     update_list = set()
     for item in common_guide_md5.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
@@ -264,7 +265,7 @@ async def _():
 async def get_update_info():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/README.md"
     try:
-        version = await AsyncHttpx.get(url)
+        version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")

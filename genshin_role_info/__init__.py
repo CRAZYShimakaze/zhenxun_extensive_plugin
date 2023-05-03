@@ -48,7 +48,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.6
+__plugin_version__ = 2.7
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -86,8 +86,8 @@ driver: Driver = nonebot.get_driver()
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
 group_worst = on_regex(r"最菜(.*)", priority=4)
-artifact_list = on_command("圣遗物榜单", aliases={"圣遗物列表"}, priority=4, block=True)
-group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物列表"}, priority=4, block=True)
+artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
+group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查面板插件更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(path=f'{json_path}/alias.json')
@@ -117,7 +117,7 @@ def get_role_name(role):
 async def get_msg_uid(event):
     at_user = get_message_at(event.json())
     user_qq = at_user[0] if at_user else event.user_id
-    genshin_user = await Genshin.get_or_none(user_qq = user_qq)
+    genshin_user = await Genshin.get_or_none(user_qq=user_qq)
     uid = genshin_user.uid if genshin_user else None
     if not uid:
         await artifact_list.finish("请绑定uid后再查询！")
@@ -313,10 +313,7 @@ async def get_char(uid):
 
 @his_card.handle()
 async def _(event: MessageEvent):
-    genshin_user = await Genshin.get_or_none(user_qq = get_message_at(event.json())[0])
-    uid = genshin_user.uid if genshin_user else None
-    if not uid:
-        await his_card.finish("请输入绑定uidXXXX进行绑定后再查询！")
+    uid = await get_msg_uid(event)
     await get_char(uid)
 
 
@@ -454,7 +451,7 @@ async def _check_update():
     url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = get_bot()
     try:
-        version = await AsyncHttpx.get(url)
+        version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"__plugin_version__ = ([0-9.]{3})",
                             str(version.text))
     except Exception as e:
