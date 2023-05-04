@@ -251,9 +251,9 @@ def get_effective(data):
                     role_name = f'{role_name}-薙刀'
             return weight, role_name
         else:
-            return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}
+            return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}, role_name
     except:
-        return role_score.get(role_name), role_name
+        return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}, role_name
 
 
 def check_effective(prop_name: str, effective: dict):

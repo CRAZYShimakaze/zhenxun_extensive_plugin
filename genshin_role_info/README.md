@@ -6,12 +6,10 @@
 
 ## 使用
 
-- 原神角色卡 uid 角色名
-- 更新角色卡 uid
-- XX面板 (例:甘雨面板、甘雨面板@CRAZYShimakaze)
-- 更新面板
+- XX面板 (例:甘雨面板、甘雨面板@CRAZYShimakaze、甘雨面板104442596)
+- 更新/刷新面板 (uid)
 - 我的角色
-- 他的角色 @CRAZYShimakaze
+- 他的角色@CRAZYShimakaze
 - 最强XX (例:群最强甘雨)
 - 圣遗物榜单
 - 群圣遗物榜单
@@ -30,6 +28,11 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2023/5/4**[v2.8]
+
+1. 支持白术和卡维
+2. 精简指令
 
 **2023/4/21**[v2.7]
 
