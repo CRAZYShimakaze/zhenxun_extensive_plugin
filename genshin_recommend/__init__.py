@@ -40,7 +40,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.7
+__plugin_version__ = 1.8
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -231,11 +231,11 @@ async def _():
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
-    common_guide_md5 = (await AsyncHttpx.get(src_url + "common_guide/md5", follow_redirects=True)).json()
-    role_break_md5 = (await AsyncHttpx.get(src_url + "role_break/md5", follow_redirects=True)).json()
-    role_guide_md5 = (await AsyncHttpx.get(src_url + "role_guide/md5", follow_redirects=True)).json()
-    role_info_md5 = (await AsyncHttpx.get(src_url + "role_info/md5", follow_redirects=True)).json()
-    weapon_info_md5 = (await AsyncHttpx.get(src_url + "weapon_info/md5", follow_redirects=True)).json()
+    common_guide_md5 = (await AsyncHttpx.get(src_url + "common_guide/md5.json", follow_redirects=True)).json()
+    role_break_md5 = (await AsyncHttpx.get(src_url + "role_break/md5.json", follow_redirects=True)).json()
+    role_guide_md5 = (await AsyncHttpx.get(src_url + "role_guide/md5.json", follow_redirects=True)).json()
+    role_info_md5 = (await AsyncHttpx.get(src_url + "role_info/md5.json", follow_redirects=True)).json()
+    weapon_info_md5 = (await AsyncHttpx.get(src_url + "weapon_info/md5.json", follow_redirects=True)).json()
     update_list = set()
     for item in common_guide_md5.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
