@@ -1,8 +1,8 @@
-# genshin_equip_recommend
+# genshin_recommend
 
-zhenxun_bot 原神角色攻略
+zhenxun_bot 原神攻略
 
-展示原神角色攻略
+展示原神攻略
 
 ## 使用
 
@@ -15,7 +15,7 @@ zhenxun_bot 原神角色攻略
 - XX图鉴
 - XX素材/XX材料
 - 更新原神推荐 (仅超级用户可用)
-- 检查攻略插件更新 (仅超级用户可用)
+- 检查原神插件更新 (仅超级用户可用)
 
 ### 更新
 

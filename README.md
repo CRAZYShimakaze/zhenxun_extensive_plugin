@@ -23,6 +23,7 @@
 
 ## 列表
 
+- [星铁攻略](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/starrail_recommend)
 - [网页截图](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/call)
 - [入群检测](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/join_group_check)
 - [Chatgpt](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/chatgpt)
@@ -35,7 +36,7 @@
 - [24点](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/24_point)
 - [21点](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/21_point)
 - [打工赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/work)
-- [原神角色攻略](https://github.com/CRAZYShimakaze/zhenxun_plugin/tree/main/genshin_recommend)
+- [原神攻略](https://github.com/CRAZYShimakaze/zhenxun_plugin/tree/main/genshin_recommend)
 - [原神角色卡片](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/genshin_role_card)
 - [扫雷赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/minesweeper)
 - [猜成语赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/guess_riddle)
