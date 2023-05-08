@@ -31,6 +31,7 @@ usage：
     指令：
         光锥评级/推荐/建议
         遗器推荐/适配/评级
+        角色配队/阵容
         XX攻略
         XX图鉴
         XX素材/材料
@@ -38,7 +39,7 @@ usage：
 __plugin_des__ = "查询星铁攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = 0.1
+__plugin_version__ = 0.2
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -65,7 +66,7 @@ Config.add_plugin_config(
 # common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
 common_weapon_grade = on_regex("^光锥(推荐|适配|评级)$", priority=1, block=True)
 common_artifact_guide = on_regex("^遗器(推荐|评级|分析)$", priority=1, block=True)
-# common_abyss = on_regex("^深渊(配队|阵容)$", priority=1, block=True)
+common_abyss = on_regex("^角色(配队|阵容)$", priority=1, block=True)
 
 update_info = on_command("更新星铁推荐", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查星铁插件更新", permission=SUPERUSER, priority=3, block=True)
@@ -98,7 +99,7 @@ def get_img_md5(image_file):
 
 async def get_img(url, arg, save_path, ignore_exist):
     if not os.path.exists(save_path) or ignore_exist:
-        await AsyncHttpx.download_file(get_raw()+url.format(arg), save_path, follow_redirects=True)
+        await AsyncHttpx.download_file(get_raw() + url.format(arg), save_path, follow_redirects=True)
 
 
 @role_guide.handle()
@@ -122,7 +123,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 
 @common_weapon_grade.handle()
 async def _(event: MessageEvent):
-    arg = '遗器推荐'
+    arg = '光锥推荐'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
     #await check_gold(event, coin=1)
     for item in save_path:
@@ -132,12 +133,22 @@ async def _(event: MessageEvent):
 
 @common_artifact_guide.handle()
 async def _(event: MessageEvent):
-    arg = '光锥推荐'
+    arg = '遗器推荐'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
     #await check_gold(event, coin=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_artifact_guide.send(image(Path(item)))
+
+
+@common_abyss.handle()
+async def _(event: MessageEvent):
+    arg = '角色配队'
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
+    await check_gold(event, coin=1)
+    for item in save_path:
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
+        await common_abyss.send(image(Path(item)))
 
 
 @starrail_info.handle()
@@ -241,6 +252,7 @@ def get_raw():
     if not (raw := Config.get_config("starrail_role_recommend", "GITHUB_RAW")):
         raw = "https://ghproxy.com/https://raw.githubusercontent.com"
     return raw
+
 
 async def get_update_info():
     url = f"{get_raw()}/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_recommend/README.md"
