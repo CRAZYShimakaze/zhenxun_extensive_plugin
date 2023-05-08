@@ -8,14 +8,14 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
-from configs.config import Config
-from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
-from services import logger
 
+from configs.config import Config
+from configs.path_config import DATA_PATH
+from services import logger
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
@@ -58,6 +58,14 @@ Config.add_plugin_config(
     help_="定期自动检查更新",
     default_value=True,
 )
+Config.add_plugin_config(
+    "genshin_role_recommend",
+    "GITHUB_RAW",
+    "https://ghproxy.com/https://raw.githubusercontent.com",
+    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com",
+    default_value="https://ghproxy.com/https://raw.githubusercontent.com",
+    type=str,
+)
 
 common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
@@ -71,7 +79,7 @@ check_update = on_command("检查原神插件更新", permission=SUPERUSER, prio
 role_guide = on_regex(r"(.*)攻略$", priority=15)
 genshin_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
-src_url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
+src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
 genshin_role_break = src_url + "role_break/{}.jpg"
@@ -96,7 +104,7 @@ def get_img_md5(image_file):
 
 async def get_img(url, arg, save_path, ignore_exist):
     if not os.path.exists(save_path) or ignore_exist:
-        await AsyncHttpx.download_file(url.format(arg), save_path, follow_redirects=True)
+        await AsyncHttpx.download_file(get_raw()+url.format(arg), save_path, follow_redirects=True)
 
 
 @common_role_equip.handle()
@@ -233,11 +241,11 @@ async def _():
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
-    common_guide_md5 = (await AsyncHttpx.get(src_url + "common_guide/md5.json", follow_redirects=True)).json()
-    role_break_md5 = (await AsyncHttpx.get(src_url + "role_break/md5.json", follow_redirects=True)).json()
-    role_guide_md5 = (await AsyncHttpx.get(src_url + "role_guide/md5.json", follow_redirects=True)).json()
-    role_info_md5 = (await AsyncHttpx.get(src_url + "role_info/md5.json", follow_redirects=True)).json()
-    weapon_info_md5 = (await AsyncHttpx.get(src_url + "weapon_info/md5.json", follow_redirects=True)).json()
+    common_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True)).json()
+    role_break_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True)).json()
+    role_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_guide/md5.json", follow_redirects=True)).json()
+    role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
+    weapon_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}weapon_info/md5.json", follow_redirects=True)).json()
     update_list = set()
     for item in common_guide_md5.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
@@ -264,8 +272,13 @@ async def _():
     await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
 
 
+def get_raw():
+    if not (raw := Config.get_config("genshin_role_recommend", "GITHUB_RAW")):
+        raw = "https://ghproxy.com/https://raw.githubusercontent.com"
+    return raw
+
 async def get_update_info():
-    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/README.md"
+    url = f"{get_raw()}/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/README.md"
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
@@ -277,7 +290,7 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update(is_cron=False):
-    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/__init__.py"
+    url = f"{get_raw()}/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/__init__.py"
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
