@@ -19,7 +19,7 @@ from services import logger
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
-from ..plugin_utils.auth_utils import check_gold
+# from ..plugin_utils.auth_utils import check_gold
 
 driver: Driver = nonebot.get_driver()
 
