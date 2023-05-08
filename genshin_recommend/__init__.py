@@ -241,31 +241,11 @@ async def _():
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
-    common_guide_md5 = (
-        await AsyncHttpx.get(
-            f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True
-        )
-    ).json()
-    role_break_md5 = (
-        await AsyncHttpx.get(
-            f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True
-        )
-    ).json()
-    role_guide_md5 = (
-        await AsyncHttpx.get(
-            f"{get_raw()}{src_url}role_guide/md5.json", follow_redirects=True
-        )
-    ).json()
-    role_info_md5 = (
-        await AsyncHttpx.get(
-            f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True
-        )
-    ).json()
-    weapon_info_md5 = (
-        await AsyncHttpx.get(
-            f"{get_raw()}{src_url}weapon_info/md5.json", follow_redirects=True
-        )
-    ).json()
+    common_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True)).json()
+    role_break_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True)).json()
+    role_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_guide/md5.json", follow_redirects=True)).json()
+    role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
+    weapon_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}weapon_info/md5.json", follow_redirects=True)).json()
     update_list = set()
     for item in common_guide_md5.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
