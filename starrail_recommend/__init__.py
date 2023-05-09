@@ -145,7 +145,7 @@ async def _(event: MessageEvent):
 async def _(event: MessageEvent):
     arg = '角色配队'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
-    await check_gold(event, coin=1)
+    #await check_gold(event, coin=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_abyss.send(image(Path(item)))
