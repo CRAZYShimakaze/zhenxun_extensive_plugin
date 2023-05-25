@@ -91,6 +91,7 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
 
 async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     artifact_pk = player_info.data['圣遗物榜单']
+    artifact_all = player_info.data['圣遗物列表']
     if not only_cal:
         bg_card = load_image(f'{bg_path}/背景_{data["元素"]}.png',
                              mode='RGBA')
@@ -393,6 +394,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 font=get_font(25, 'number.ttf'))
         if artifact_pk_info not in artifact_pk:
             artifact_pk.append(copy.deepcopy(artifact_pk_info))
+        if artifact not in artifact_all[i] and artifact['等级'] == 20:
+            artifact_all[i].append(copy.deepcopy(artifact))
 
     # 第二排
     for i in range(3):
@@ -493,6 +496,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 font=get_font(25, 'number.ttf'))
         if artifact_pk_info not in artifact_pk:
             artifact_pk.append(copy.deepcopy(artifact_pk_info))
+        if artifact not in artifact_all[i + 2] and artifact['等级'] == 20:
+            artifact_all[i + 2].append(copy.deepcopy(artifact))
     player_info.data['圣遗物榜单'] = sorted(player_info.data['圣遗物榜单'], key=lambda x: float(x['评分']),
                                             reverse=True)[:20]
     if not only_cal:

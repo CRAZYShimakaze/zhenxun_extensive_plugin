@@ -22,6 +22,7 @@ from utils.http_utils import AsyncHttpx
 from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_artifact_card import draw_artifact_card
+from .data_source.draw_recommend_card import gen_artifact_recommend
 from .data_source.draw_role_card import draw_role_card
 from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
@@ -35,6 +36,7 @@ usage：
     指令：
         角色面板 (例:刻晴面板、刻晴面板@XXX、刻晴面板+uid)
         更新/刷新面板 (uid)
+        XX(羽花沙杯头)推荐
         我的角色
         他的角色@XXX
         最强XX (例:最强甘雨)
@@ -46,7 +48,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.8
+__plugin_version__ = 2.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -83,23 +85,14 @@ driver: Driver = nonebot.get_driver()
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
 group_worst = on_regex(r"最菜(.*)", priority=4)
+
+artifact_recommend = on_regex("(.*?)([羽花沙杯头])推荐", priority=4)
 artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
 group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
 check_update = on_command("检查面板插件更新", permission=SUPERUSER, priority=3, block=True)
-alias_file = load_json(path=f'{json_path}/alias.json')
+alias_file = load_json(f'{json_path}/alias.json')
 name_list = alias_file['roles']
-
-
-@group_artifact_list.handle()
-async def _(event: GroupMessageEvent):
-    group_id = event.group_id
-    if not os.path.exists(f"{group_info_path}/{group_id}.json"):
-        return await group_artifact_list.finish('未收录任何圣遗物信息,请先进行查询!')
-    else:
-        group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
-        img = await draw_artifact_card(group_id, group_artifact_info, None, None, __plugin_version__, 1)
-        await group_artifact_list.finish(img)
 
 
 def get_role_name(role):
@@ -190,9 +183,11 @@ async def _(event: MessageEvent):
         if not player_info.data['圣遗物榜单']:
             return await artifact_list.send("未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=True)
         roles_list = player_info.get_roles_list()
-        img = await draw_artifact_card(uid, player_info.data['圣遗物榜单'], player_info.data['大毕业圣遗物'],
-                                       player_info.data['小毕业圣遗物'], __plugin_version__)
-        await artifact_list.finish(img, at_sender=True)  # + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
+        await check_gold(event, coin=1, percent=1)
+        img, text = await draw_artifact_card(f'圣遗物榜单', None, uid, player_info.data['圣遗物榜单'],
+                                             player_info.data['大毕业圣遗物'],
+                                             player_info.data['小毕业圣遗物'], __plugin_version__)
+        await artifact_list.finish(img + text, at_sender=True)  # + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
 
 
 @get_card.handle()
@@ -208,7 +203,10 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     else:
         uid = await get_msg_uid(event)
     if role in ["更新", "刷新"]:
-        await update(event, uid, group_save=True)
+        if at_user:
+            await update(event, uid, group_save=False)
+        else:
+            await update(event, uid, group_save=True)
     else:
         await gen(event, uid, role, at_user=at_user)
 

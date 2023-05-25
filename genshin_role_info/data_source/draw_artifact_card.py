@@ -46,19 +46,24 @@ async def draw_qq_logo_mask(artifact, mask_bottom):
     return img
 
 
-async def draw_artifact_card(uid, artifact_info, ace2_num, ace_num, plugin_version, is_group=0):
-    bounder_offset = (70, 30)
+async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num, plugin_version, is_group=0):
+    bounder_offset = (70, 130)
     interval = (0, 15)
     # w317,h434
     mask_bottom = load_image(path=f'{other_path}/底遮罩.png', crop=(707, 936, 1024, 1370))
     mask_w, mask_h = mask_bottom.size
-    h = 5  # len(artifact_pk)//4
-    wid = bounder_offset[0] + (mask_w * 4 + interval[0] * 3) + bounder_offset[0]
-    hei = bounder_offset[1] + (mask_h * h + interval[1] * (h - 1)) + bounder_offset[1] + 50
-    bg = load_image(f'{bg_path}/背景_{role_data[artifact_info[0]["角色"]]["element"]}.png', size=(wid, hei),
-                    mode='RGBA')
-    bg_draw = ImageDraw.Draw(bg)
     artifact_pk = artifact_info
+    h = (len(artifact_pk) + 3) // 4
+    wid = bounder_offset[0] + (mask_w * 4 + interval[0] * 3) + bounder_offset[0]
+    hei = bounder_offset[1] + (mask_h * h + interval[1] * (h - 1)) + bounder_offset[1] + 50 - 100
+    if '角色' in artifact_pk[0]:
+        bg = load_image(f'{bg_path}/背景_{role_data[artifact_info[0]["角色"]]["element"]}.png', size=(wid, hei),
+                        mode='RGBA')
+    else:
+        bg = load_image(f'{bg_path}/背景_{role_data[name]["element"]}.png', size=(wid, hei),
+                        mode='RGBA')
+    bg_draw = ImageDraw.Draw(bg)
+
     # artifact_pk = sorted(artifact_info, key=lambda x: float(x['评分']), reverse=True)
 
     for index, artifact in enumerate(artifact_pk):
@@ -83,16 +88,16 @@ async def draw_artifact_card(uid, artifact_info, ace2_num, ace_num, plugin_versi
             save_path=reli_icon,
             mode='RGBA')
         bg.alpha_composite(reli_icon, (slice_offset_x + 200, slice_offset_y + 67))
-
-        avatar_name = role_name["Side_Name"][artifact["角色"]]
-        avatar_icon = f'{avatar_path}/{avatar_name}.png'
-        avatar_icon = await get_img(
-            url=artifact_url.format(
-                avatar_name),
-            size=(100, 100),
-            save_path=avatar_icon,
-            mode='RGBA')
-        bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 30, slice_offset_y + 67 + 30))
+        if '角色' in artifact:
+            avatar_name = role_name["Side_Name"][artifact["角色"]]
+            avatar_icon = f'{avatar_path}/{avatar_name}.png'
+            avatar_icon = await get_img(
+                url=artifact_url.format(
+                    avatar_name),
+                size=(100, 100),
+                save_path=avatar_icon,
+                mode='RGBA')
+            bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 30, slice_offset_y + 67 + 30))
         bg_draw.text((slice_offset_x + 24, slice_offset_y + 16),
                      artifact['名称'],
                      fill='white',
@@ -142,12 +147,20 @@ async def draw_artifact_card(uid, artifact_info, ace2_num, ace_num, plugin_versi
                 slice_offset_y + 228 + 50 * j,
                 fill=artifact['副属性'][j]['颜色'],
                 font=get_font(25, 'number.ttf'))
-
+    draw_center_text(bg_draw,
+                     f'{title}',
+                     0, wid, 5, '#ffffff',
+                     get_font(96, '优设标题黑.ttf'))
     draw_center_text(bg_draw,
                      f'{"group" if is_group else "uid"}:{uid} | v{plugin_version} | Powered by Enka.Network',
                      0, wid, bg.size[1] - 70, '#ffffff',
                      get_font(46, '优设标题黑.ttf'))
-    text_info = '' if is_group else f"\n大毕业圣遗物{ace2_num}个,小毕业圣遗物{ace_num}个.\n最高评分为{artifact_pk[0]['角色']}{round(artifact_pk[0]['评分'], 2)}分的{artifact_pk[0]['名称']}!"
-
+    if is_group:
+        text_info = ''
+    else:
+        if '角色' in artifact_pk[0]:
+            text_info = f"\n大毕业圣遗物{ace2_num}个,小毕业圣遗物{ace_num}个.\n最高评分为{artifact_pk[0]['角色']}{round(artifact_pk[0]['评分'], 2)}分的{artifact_pk[0]['名称']}!"
+        else:
+            text_info = f"\n大毕业圣遗物{ace2_num}个,小毕业圣遗物{ace_num}个.\n最高评分为{name}{round(artifact_pk[0]['评分'], 2)}分的{artifact_pk[0]['名称']}!"
     return image_build(img=bg, quality=100,
-                       mode='RGB') + text_info
+                       mode='RGB'), text_info

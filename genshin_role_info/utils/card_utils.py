@@ -3,8 +3,8 @@ import os
 import re
 
 from PIL import ImageFont
-
 from configs.path_config import DATA_PATH
+
 from ..utils.json_utils import load_json, save_json
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
@@ -49,6 +49,8 @@ class PlayerInfo:
             self.data['小毕业圣遗物'] = 0
         if '大毕业圣遗物' not in self.data:
             self.data['大毕业圣遗物'] = 0
+        if '圣遗物列表' not in self.data:
+            self.data['圣遗物列表'] = [[], [], [], [], []]
 
     def set_player(self, data: dict):
         self.player_info['昵称'] = data.get('nickname', 'unknown')
@@ -215,6 +217,9 @@ class PlayerInfo:
 
     def get_roles_list(self):
         return list(self.roles.keys())
+
+    def get_artifact_list(self, pos):
+        return list(self.data['圣遗物列表'][pos])
 
     def get_roles_info(self, role_name):
         if role_name in self.roles:

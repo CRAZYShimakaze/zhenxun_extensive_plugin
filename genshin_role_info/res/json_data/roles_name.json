@@ -53,7 +53,8 @@
     "艾尔海森": "UI_Gacha_AvatarImg_Alhatham",
     "瑶瑶": "UI_Gacha_AvatarImg_Yaoyao",
     "白术": "UI_Gacha_AvatarImg_Baizhuer",
-    "卡维": "UI_AvatarIcon_Side_Kaveh",
+    "卡维": "UI_Gacha_AvatarImg_Kaveh",
+    "绮良良": "UI_Gacha_AvatarImg_Momoka",
 
     "神里绫华": "UI_Gacha_AvatarImg_Ayaka",
     "甘雨": "UI_Gacha_AvatarImg_Ganyu",
@@ -131,6 +132,7 @@
     "瑶瑶": "UI_AvatarIcon_Side_Yaoyao",
     "白术": "UI_AvatarIcon_Side_Baizhuer",
     "卡维": "UI_AvatarIcon_Side_Kaveh",
+    "绮良良": "UI_AvatarIcon_Side_Momoka",
 
     "神里绫华": "UI_AvatarIcon_Side_Ayaka",
     "甘雨": "UI_AvatarIcon_Side_Ganyu",
