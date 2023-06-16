@@ -8,14 +8,14 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
+from configs.config import Config
+from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
-
-from configs.config import Config
-from configs.path_config import DATA_PATH
 from services import logger
+
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
@@ -39,7 +39,7 @@ usage：
 __plugin_des__ = "查询星铁攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = 0.2
+__plugin_version__ = 0.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -106,7 +106,6 @@ async def get_img(url, arg, save_path, ignore_exist):
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for character, nicknames in role_list.items():
-        print(role, nicknames + [character])
         if role in nicknames + [character]:
             role = character
             break
@@ -124,8 +123,8 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @common_weapon_grade.handle()
 async def _(event: MessageEvent):
     arg = '光锥推荐'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
-    #await check_gold(event, coin=1)
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
+    #await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_weapon_grade.send(image(Path(item)))
