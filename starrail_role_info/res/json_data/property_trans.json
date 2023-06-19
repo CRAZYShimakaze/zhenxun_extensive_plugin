@@ -1,0 +1,38 @@
+{
+  "property": {
+    "HPDelta": "生命值",
+    "AttackDelta": "攻击力",
+    "DefenceDelta": "防御力",
+    "HPAddedRatio": "百分比生命值",
+    "AttackAddedRatio": "百分比攻击力",
+    "DefenceAddedRatio": "百分比防御力",
+    "CriticalChanceBase": "暴击率",
+    "CriticalDamageBase": "暴击伤害",
+    "HealRatioBase": "治疗加成",
+    "StatusProbabilityBase": "效果命中",
+    "StatusResistanceBase": "效果抵抗",
+    "SpeedDelta": "速度",
+    "SpeedAddedRatio": "百分比速度",
+    "PhysicalAddedRatio": "物理伤害加成",
+    "FireAddedRatio": "火元素伤害加成",
+    "IceAddedRatio": "冰元素伤害加成",
+    "ThunderAddedRatio": "雷元素伤害加成",
+    "WindAddedRatio": "风元素伤害加成",
+    "QuantumAddedRatio": "量子伤害加成",
+    "ImaginaryAddedRatio": "虚数伤害加成",
+    "BreakDamageAddedRatioBase": "击破特攻",
+    "SPRatioBase": "能量恢复效率"
+  },
+  "path": {
+    "Priest": "Abundance",
+    "Warrior": "Destruction",
+    "Mage": "Erudition",
+    "?": "Explore",
+    "Shaman": "Harmony",
+    "Rogue": "Hunt",
+    "??": "Joy",
+    "???": "Memory",
+    "Warlock": "Nihility",
+    "Knight": "Preservation"
+  }
+}
