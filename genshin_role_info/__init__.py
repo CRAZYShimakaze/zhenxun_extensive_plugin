@@ -22,7 +22,7 @@ from utils.http_utils import AsyncHttpx
 from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_artifact_card import draw_artifact_card
-from .data_source.draw_recommend_card import gen_artifact_recommend
+from .data_source.draw_recommend_card import gen_artifact_adapt, gen_artifact_recommend
 from .data_source.draw_role_card import draw_role_card
 from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
@@ -34,11 +34,15 @@ __plugin_usage__ = """
 usage：
     查询橱窗内角色的面板
     指令：
+        绑定原神UID/uidXXX
+        原神解绑
         角色面板 (例:刻晴面板、刻晴面板@XXX、刻晴面板+uid)
-        更新/刷新面板 (uid)
-        XX(羽花沙杯头)推荐
-        我的角色
-        他的角色@XXX
+        更新/刷新原神面板 (uid)
+        圣遗物导入
+        XX(花羽沙杯冠)适配
+        XX(花羽沙杯冠)推荐
+        我的原神角色
+        他的原神角色@XXX
         最强XX (例:最强甘雨)
         最菜XX
         圣遗物榜单
@@ -48,7 +52,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.9
+__plugin_version__ = 3.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -76,21 +80,22 @@ Config.add_plugin_config(
     default_value=83,
 )
 enak_url = 'https://enka.network/api/uid/{}'
-
-my_card = on_command("我的角色", priority=4, block=True)
-his_card = on_command("他的角色", aliases={"她的角色"}, priority=4, block=True)
+bind = on_regex(r"绑定原神(UID|uid)(.*)", priority=5, block=True)
+unbind = on_command("原神解绑", priority=5, block=True)
+my_card = on_command("我的原神角色", priority=4, block=True)
+his_card = on_command("他的原神角色", aliases={"她的原神角色"}, priority=4, block=True)
 
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"最强(.*)", priority=4)
 group_worst = on_regex(r"最菜(.*)", priority=4)
-
-artifact_recommend = on_regex("(.*?)([羽花沙杯头])推荐", priority=4)
+artifact_adapt = on_regex("(.*?)([花羽沙杯冠])适配", priority=4)
+artifact_recommend = on_regex("(.*?)([花羽沙杯冠])推荐", priority=4)
 artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
 group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
-reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=True)
-check_update = on_command("检查面板插件更新", permission=SUPERUSER, priority=3, block=True)
+reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=False)
+check_update = on_command("检查原神面板更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(f'{json_path}/alias.json')
 name_list = alias_file['roles']
 
@@ -104,11 +109,29 @@ def get_role_name(role):
     return role_name
 
 
+def get_uid(user_qq):
+    qq2uid = load_json(f'{player_info_path}/qq2uid.json')
+    return qq2uid.get(str(user_qq), '')
+
+
+def bind_uid(user_qq, uid):
+    qq2uid = load_json(f'{player_info_path}/qq2uid.json')
+    qq2uid[str(user_qq)] = uid
+    save_json(qq2uid, f"{player_info_path}/qq2uid.json")
+
+
+def unbind_uid(user_qq):
+    qq2uid = load_json(f'{player_info_path}/qq2uid.json')
+    qq2uid.pop(str(user_qq))
+    save_json(qq2uid, f"{player_info_path}/qq2uid.json")
+
+
 async def get_msg_uid(event):
     at_user = get_message_at(event.json())
     user_qq = at_user[0] if at_user else event.user_id
-    genshin_user = await Genshin.get_or_none(user_qq=user_qq)
-    uid = genshin_user.uid if genshin_user else None
+    # genshin_user = await Genshin.get_or_none(user_qq=user_qq)
+    uid = get_uid(user_qq)
+    # uid = genshin_user.uid if genshin_user else None
     if not uid:
         await artifact_list.finish("请绑定uid后再查询！")
     if not check_uid(uid):
@@ -119,14 +142,18 @@ async def get_msg_uid(event):
 async def get_enka_info(url, uid, update_info):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
-        try:
-            req = await AsyncHttpx.get(
-                url=url,
-                follow_redirects=True,
-            )
-        except Exception:
-            return await get_card.finish("获取数据出错,请重试...")
-        if req.status_code != 200:
+        for i in range(3):
+            try:
+                req = await AsyncHttpx.get(
+                    url=url,
+                    follow_redirects=True,
+                )
+            except Exception:
+                return await get_card.finish("获取数据出错,请重试...")
+            if req.status_code == 200:
+                break
+            await asyncio.sleep(1)
+        else:
             return await get_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
@@ -136,8 +163,8 @@ async def get_enka_info(url, uid, update_info):
                 try:
                     player_info.set_role(role)
                     update_role_list.append(get_name_by_id(str(role['avatarId'])))
-                except:
-                    pass
+                except Exception as e:
+                    await get_card.send(str(e))
             player_info.save()
         else:
             guide = load_image(f'{other_path}/collections.png')
@@ -173,6 +200,95 @@ async def check_role_avaliable(role_name, roles_list):
             at_sender=True)
 
 
+@bind.handle()
+async def _(event: MessageEvent, arg: Tuple[str, ...] = RegexGroup()):
+    cmd = arg[0].strip()
+    msg = arg[1].strip()
+    uid = get_uid(event.user_id)
+    if not msg.isdigit():
+        await bind.finish("uid/id必须为纯数字！", at_senders=True)
+    msg = int(msg)
+    if uid:
+        await bind.finish(f"您已绑定过uid：{uid}，如果希望更换uid，请先发送原神解绑")
+    else:
+        bind_uid(event.user_id, msg)
+        await bind.finish(f"已成功添加原神uid：{msg}")
+
+
+@unbind.handle()
+async def _(event: MessageEvent):
+    if get_uid(event.user_id):
+        unbind_uid(event.user_id)
+        await unbind.send("用户数据删除成功...")
+
+
+@artifact_adapt.handle()
+async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    msg = args[0].strip(), args[1].strip()
+    uid = await get_msg_uid(event)
+    if msg[1] not in ["花", "羽", "沙", "杯", "冠"]:
+        return await artifact_adapt.send("请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True)
+    role = msg[0]
+    pos = ["花", "羽", "沙", "杯", "冠"].index(msg[1])
+    role_name = get_role_name(role)
+    if not role_name:
+        return
+    url = enak_url.format(uid)
+    player_info, _ = await get_enka_info(url, uid, update_info=False)
+    roles_list = player_info.get_roles_list()
+    await check_role_avaliable(role_name, roles_list)
+    await check_gold(event, coin=10, percent=1)
+    role_data = player_info.get_roles_info(role_name)
+    for index, item in enumerate(role_data['圣遗物']):
+        if item['部位'] == ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"][pos]:
+            pos_list = index
+            break
+    else:
+        await artifact_adapt.send(f"{role_name}{pos}号位没有圣遗物！", at_sender=True)
+    img, _ = await gen_artifact_adapt(f'{role}圣遗物适配({msg[1]})', role_data['圣遗物'][pos_list], uid, role, pos, __plugin_version__)
+    await artifact_adapt.finish(img)
+
+
+@artifact_recommend.handle()
+async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
+    msg = args[0].strip(), args[1].strip()
+    uid = await get_msg_uid(event)
+    if msg[1] not in ["花", "羽", "沙", "杯", "冠"]:
+        return await artifact_recommend.send("请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True)
+    role = msg[0]
+    pos = ["花", "羽", "沙", "杯", "冠"].index(msg[1])
+    role_name = get_role_name(role)
+    if not role_name:
+        return
+    url = enak_url.format(uid)
+    player_info, _ = await get_enka_info(url, uid, update_info=False)
+    await check_gold(event, coin=10, percent=1)
+    artifact_list = player_info.get_artifact_list(pos)
+
+    if not artifact_list:
+        return await artifact_recommend.send(f"{pos}号位没有圣遗物缓存！请先执行'更新面板'指令！", at_sender=True)
+    roles_list = player_info.get_roles_list()
+    await check_role_avaliable(role_name, roles_list)
+    role_data = player_info.get_roles_info(role_name)
+    img, _ = await gen_artifact_recommend(f'{role_name}圣遗物推荐({msg[1]})', role_data, artifact_list, uid, role_name,
+                                          pos,
+                                          __plugin_version__)
+    await artifact_recommend.finish(img + f"注:仅根据当前缓存圣遗物进行推荐,发送'圣遗物导入'可导入背包内所有圣遗物.")
+
+
+@group_artifact_list.handle()
+async def _(event: GroupMessageEvent):
+    group_id = event.group_id
+    if not os.path.exists(f"{group_info_path}/{group_id}.json"):
+        return await group_artifact_list.finish('未收录任何圣遗物信息,请先进行查询!')
+    else:
+        await check_gold(event, coin=1, percent=1)
+        group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
+        img, _ = await draw_artifact_card(f'群圣遗物榜单', None, group_id, group_artifact_info, None, None,
+                                          __plugin_version__, 1)
+        await group_artifact_list.finish(img)
+
+
 @artifact_list.handle()
 async def _(event: MessageEvent):
     uid = await get_msg_uid(event)
@@ -194,7 +310,7 @@ async def _(event: MessageEvent):
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     at_user = args[1].strip()
-    if role not in ["更新", "刷新"]:
+    if role not in ["更新原神", "刷新原神"]:
         role = get_role_name(role)
     if not role:
         return
@@ -202,7 +318,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         uid = int(at_user)
     else:
         uid = await get_msg_uid(event)
-    if role in ["更新", "刷新"]:
+    if role in ["更新原神", "刷新原神"]:
         if at_user:
             await update(event, uid, group_save=False)
         else:

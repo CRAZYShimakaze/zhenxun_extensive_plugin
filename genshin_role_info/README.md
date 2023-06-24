@@ -7,19 +7,20 @@
 ## 使用
 
 - XX面板 (例:甘雨面板、甘雨面板@CRAZYShimakaze、甘雨面板104442596)
-- 更新/刷新面板 (uid)
+- 更新/刷新原神面板 (uid)
 - XX(羽花沙杯头)推荐
-- 我的角色
-- 他的角色@CRAZYShimakaze
-- 最强XX (例:群最强甘雨)
+- 我的原神角色
+- 他的原神角色@CRAZYShimakaze
+- 最强XX (例:最强甘雨)
+- 最菜XX
 - 圣遗物榜单
 - 群圣遗物榜单
 - 重置最强XX (仅超级用户可用)
-- 检查面板更新 (仅超级用户可用)
+- 检查原神面板更新 (仅超级用户可用)
 
 ## 效果图
 
-<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample.jpg" height="700px"> <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/sample2.jpg" height="700px"/>
+<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
 
 ## 致谢
 
@@ -29,6 +30,13 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2023/6/24**[v3.0]
+
+1. 调整相关指令
+2. UID绑定与真寻解耦
+3. 角色信息展示命座和武器精炼
+4. 支持特定圣遗物适配角色
 
 **2023/5/25**[v2.9]
 

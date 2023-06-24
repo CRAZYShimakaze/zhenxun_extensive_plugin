@@ -521,13 +521,13 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                                mode='RGBA')
         if total_rank == 'ACE':
             rank_icon = load_image(f'{other_path}/ACE-A.png',
-                                   mode='RGBA')
+                                   mode='RGBA', size=(55, 73))
             bg.alpha_composite(rank_icon, (95, 964))
             rank_icon = load_image(f'{other_path}/ACE-C.png',
-                                   mode='RGBA')
+                                   mode='RGBA', size=(55, 73))
             bg.alpha_composite(rank_icon, (145, 964))
             rank_icon = load_image(f'{other_path}/ACE-E.png',
-                                   mode='RGBA')
+                                   mode='RGBA', size=(55, 73))
             bg.alpha_composite(rank_icon, (195, 964))
             bg_draw.text((250, 974),
                          str(total_int),

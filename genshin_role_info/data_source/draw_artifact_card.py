@@ -88,7 +88,7 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
             save_path=reli_icon,
             mode='RGBA')
         bg.alpha_composite(reli_icon, (slice_offset_x + 200, slice_offset_y + 67))
-        if '角色' in artifact:
+        if '角色' in artifact and artifact.get("角色", ''):
             avatar_name = role_name["Side_Name"][artifact["角色"]]
             avatar_icon = f'{avatar_path}/{avatar_name}.png'
             avatar_icon = await get_img(
