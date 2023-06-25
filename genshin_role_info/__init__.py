@@ -110,8 +110,15 @@ def get_role_name(role):
     return role_name
 
 
-def get_uid(user_qq):
-    qq2uid = load_json(f'{player_info_path}/qq2uid.json')
+async def get_uid(user_qq):
+    if not os.path.exists(f'{player_info_path}/qq2uid.json'):
+        qq2uid = load_json(f'{player_info_path}/qq2uid.json')
+        genshin_user = await Genshin.all()
+        for item in genshin_user:
+            qq2uid[str(item.user_qq)] = item.uid
+        save_json(qq2uid, f"{player_info_path}/qq2uid.json")
+    else:
+        qq2uid = load_json(f'{player_info_path}/qq2uid.json')
     return qq2uid.get(str(user_qq), '')
 
 
@@ -131,7 +138,7 @@ async def get_msg_uid(event):
     at_user = get_message_at(event.json())
     user_qq = at_user[0] if at_user else event.user_id
     # genshin_user = await Genshin.get_or_none(user_qq=user_qq)
-    uid = get_uid(user_qq)
+    uid = await get_uid(user_qq)
     # uid = genshin_user.uid if genshin_user else None
     if not uid:
         await artifact_list.finish("请绑定uid后再查询！")
@@ -205,7 +212,7 @@ async def check_role_avaliable(role_name, roles_list):
 async def _(event: MessageEvent, arg: Tuple[str, ...] = RegexGroup()):
     cmd = arg[0].strip()
     msg = arg[1].strip()
-    uid = get_uid(event.user_id)
+    uid = await get_uid(event.user_id)
     if not msg.isdigit():
         await bind.finish("uid/id必须为纯数字！", at_senders=True)
     msg = int(msg)
