@@ -40,7 +40,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.8
+__plugin_version__ = 1.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -80,6 +80,9 @@ role_guide = on_regex(r"(.*)攻略$", priority=15)
 genshin_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
+alias_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/alias_template.json"
+
+
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
 genshin_role_break = src_url + "role_break/{}.jpg"
@@ -91,9 +94,10 @@ ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'
 COMMON_GUIDE_PATH = RES_PATH + '/common_guide'
 WEAPON_INFO_PATH = RES_PATH + '/weapon_info'
-alias_file = json.load(open(f'{os.path.dirname(__file__)}/alias.json', 'r', encoding='utf-8'))
-role_list = alias_file['roles']
-weapon_list = alias_file['weapons']
+alias_Path = os.path.join(os.path.dirname(__file__), "./alias.json")
+alias_file = {}
+role_list = {}
+weapon_list = {}
 
 
 def get_img_md5(image_file):
@@ -267,9 +271,36 @@ async def _():
         save_path = Path(f'{WEAPON_INFO_PATH}/{item}.png')
         if await check_md5(save_path, item, genshin_weapon_info, weapon_info_md5):
             update_list.add(item)
+
+    # 追加昵称更新
+    global alias_file, role_list, weapon_list
+    alias_remote_file = await AsyncHttpx.get(get_raw() + alias_url, follow_redirects=True)
+    alias_remote = json.loads(alias_remote_file.text)
+    for alias_type in alias_remote.keys():
+        for key in alias_remote[alias_type]:
+            if key in alias_file[alias_type].keys():
+                # 合并昵称
+                alias_file[alias_type][key] = list(
+                    set(alias_file[alias_type][key] + alias_remote[alias_type][key]))
+            else:
+                # 新增昵称
+                alias_file[alias_type][key] = alias_remote[alias_type][key]
+    # 保存昵称
+    with open(alias_Path, "w", encoding="utf8") as f:
+        json.dump(alias_file, f, ensure_ascii=False, indent=2)
+    # 更新缓存
+    alias_file = await get_alias()
+    role_list = alias_file['roles']
+    weapon_list = alias_file['weapons']
     if not update_list:
         return await update_info.send(f'所有推荐信息均为最新！')
     await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
+
+
+async def get_alias():
+    if not os.path.exists(alias_Path):
+        await AsyncHttpx.download_file(get_raw()+alias_url, alias_Path, follow_redirects=True)
+    return json.load(open(alias_Path, 'r', encoding='utf-8'))
 
 
 def get_raw():
@@ -318,6 +349,10 @@ async def _check_update(is_cron=False):
 
 @driver.on_startup
 async def _():
+    global alias_file, role_list, weapon_list
+    alias_file = await get_alias()
+    role_list = alias_file['roles']
+    weapon_list = alias_file['weapons']
     if Config.get_config("genshin_role_recommend", "CHECK_UPDATE"):
         scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59),
                           id='genshin_role_recommend')
