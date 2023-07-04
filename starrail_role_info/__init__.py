@@ -34,6 +34,8 @@ __plugin_usage__ = """
 usage：
     查询角色的面板
     指令：
+        星铁绑定uidXXXX
+        星铁解绑
         角色面板 (例:希儿面板、希儿面板@XXX、希儿面板+uid)
         更新/刷新星铁面板 (uid)
         XX(头手身脚球绳)推荐
@@ -76,8 +78,8 @@ starrail_url = 'https://api.mihomo.me/sr_info/{}'
 my_card = on_command("我的星铁角色", priority=4, block=True)
 his_card = on_command("他的星铁角色", aliases={"她的星铁角色"}, priority=4, block=True)
 
-bind = on_regex(r"绑定星铁(UID|uid)(.*)", priority=5, block=True)
-unbind = on_command("星铁解绑", priority=5, block=True)
+bind = on_regex(r"[星铁绑定|绑定星铁](UID|uid)(.*)", priority=5, block=True)
+unbind = on_command("星铁解绑", priority=4, block=True)
 
 driver: Driver = nonebot.get_driver()
 
