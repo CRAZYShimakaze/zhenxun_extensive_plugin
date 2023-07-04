@@ -74,7 +74,7 @@ role_guide = on_regex(r"(.*)攻略$", priority=15)
 starrail_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/"
-alias_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_recommend/alias_template.json"
+alias_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_recommend/alias.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 starrail_role_guide = src_url + "role_guide/{}.png"
