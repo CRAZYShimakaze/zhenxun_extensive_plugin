@@ -245,7 +245,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     player_info, _ = await get_enka_info(url, uid, update_info=False)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list)
-    await check_gold(event, coin=10, percent=1)
+    # await check_gold(event, coin=10, percent=1)
     role_data = player_info.get_roles_info(role_name)
     for index, item in enumerate(role_data['圣遗物']):
         if item['部位'] == ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"][pos]:
@@ -270,7 +270,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         return
     url = enak_url.format(uid)
     player_info, _ = await get_enka_info(url, uid, update_info=False)
-    await check_gold(event, coin=10, percent=1)
+    # await check_gold(event, coin=10, percent=1)
     artifact_list = player_info.get_artifact_list(pos)
 
     if not artifact_list:
@@ -290,7 +290,7 @@ async def _(event: GroupMessageEvent):
     if not os.path.exists(f"{group_info_path}/{group_id}.json"):
         return await group_artifact_list.finish('未收录任何圣遗物信息,请先进行查询!')
     else:
-        await check_gold(event, coin=1, percent=1)
+        # await check_gold(event, coin=1, percent=1)
         group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
         img, _ = await draw_artifact_card(f'群圣遗物榜单', None, group_id, group_artifact_info, None, None,
                                           __plugin_version__, 1)
@@ -307,7 +307,7 @@ async def _(event: MessageEvent):
         if not player_info.data['圣遗物榜单']:
             return await artifact_list.send("未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=True)
         roles_list = player_info.get_roles_list()
-        await check_gold(event, coin=1, percent=1)
+        # await check_gold(event, coin=1, percent=1)
         img, text = await draw_artifact_card(f'圣遗物榜单', None, uid, player_info.data['圣遗物榜单'],
                                              player_info.data['大毕业圣遗物'],
                                              player_info.data['小毕业圣遗物'], __plugin_version__)
