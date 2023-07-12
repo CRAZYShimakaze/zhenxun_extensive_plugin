@@ -3,10 +3,9 @@ from typing import Union
 from PIL import ImageDraw, Image
 
 from .draw_role_card import weapon_url
-from ..utils.card_utils import json_path, get_font, bg_path, avatar_path
+from ..utils.card_utils import json_path, get_font, bg_path, avatar_path, other_path, weapon_path
 from ..utils.image_utils import load_image, draw_center_text, get_img, image_build
 from ..utils.json_utils import load_json
-from ...starrail_role_info.utils.card_utils import other_path, weapon_path
 
 role_url = 'https://enka.network/ui/{}.png'
 
