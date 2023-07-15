@@ -8,14 +8,14 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
+from configs.config import Config
+from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
-
-from configs.config import Config
-from configs.path_config import DATA_PATH
 from services import logger
+
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
@@ -82,7 +82,6 @@ break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
 alias_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/alias.json"
 
-
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
 genshin_role_break = src_url + "role_break/{}.jpg"
@@ -94,10 +93,7 @@ ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'
 COMMON_GUIDE_PATH = RES_PATH + '/common_guide'
 WEAPON_INFO_PATH = RES_PATH + '/weapon_info'
-alias_Path = os.path.join(os.path.dirname(__file__), "./alias.json")
-alias_file = {}
-role_list = {}
-weapon_list = {}
+alias_path = os.path.join(os.path.dirname(__file__), "./alias.json")
 
 
 def get_img_md5(image_file):
@@ -108,7 +104,7 @@ def get_img_md5(image_file):
 
 async def get_img(url, arg, save_path, ignore_exist):
     if not os.path.exists(save_path) or ignore_exist:
-        await AsyncHttpx.download_file(get_raw()+url.format(arg), save_path, follow_redirects=True)
+        await AsyncHttpx.download_file(get_raw() + url.format(arg), save_path, follow_redirects=True)
 
 
 @common_role_equip.handle()
@@ -177,10 +173,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, ignore_exist=False)
-    try:
-        await role_guide.send(image(Path(save_path)))
-    except:
-        os.unlink(save_path)
+    await role_guide.send(image(Path(save_path)))
 
 
 @genshin_info.handle()
@@ -199,17 +192,11 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             return
         save_path = f'{WEAPON_INFO_PATH}/{role}.png'
         await get_img(genshin_weapon_info, role, save_path, ignore_exist=False)
-        try:
-            await genshin_info.send(image(Path(save_path)))
-        except:
-            os.unlink(save_path)
+        await genshin_info.send(image(Path(save_path)))
         return
     save_path = f'{ROLE_INFO_PATH}/{role}.png'
     await get_img(genshin_role_info, role, save_path, ignore_exist=False)
-    try:
-        await genshin_info.send(image(Path(save_path)))
-    except:
-        os.unlink(save_path)
+    await genshin_info.send(image(Path(save_path)))
 
 
 @break_material.handle()
@@ -223,10 +210,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{ROLE_BREAK_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, ignore_exist=False)
-    try:
-        await break_material.send(image(Path(save_path)))
-    except:
-        os.unlink(save_path)
+    await break_material.send(image(Path(save_path)))
 
 
 @update_info.handle()
@@ -273,21 +257,11 @@ async def _():
             update_list.add(item)
 
     # 追加昵称更新
-    global alias_file, role_list, weapon_list
     alias_remote_file = await AsyncHttpx.get(get_raw() + alias_url, follow_redirects=True)
     alias_remote = json.loads(alias_remote_file.text)
-    for alias_type in alias_remote.keys():
-        for key in alias_remote[alias_type]:
-            if key in alias_file[alias_type].keys():
-                # 合并昵称
-                alias_file[alias_type][key] = list(
-                    set(alias_file[alias_type][key] + alias_remote[alias_type][key]))
-            else:
-                # 新增昵称
-                alias_file[alias_type][key] = alias_remote[alias_type][key]
     # 保存昵称
-    with open(alias_Path, "w", encoding="utf8") as f:
-        json.dump(alias_file, f, ensure_ascii=False, indent=2)
+    with open(alias_path, "w", encoding="utf8") as f:
+        json.dump(alias_remote, f, ensure_ascii=False, indent=2)
     # 更新缓存
     alias_file = await get_alias()
     role_list = alias_file['roles']
@@ -298,15 +272,16 @@ async def _():
 
 
 async def get_alias():
-    if not os.path.exists(alias_Path):
-        await AsyncHttpx.download_file(get_raw()+alias_url, alias_Path, follow_redirects=True)
-    return json.load(open(alias_Path, 'r', encoding='utf-8'))
+    if not os.path.exists(alias_path):
+        await AsyncHttpx.download_file(get_raw() + alias_url, alias_path, follow_redirects=True)
+    return json.load(open(alias_path, 'r', encoding='utf-8'))
 
 
 def get_raw():
     if not (raw := Config.get_config("genshin_role_recommend", "GITHUB_RAW")):
         raw = "https://ghproxy.com/https://raw.githubusercontent.com"
     return raw
+
 
 async def get_update_info():
     url = f"{get_raw()}/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/README.md"
