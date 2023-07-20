@@ -296,12 +296,24 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     for i in range(len(data['圣遗物'])):
         artifact_list[pos_name.index(data['圣遗物'][i]['部位'])] = data['圣遗物'][i]
     # 第一排
-    for i in range(2):
+    for i in range(5):
+        offset_x = 0 if i > 1 else 317
+        offset_y = 437 if i > 1 else 0
         artifact = artifact_list[i]
         if not artifact:
             continue
+        artifact_copy = copy.deepcopy(artifact)
+
+        if artifact_copy['等级'] == 20:
+            if artifact_copy not in artifact_all[i]:
+                artifact_copy['角色'] = data["名称"]
+                artifact_all[i].append(artifact_copy)
+            else:
+                artifact_all[i].remove(artifact_copy)
+                artifact_copy['角色'] = data["名称"]
+                artifact_all[i].append(artifact_copy)
         artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
-
+        i = i - 2 if i > 1 else i
         player_info.data['大毕业圣遗物'] = player_info.data['大毕业圣遗物'] + 1 if artifact_score == 'ACE*' else \
             player_info.data['大毕业圣遗物']
         player_info.data['小毕业圣遗物'] = player_info.data['小毕业圣遗物'] + 1 if artifact_score == 'ACE' else \
@@ -320,7 +332,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         total_cnt += 1
         artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
                                  size=(100, 100))
-        bg.alpha_composite(artifact_bg, (587 + 317 * i, 1002))
+        bg.alpha_composite(artifact_bg, (270 + offset_x + 317 * i, 1002 + offset_y))
         reli_icon = f'{reli_path}/{artifact["图标"]}.png'
         reli_icon = await get_img(
             url=artifact_url.format(
@@ -328,33 +340,33 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             size=(100, 100),
             save_path=reli_icon,
             mode='RGBA')
-        bg.alpha_composite(reli_icon, (587 + 317 * i, 1002))
-        bg_draw.text((411 + 317 * i, 951),
+        bg.alpha_composite(reli_icon, (270 + offset_x + 317 * i, 1002 + offset_y))
+        bg_draw.text((94 + offset_x + 317 * i, 951 + offset_y),
                      artifact['名称'],
                      fill='white',
                      font=get_font(40))
-        bg_draw.text((412 + 317 * i, 998),
+        bg_draw.text((95 + offset_x + 317 * i, 998 + offset_y),
                      f'{artifact_score}-{round(grade, 1)}',
                      fill='#ffde6b',
                      font=get_font(28, 'number.ttf'))
         level_mask = load_image(path=f'{other_path}/等级遮罩.png')
-        bg.alpha_composite(level_mask.resize((98, 30)), (412 + 317 * i, 1032))
+        bg.alpha_composite(level_mask.resize((98, 30)), (95 + offset_x + 317 * i, 1032 + offset_y))
         if artifact['等级'] != 20:
             no_list = '*'
-        draw_center_text(bg_draw, f"LV{artifact['等级']}", 412 + 317 * i,
-                         412 + 317 * i + 98, 1033, 'black',
+        draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + offset_x + 317 * i,
+                         95 + offset_x + 317 * i + 98, 1033 + offset_y, 'black',
                          get_font(27, 'number.ttf'))
-        bg_draw.text((411 + 317 * i, 1069),
+        bg_draw.text((94 + offset_x + 317 * i, 1069 + offset_y),
                      artifact['主属性']['属性名'],
                      fill='white',
                      font=get_font(25))
         if artifact['主属性']['属性名'] not in ['生命值', '攻击力', '元素精通']:
-            bg_draw.text((408 + 317 * i, 1100),
+            bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y),
                          f"+{artifact['主属性']['属性值']}%",
                          fill='white',
                          font=get_font(48, 'number.ttf'))
         else:
-            bg_draw.text((408 + 317 * i, 1100),
+            bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y),
                          f"+{artifact['主属性']['属性值']}",
                          fill='white',
                          font=get_font(48, 'number.ttf'))
@@ -366,13 +378,13 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                                                                                                                j] == 4 else '⁵'
                 x_offset = 25 * len(text)
                 bg_draw.text(
-                    (411 + 317 * i + x_offset, 1163 + 50 * j - 5),
+                    (94 + offset_x + 317 * i + x_offset, 1163 + 50 * j - 5 + offset_y),
                     up_num,
                     fill='white' if check_effective(artifact['词条'][j]['属性名'],
                                                     effective) else '#afafaf',
                     font=get_font(25, 'tahomabd.ttf'))
             bg_draw.text(
-                (411 + 317 * i, 1163 + 50 * j),
+                (94 + offset_x + 317 * i, 1163 + 50 * j + offset_y),
                 text,
                 fill='white' if check_effective(artifact['词条'][j]['属性名'],
                                                 effective) else '#afafaf',
@@ -387,119 +399,15 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             draw_right_text(
                 bg_draw,
                 num,
-                679 + 317 * i,
-                1163 + 50 * j,
+                362 + offset_x + 317 * i,
+                1163 + 50 * j + offset_y,
                 fill='white' if check_effective(artifact['词条'][j]['属性名'],
                                                 effective) else '#afafaf',
                 font=get_font(25, 'number.ttf'))
         if artifact_pk_info not in artifact_pk:
             artifact_pk.append(copy.deepcopy(artifact_pk_info))
-        if artifact not in artifact_all[i] and artifact['等级'] == 20:
-            artifact_all[i].append(copy.deepcopy(artifact))
 
-    # 第二排
-    for i in range(3):
-        artifact = artifact_list[i + 2]
-        if not artifact:
-            continue
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i + 2)
-
-        player_info.data['大毕业圣遗物'] = player_info.data['大毕业圣遗物'] + 1 if artifact_score == 'ACE*' else \
-            player_info.data['大毕业圣遗物']
-        player_info.data['小毕业圣遗物'] = player_info.data['小毕业圣遗物'] + 1 if artifact_score == 'ACE' else \
-            player_info.data['小毕业圣遗物']
-
-        artifact_pk_info['星级'] = artifact["星级"]
-        artifact_pk_info['图标'] = artifact["图标"]
-        artifact_pk_info['名称'] = artifact['名称']
-        artifact_pk_info['评分'] = grade
-        artifact_pk_info['评级'] = artifact_score
-        artifact_pk_info['等级'] = artifact['等级']
-        artifact_pk_info['主属性'] = {'属性名': artifact['主属性']['属性名'], '属性值': artifact['主属性']['属性值']}
-        artifact_pk_info['副属性'] = []
-
-        total_all += round(grade, 1)
-        total_cnt += 1
-        artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png',
-                                 size=(100, 100))
-        bg.alpha_composite(artifact_bg, (270 + 317 * i, 1439))
-        reli_icon = f'{reli_path}/{artifact["图标"]}.png'
-        reli_icon = await get_img(
-            url=artifact_url.format(
-                artifact["图标"]),
-            size=(100, 100),
-            save_path=reli_icon,
-            mode='RGBA')
-        bg.alpha_composite(reli_icon, (270 + 317 * i, 1439))
-        bg_draw.text((94 + 317 * i, 1388),
-                     artifact['名称'],
-                     fill='white',
-                     font=get_font(40))
-        bg_draw.text((95 + 317 * i, 1435),
-                     f'{artifact_score}-{round(grade, 1)}',
-                     fill='#ffde6b',
-                     font=get_font(28, 'number.ttf'))
-        level_mask = load_image(path=f'{other_path}/等级遮罩.png')
-        bg.alpha_composite(level_mask.resize((98, 30)), (95 + 317 * i, 1469))
-        if artifact['等级'] != 20:
-            no_list = '*'
-        draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + 317 * i,
-                         95 + 317 * i + 98, 1470, 'black',
-                         get_font(27, 'number.ttf'))
-        bg_draw.text((94 + 317 * i, 1506),
-                     artifact['主属性']['属性名'],
-                     fill='white',
-                     font=get_font(25))
-        if artifact['主属性']['属性名'] not in ['生命值', '攻击力', '元素精通']:
-            bg_draw.text((91 + 317 * i, 1537),
-                         f"+{artifact['主属性']['属性值']}%",
-                         fill='white',
-                         font=get_font(48, 'number.ttf'))
-        else:
-            bg_draw.text((91 + 317 * i, 1537),
-                         f"+{artifact['主属性']['属性值']}",
-                         fill='white',
-                         font=get_font(48, 'number.ttf'))
-        for j in range(len(artifact['词条'])):
-            text = artifact['词条'][j]['属性名'].replace('百分比', '')
-            up_num = ''
-            if mark[j] != 0:
-                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[
-                                                                                                               j] == 4 else '⁵'
-                x_offset = 25 * len(text)
-                bg_draw.text(
-                    (94 + 317 * i + x_offset, 1600 + 50 * j - 5),
-                    up_num,
-                    fill='white' if check_effective(artifact['词条'][j]['属性名'],
-                                                    effective) else '#afafaf',
-                    font=get_font(25, 'tahomabd.ttf'))
-            bg_draw.text(
-                (94 + 317 * i, 1600 + 50 * j),
-                text,
-                fill='white' if check_effective(artifact['词条'][j]['属性名'],
-                                                effective) else '#afafaf',
-                font=get_font(25))
-            if artifact['词条'][j]['属性名'] not in ['攻击力', '防御力', '生命值', '元素精通']:
-                num = '+' + str(artifact['词条'][j]['属性值']) + '%'
-            else:
-                num = '+' + str(artifact['词条'][j]['属性值'])
-            artifact_pk_info['副属性'].append({'属性名': text, '属性值': num, '强化次数': up_num,
-                                               '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'],
-                                                                                  effective) else '#afafaf'})
-            draw_right_text(
-                bg_draw,
-                num,
-                362 + 317 * i,
-                1600 + 50 * j,
-                fill='white' if check_effective(artifact['词条'][j]['属性名'],
-                                                effective) else '#afafaf',
-                font=get_font(25, 'number.ttf'))
-        if artifact_pk_info not in artifact_pk:
-            artifact_pk.append(copy.deepcopy(artifact_pk_info))
-        if artifact not in artifact_all[i + 2] and artifact['等级'] == 20:
-            artifact_all[i + 2].append(copy.deepcopy(artifact))
-    player_info.data['圣遗物榜单'] = sorted(player_info.data['圣遗物榜单'], key=lambda x: float(x['评分']),
-                                            reverse=True)[:20]
+    player_info.data['圣遗物榜单'] = sorted(player_info.data['圣遗物榜单'], key=lambda x: float(x['评分']), reverse=True)[:20]
     if not only_cal:
         # 圣遗物评分
         if total_cnt and total_all <= 66 * total_cnt:
@@ -630,7 +538,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         if '-' not in weight_name:
             weight_name = '通用'
         else:
-            weight_name = weight_name[-2:]
+            weight_name = weight_name.split('-')[-1]
         draw_center_text(bg_draw, f'{weight_name}:{effect}',
                          0, 1080, bg.size[1] - 85, '#afafaf',
                          get_font(30))

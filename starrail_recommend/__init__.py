@@ -74,7 +74,7 @@ role_guide = on_regex(r"(.*)攻略$", priority=15)
 starrail_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/"
-alias_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_recommend/alias.json"
+alias_url = src_url + "alias.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 starrail_role_guide = src_url + "role_guide/{}.png"
@@ -87,10 +87,7 @@ ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'
 COMMON_GUIDE_PATH = RES_PATH + '/common_guide'
 WEAPON_INFO_PATH = RES_PATH + '/weapon_info'
-alias_Path = os.path.join(os.path.dirname(__file__), "./alias.json")
-alias_file = {}
-role_list = {}
-weapon_list = {}
+alias_path = os.path.join(os.path.dirname(__file__), "./alias.json")
 
 
 def get_img_md5(image_file):
@@ -202,6 +199,8 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 
 @update_info.handle()
 async def _():
+    global alias_file, role_list, weapon_list
+
     async def check_md5(path, name, url, md5_list):
         try:
             if not path.exists() or md5_list.get(name, '') != str(get_img_md5(path)):
@@ -216,7 +215,16 @@ async def _():
 
     await update_info.send('开始更新星铁推荐信息,请耐心等待...')
     # shutil.rmtree(RES_PATH, ignore_errors=True)
-
+    # 追加昵称更新
+    alias_remote_file = await AsyncHttpx.get(get_raw() + alias_url, follow_redirects=True)
+    alias_remote = json.loads(alias_remote_file.text)
+    # 保存昵称
+    with open(alias_path, "w", encoding="utf8") as f:
+        json.dump(alias_remote, f, ensure_ascii=False, indent=2)
+    # 更新缓存
+    alias_file = await get_alias()
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     common_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True)).json()
     role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
     role_break_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True)).json()
@@ -245,34 +253,15 @@ async def _():
         if await check_md5(save_path, item, starrail_weapon_info, weapon_info_md5):
             update_list.add(item)
 
-    # 追加昵称更新
-    global alias_file, role_list, weapon_list
-    alias_remote_file = await AsyncHttpx.get(get_raw()+alias_url, follow_redirects=True)
-    alias_remote = json.loads(alias_remote_file.text)
-    for alias_type in alias_remote.keys():
-        for key in alias_remote[alias_type]:
-            if key in alias_file[alias_type].keys():
-                # 合并昵称
-                alias_file[alias_type][key] = list(set(alias_file[alias_type][key] + alias_remote[alias_type][key]))
-            else:
-                # 新增昵称
-                alias_file[alias_type][key] = alias_remote[alias_type][key]
-    # 保存昵称
-    with open(alias_Path, "w", encoding="utf8") as f:
-        json.dump(alias_file, f, ensure_ascii=False, indent=2)
-    # 更新缓存
-    alias_file = await get_alias()
-    role_list = alias_file['角色']
-    weapon_list = alias_file['武器']
     if not update_list:
         return await update_info.send(f'所有推荐信息均为最新！')
     await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
 
 
 async def get_alias():
-    if not os.path.exists(alias_Path):
-        await AsyncHttpx.download_file(get_raw()+alias_url, alias_Path, follow_redirects=True)
-    return json.load(open(alias_Path, 'r', encoding='utf-8'))
+    if not os.path.exists(alias_path):
+        await AsyncHttpx.download_file(get_raw() + alias_url, alias_path, follow_redirects=True)
+    return json.load(open(alias_path, 'r', encoding='utf-8'))
 
 
 def get_raw():
@@ -284,7 +273,7 @@ def get_raw():
 async def get_update_info():
     url = f"{get_raw()}/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_recommend/README.md"
     try:
-        version = await AsyncHttpx.get(url)
+        version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")

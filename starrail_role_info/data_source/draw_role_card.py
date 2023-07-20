@@ -121,10 +121,10 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             url=role_url.format(data['角色ID']),
             save_path=role_pic,
             mode='RGBA')
-        new_h = 1000
+        new_h = 900
         new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
         role_pic = role_pic.resize((new_w, new_h), Image.ANTIALIAS)
-        bg.alpha_composite(role_pic, (285, -100 - 40))  # 234))
+        bg.alpha_composite(role_pic, (285 + 50, 0))  # 234))
         base_mask = load_image(f'{other_path}/底遮罩.png')
         bg.alpha_composite(base_mask, (0, 0))
 

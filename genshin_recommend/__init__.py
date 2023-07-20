@@ -80,7 +80,7 @@ role_guide = on_regex(r"(.*)攻略$", priority=15)
 genshin_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
-alias_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_recommend/alias.json"
+alias_url = src_url + "alias.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
@@ -165,9 +165,9 @@ async def _(event: MessageEvent):
 @role_guide.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in role_list:
-        if role in role_list.get(item):
-            role = role_list.get(item)[0]
+    for character, nicknames in role_list.items():
+        if role in nicknames + [character]:
+            role = character
             break
     else:
         return
@@ -179,14 +179,14 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @genshin_info.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in role_list:
-        if role in role_list.get(item):
-            role = role_list.get(item)[0]
+    for character, nicknames in role_list.items():
+        if role in nicknames + [character]:
+            role = character
             break
     else:
-        for item in weapon_list:
-            if role in weapon_list.get(item) or role == item:
-                role = item
+        for character, nicknames in weapon_list.items():
+            if role in nicknames + [character]:
+                role = character
                 break
         else:
             return
@@ -202,9 +202,9 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @break_material.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for item in role_list:
-        if role in role_list.get(item):
-            role = role_list.get(item)[0]
+    for character, nicknames in role_list.items():
+        if role in nicknames + [character]:
+            role = character
             break
     else:
         return
@@ -215,6 +215,8 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 
 @update_info.handle()
 async def _():
+    global alias_file, role_list, weapon_list
+
     async def check_md5(path, name, url, md5_list):
         try:
             if not path.exists() or md5_list.get(name, '') != str(get_img_md5(path)):
@@ -228,13 +230,23 @@ async def _():
             return False
 
     await update_info.send('开始更新原神推荐信息,请耐心等待...')
-    # shutil.rmtree(RES_PATH, ignore_errors=True)
+    # 追加昵称更新
+    alias_remote_file = await AsyncHttpx.get(get_raw() + alias_url, follow_redirects=True)
+    alias_remote = json.loads(alias_remote_file.text)
+    # 保存昵称
+    with open(alias_path, "w", encoding="utf8") as f:
+        json.dump(alias_remote, f, ensure_ascii=False, indent=2)
+    # 更新缓存
+    alias_file = await get_alias()
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     common_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True)).json()
+    role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
     role_break_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True)).json()
     role_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_guide/md5.json", follow_redirects=True)).json()
-    role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
     weapon_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}weapon_info/md5.json", follow_redirects=True)).json()
     update_list = set()
+
     for item in common_guide_md5.keys():
         save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
         if await check_md5(save_path, item, common_guide, common_guide_md5):
@@ -326,8 +338,8 @@ async def _check_update(is_cron=False):
 async def _():
     global alias_file, role_list, weapon_list
     alias_file = await get_alias()
-    role_list = alias_file['roles']
-    weapon_list = alias_file['weapons']
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     if Config.get_config("genshin_role_recommend", "CHECK_UPDATE"):
         scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59),
                           id='genshin_role_recommend')

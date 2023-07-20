@@ -56,7 +56,7 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
     h = (len(artifact_pk) + 3) // 4
     wid = bounder_offset[0] + (mask_w * 4 + interval[0] * 3) + bounder_offset[0]
     hei = bounder_offset[1] + (mask_h * h + interval[1] * (h - 1)) + bounder_offset[1] + 50 - 100
-    if '角色' in artifact_pk[0]:
+    if artifact_info[0].get('角色', '') != '':
         bg = load_image(f'{bg_path}/背景_{role_data[artifact_info[0]["角色"]]["element"]}.png', size=(wid, hei),
                         mode='RGBA')
     else:
