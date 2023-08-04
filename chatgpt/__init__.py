@@ -3,6 +3,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
+from services.log import logger
 
 from utils.http_utils import AsyncHttpx
 
@@ -16,7 +17,7 @@ usage：
 __plugin_des__ = "ChatGPT"
 __plugin_cmd__ = ["世界树"]
 __plugin_type__ = ("一些工具",)
-__plugin_version__ = 0.2
+__plugin_version__ = 0.3
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "admin_level": 2, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 __plugin_cd_limit__ = {"cd": 10, "limit_type": "group", "rst": "请求过快！"}
@@ -85,6 +86,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
         # response = await loop.run_in_executor(None, ask, msg, conversation[0])
         response = await ask(msg, conversation[0])
     except Exception as e:
+        logger.error(f"发生错误{type(e)}：{e}")
         return await ai.finish(str(e))
     conversation[0].append({"role": "user", "content": msg})
     conversation[0].append({"role": "assistant", "content": response})
