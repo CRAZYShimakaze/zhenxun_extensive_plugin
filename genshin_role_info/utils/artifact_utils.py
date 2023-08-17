@@ -169,7 +169,7 @@ def get_effective(data):
             if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
-                    and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
+                    and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] >= 0 \
                     and data['属性']['基础生命'] + data['属性']['额外生命'] > 40000:
                 role_name = '钟离-血牛'
         elif role_name == '芭芭拉':
@@ -181,7 +181,7 @@ def get_effective(data):
             if '冰' in suit[0][0] and '冰' in suit[1][0]:
                 role_name = '甘雨-永冻'
         elif role_name == '刻晴':
-            if data['属性']['元素精通'] > 80:
+            if data['属性']['元素精通'] > 50:
                 role_name = '刻晴-精通'
         elif role_name == '神里绫人':
             if data['属性']['元素精通'] > 120:
@@ -211,11 +211,11 @@ def get_effective(data):
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2.8:
                 role_name = '胡桃-核爆'
         elif role_name == '夜兰':
-            if data['属性']['元素精通'] > 80:
+            if data['属性']['元素精通'] > 50:
                 role_name = '夜兰-精通'
             if data['武器']['名称'] == '若水':
                 role_name = '夜兰-若水'
-            if data['属性']['元素精通'] > 80 and data['武器']['名称'] == '若水':
+            if data['属性']['元素精通'] > 50 and data['武器']['名称'] == '若水':
                 role_name = '夜兰-精通若水'
         elif role_name == '神里绫华':
             if data['属性']['元素精通'] > 120:
