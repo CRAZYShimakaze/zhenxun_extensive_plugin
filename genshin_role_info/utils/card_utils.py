@@ -75,7 +75,7 @@ class PlayerInfo:
             role_info['好感度'] = data['fetterInfo']['expLevel']
             if role_name in ['荧', '空']:
                 traveler_skill = role_skill['Name'][list(
-                    data['skillLevelMap'].keys())[-1]]
+                    data['skillLevelMap'].keys())[-2]]
                 find_element = re.search(r'([风雷岩草水火冰])',
                                          traveler_skill).group(1)
                 role_info['元素'] = find_element

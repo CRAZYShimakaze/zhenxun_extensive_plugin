@@ -110,11 +110,9 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             bg.alpha_composite(role_pic, (-100, 0))  # 234))
         base_mask = load_image(f'{other_path}/底遮罩.png')
         bg.alpha_composite(base_mask, (0, 0))
-        try:  # if data['名称'] not in ['荧', '空', '埃洛伊']:
+        if data['名称'] not in ['荧', '空', '埃洛伊']:
             region_icon = load_image(path=f'{regoin_path}/{role_data[data["名称"]]["region"]}.png', size=(130, 130))
             bg.alpha_composite(region_icon, (0, 4))
-        except:
-            pass
         bg_draw = ImageDraw.Draw(bg)
         bg_draw.text((131, 100), f"UID{uid}", fill='white', font=get_font(48, 'number.ttf'))
         bg_draw.text((134, 150), data['名称'], fill='white', font=get_font(72, '优设标题黑.ttf'))
@@ -266,7 +264,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
                 x_offset = 25 * len(text)
                 bg_draw.text((94 + offset_x + 317 * i + x_offset, 1163 + 50 * j - 5 + offset_y), up_num, fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf',
-                    font=get_font(25, 'tahomabd.ttf'))
+                             font=get_font(25, 'tahomabd.ttf'))
             bg_draw.text((94 + offset_x + 317 * i, 1163 + 50 * j + offset_y), text, fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25))
             if artifact['词条'][j]['属性名'] not in ['攻击力', '防御力', '生命值', '元素精通']:
                 num = '+' + str(artifact['词条'][j]['属性值']) + '%'
