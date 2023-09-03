@@ -217,9 +217,11 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         artifact_copy = copy.deepcopy(artifact)
 
         if artifact_copy['等级'] == 20:
+            artifact_copy['角色'] = ''
             if artifact_copy not in artifact_all[i]:
                 artifact_copy['角色'] = data["名称"]
-                artifact_all[i].append(artifact_copy)
+                if artifact_copy not in artifact_all[i]:
+                    artifact_all[i].append(artifact_copy)
             else:
                 artifact_all[i].remove(artifact_copy)
                 artifact_copy['角色'] = data["名称"]
