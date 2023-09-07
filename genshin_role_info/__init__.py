@@ -35,7 +35,7 @@ __plugin_usage__ = """
 usage：
     查询橱窗内角色的面板
     指令：
-        绑定原神UID/uidXXX
+        原神绑定UID/uidXXX
         原神解绑
         角色面板 (例:刻晴面板、刻晴面板@XXX、刻晴面板+uid)
         更新/刷新原神面板 (uid)
@@ -53,7 +53,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 3.0
+__plugin_version__ = 3.1
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -81,7 +81,7 @@ Config.add_plugin_config(
     default_value=83,
 )
 enak_url = 'https://enka.network/api/uid/{}'
-bind = on_regex(r"绑定原神(UID|uid)(.*)", priority=5, block=True)
+bind = on_regex(r"(原神绑定|绑定原神)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
 my_card = on_command("我的原神角色", priority=4, block=True)
 his_card = on_command("他的原神角色", aliases={"她的原神角色"}, priority=4, block=True)
@@ -210,8 +210,8 @@ async def check_role_avaliable(role_name, roles_list):
 
 @bind.handle()
 async def _(event: MessageEvent, arg: Tuple[str, ...] = RegexGroup()):
-    cmd = arg[0].strip()
-    msg = arg[1].strip()
+    cmd = arg[1].strip()
+    msg = arg[2].strip()
     uid = await get_uid(event.user_id)
     if not msg.isdigit():
         await bind.finish("uid/id必须为纯数字！", at_senders=True)

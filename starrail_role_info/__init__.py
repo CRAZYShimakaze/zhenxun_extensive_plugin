@@ -78,7 +78,7 @@ starrail_url = 'https://api.mihomo.me/sr_info/{}'
 my_card = on_command("我的星铁角色", priority=4, block=True)
 his_card = on_command("他的星铁角色", aliases={"她的星铁角色"}, priority=4, block=True)
 
-bind = on_regex(r"[星铁绑定|绑定星铁](UID|uid)(.*)", priority=5, block=True)
+bind = on_regex(r"(星铁绑定|绑定星铁)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("星铁解绑", priority=4, block=True)
 
 driver: Driver = nonebot.get_driver()
@@ -198,8 +198,8 @@ async def check_role_avaliable(role_name, roles_list):
 
 @bind.handle()
 async def _(event: MessageEvent, arg: Tuple[str, ...] = RegexGroup()):
-    cmd = arg[0].strip()
-    msg = arg[1].strip()
+    cmd = arg[1].strip()
+    msg = arg[2].strip()
     uid = get_uid(event.user_id)
     if not msg.isdigit():
         await bind.finish("uid/id必须为纯数字！", at_senders=True)
@@ -247,11 +247,11 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 async def _(event: GroupMessageEvent):
     group_id = event.group_id
     if not os.path.exists(f"{group_info_path}/{group_id}.json"):
-        return await group_artifact_list.finish('未收录任何圣遗物信息,请先进行查询!')
+        return await group_artifact_list.finish('未收录任何遗器信息,请先进行查询!')
     else:
         #await check_gold(event, coin=1, percent=1)
         group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
-        img, _ = await draw_artifact_card(f'群遗器榜单', None, group_id, group_artifact_info, None, None,
+        img, _ = await draw_artifact_card(f'群遗器榜单', group_id, group_artifact_info, None, None,
                                           __plugin_version__, 1)
         await group_artifact_list.finish(img)
 
@@ -264,10 +264,11 @@ async def _(event: MessageEvent):
     else:
         player_info = PlayerInfo(uid)
         if not player_info.data['遗器榜单']:
-            return await artifact_list.send("未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=True)
+            return await artifact_list.send("未收录任何遗器信息,请先输入'更新面板'命令!", at_sender=True)
         roles_list = player_info.get_roles_list()
         #await check_gold(event, coin=1, percent=1)
         img, text = await draw_artifact_card(f'遗器榜单', None, uid, player_info.data['遗器榜单'],
+        img, text = await draw_artifact_card(f'遗器榜单', uid, player_info.data['遗器榜单'],
                                              player_info.data['大毕业遗器'],
                                              player_info.data['小毕业遗器'], __plugin_version__)
         await artifact_list.finish(img + text, at_sender=True)  # + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
@@ -314,7 +315,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         bot = get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
-        await group_best.finish(f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
+        await group_best.finish(f"本群最强{role}!仅根据遗器评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
 
 @group_worst.handle()
@@ -334,7 +335,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         bot = get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
-        await group_worst.finish(f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic)
+        await group_worst.finish(f"本群最菜{role}!仅根据遗器评分评判.\n由'{qq_name}'查询\n" + role_pic)
 
 
 @reset_best.handle()
