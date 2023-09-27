@@ -53,17 +53,13 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 3.1
+__plugin_version__ = 3.2
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
     "default_status": True,
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
-}
-__plugin_cd_limit__ = {
-    "limit_type": "group",
-    "rst": "正在查询中，请等待当前请求完成...",
 }
 
 Config.add_plugin_config(
@@ -456,8 +452,8 @@ async def update(event, uid, group_save):
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
-        if cd_time < 130:
-            await get_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
+        if cd_time < 60:
+            await get_card.finish(f'{60 - cd_time}秒后可再次更新!', at_sender=True)
     player_info, update_role_list = await get_enka_info(url, uid, update_info=True)
     await check_artifact(event, player_info, uid, group_save)
     await get_card.finish(await draw_role_pic(uid, update_role_list, player_info))
