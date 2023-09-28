@@ -61,7 +61,7 @@ class PlayerInfo:
         self.player_info['角色列表'] = dictlist_to_list(
             data.get('showAvatarInfoList'))
         self.player_info['名片列表'] = data.get('showNameCardIdList', 'unknown')
-        self.player_info['头像'] = data['profilePicture']['avatarId']
+        self.player_info['头像'] = data['profilePicture'].get('avatarId', 'unknown')
         self.player_info['更新时间'] = datetime.datetime.strftime(
             datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
 
