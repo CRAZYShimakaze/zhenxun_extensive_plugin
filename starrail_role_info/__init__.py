@@ -267,7 +267,6 @@ async def _(event: MessageEvent):
             return await artifact_list.send("未收录任何遗器信息,请先输入'更新面板'命令!", at_sender=True)
         roles_list = player_info.get_roles_list()
         #await check_gold(event, coin=1, percent=1)
-        img, text = await draw_artifact_card(f'遗器榜单', None, uid, player_info.data['遗器榜单'],
         img, text = await draw_artifact_card(f'遗器榜单', uid, player_info.data['遗器榜单'],
                                              player_info.data['大毕业遗器'],
                                              player_info.data['小毕业遗器'], __plugin_version__)
