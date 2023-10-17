@@ -84,8 +84,8 @@ unbind = on_command("星铁解绑", priority=4, block=True)
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
-group_best = on_regex(r"最强(.*)", priority=4)
-group_worst = on_regex(r"最菜(.*)", priority=4)
+group_best = on_regex(r"^最强(.*)", priority=4)
+group_worst = on_regex(r"^最菜(.*)", priority=4)
 
 artifact_recommend = on_regex("(.*?)([头手身脚球绳])推荐", priority=4)
 artifact_list = on_command("遗器榜单", aliases={"遗器排行"}, priority=4, block=True)

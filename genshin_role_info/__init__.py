@@ -85,8 +85,8 @@ his_card = on_command("他的原神角色", aliases={"她的原神角色"}, prio
 driver: Driver = nonebot.get_driver()
 
 get_card = on_regex(r"(.*)面板(.*)", priority=4)
-group_best = on_regex(r"最强(.*)", priority=4)
-group_worst = on_regex(r"最菜(.*)", priority=4)
+group_best = on_regex(r"^最强(.*)", priority=4)
+group_worst = on_regex(r"^最菜(.*)", priority=4)
 artifact_adapt = on_regex("(.*?)([花羽沙杯冠])适配", priority=4)
 artifact_recommend = on_regex("(.*?)([花羽沙杯冠])推荐", priority=4)
 artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
