@@ -44,10 +44,13 @@ async def _(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
         for item in screenshots:
             save_path = TEMP_PATH / f"{data['name']}_{cnt}.jpg"
             cnt += 1
-            await AsyncHttpx.download_file(item['screenshot'], save_path, follow_redirects=True)
-            ori_image = Image.open(save_path)
-            blur_image = ori_image.filter(ImageFilter.GaussianBlur(5))
-            blur_image.save(save_path)
+            try:
+                await AsyncHttpx.download_file(item['screenshot'], save_path, follow_redirects=True)
+                ori_image = Image.open(save_path)
+                blur_image = ori_image.filter(ImageFilter.GaussianBlur(5))
+                blur_image.save(save_path)
+            except:
+                continue
             screenshots_list.append(MessageSegment.image(save_path))
             if len(screenshots_list) >= 6:
                 break
