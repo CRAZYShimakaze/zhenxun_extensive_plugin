@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import asyncio
 import copy
 import os
 import random
@@ -24,8 +25,7 @@ from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_recommend_card import gen_artifact_recommend
 from .data_source.draw_role_card import draw_role_card
 from .data_source.draw_update_card import draw_role_pic
-from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, \
-    group_info_path
+from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, group_info_path
 from .utils.image_utils import load_image, image_build
 #from ..plugin_utils.auth_utils import check_gold
 
@@ -136,14 +136,18 @@ async def get_msg_uid(event):
 async def get_starrail_info(url, uid, update_info):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
-        try:
-            req = await AsyncHttpx.get(
-                url=url,
-                follow_redirects=True,
-            )
-        except Exception:
-            return await get_card.finish("获取数据出错,请重试...")
-        if req.status_code != 200:
+        for i in range(3):
+            try:
+                req = await AsyncHttpx.get(
+                    url=url,
+                    follow_redirects=True,
+                )
+            except Exception:
+                await asyncio.sleep(1)
+                continue
+            if req.status_code == 200:
+                break
+        else:
             return await get_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)

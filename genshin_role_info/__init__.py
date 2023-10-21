@@ -153,10 +153,10 @@ async def get_enka_info(url, uid, update_info):
                     follow_redirects=True,
                 )
             except Exception:
-                return await get_card.finish("获取数据出错,请重试...")
+                await asyncio.sleep(1)
+                continue
             if req.status_code == 200:
                 break
-            await asyncio.sleep(1)
         else:
             return await get_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
