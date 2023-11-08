@@ -61,9 +61,9 @@ Config.add_plugin_config(
 Config.add_plugin_config(
     "genshin_role_recommend",
     "GITHUB_RAW",
-    "https://ghproxy.com/https://raw.githubusercontent.com",
+    "https://mirror.ghproxy.com/https://raw.githubusercontent.com",
     help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com",
-    default_value="https://ghproxy.com/https://raw.githubusercontent.com",
+    default_value="https://mirror.ghproxy.com/https://raw.githubusercontent.com",
     type=str,
 )
 
@@ -291,7 +291,7 @@ async def get_alias():
 
 def get_raw():
     if not (raw := Config.get_config("genshin_role_recommend", "GITHUB_RAW")):
-        raw = "https://ghproxy.com/https://raw.githubusercontent.com"
+        raw = "https://mirror.ghproxy.com/https://raw.githubusercontent.com"
     return raw
 
 
