@@ -26,6 +26,7 @@
     "坎蒂丝": "UI_Gacha_AvatarImg_Candace",
     "妮露": "UI_Gacha_AvatarImg_Nilou",
     "那维莱特": "UI_Gacha_AvatarImg_Neuvillette",
+	"芙宁娜": "UI_Gacha_AvatarImg_Furina",
 
     "温迪": "UI_Gacha_AvatarImg_Venti",
     "砂糖": "UI_Gacha_AvatarImg_Sucrose",
@@ -72,6 +73,7 @@
     "莱依拉": "UI_Gacha_AvatarImg_Layla",
     "米卡": "UI_Gacha_AvatarImg_Mika",
     "莱欧斯利": "UI_Gacha_AvatarImg_Wriothesley",
+	"夏洛蒂": "UI_Gacha_AvatarImg_Charlotte",
 
     "钟离": "UI_Gacha_AvatarImg_Zhongli",
     "荒泷一斗": "UI_Gacha_AvatarImg_Itto",
@@ -108,6 +110,7 @@
     "坎蒂丝": "UI_AvatarIcon_Side_Candace",
     "妮露": "UI_AvatarIcon_Side_Nilou",
     "那维莱特": "UI_AvatarIcon_Side_Neuvillette",
+    "芙宁娜": "UI_AvatarIcon_Side_Furina",
 
     "温迪": "UI_AvatarIcon_Side_Venti",
     "砂糖": "UI_AvatarIcon_Side_Sucrose",
@@ -154,6 +157,7 @@
     "莱依拉": "UI_AvatarIcon_Side_Layla",
     "米卡": "UI_AvatarIcon_Side_Mika",
     "莱欧斯利": "UI_AvatarIcon_Side_Wriothesley",
+    "夏洛蒂": "UI_AvatarIcon_Side_Charlotte",
 
     "钟离": "UI_AvatarIcon_Side_Zhongli",
     "荒泷一斗": "UI_AvatarIcon_Side_Itto",
