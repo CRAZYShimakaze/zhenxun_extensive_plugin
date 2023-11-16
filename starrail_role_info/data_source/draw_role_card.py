@@ -11,13 +11,13 @@ from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pi
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img
 from ..utils.json_utils import load_json
 
-weapon_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/light_cone/{}.png'
-artifact_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/{}.png'
-rank_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/skill/{}.png'
-skill_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/skill/{}.png'
-path_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/path/{}.png'
-element_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/element/{}.png'
-role_url = 'https://ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/image/character_portrait/{}.png'
+weapon_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/light_cone/{}.png'
+artifact_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/{}.png'
+rank_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/skill/{}.png'
+skill_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/skill/{}.png'
+path_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/path/{}.png'
+element_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/element/{}.png'
+role_url = 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/image/character_portrait/{}.png'
 
 role_data = load_json(f'{json_path}/roles_data.json')
 role_name = load_json(f'{json_path}/roles_name.json')
