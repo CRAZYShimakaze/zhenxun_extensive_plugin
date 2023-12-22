@@ -26,7 +26,7 @@
     "坎蒂丝": "UI_Gacha_AvatarImg_Candace",
     "妮露": "UI_Gacha_AvatarImg_Nilou",
     "那维莱特": "UI_Gacha_AvatarImg_Neuvillette",
-	"芙宁娜": "UI_Gacha_AvatarImg_Furina",
+	  "芙宁娜": "UI_Gacha_AvatarImg_Furina",
 
     "温迪": "UI_Gacha_AvatarImg_Venti",
     "砂糖": "UI_Gacha_AvatarImg_Sucrose",
@@ -74,7 +74,7 @@
     "米卡": "UI_Gacha_AvatarImg_Mika",
     "菲米尼": "UI_Gacha_AvatarImg_Freminet",
     "莱欧斯利": "UI_Gacha_AvatarImg_Wriothesley",
-	"夏洛蒂": "UI_Gacha_AvatarImg_Charlotte",
+	  "夏洛蒂": "UI_Gacha_AvatarImg_Charlotte",
 
     "钟离": "UI_Gacha_AvatarImg_Zhongli",
     "荒泷一斗": "UI_Gacha_AvatarImg_Itto",
@@ -82,7 +82,8 @@
     "凝光": "UI_Costume_NingguangCostumeFloral",
     "诺艾尔": "UI_Gacha_AvatarImg_Noel",
     "云堇": "UI_Gacha_AvatarImg_Yunjin",
-    "五郎": "UI_Gacha_AvatarImg_Gorou"
+    "五郎": "UI_Gacha_AvatarImg_Gorou",
+    "娜维娅": "UI_Gacha_AvatarImg_Navia"
   },
   "Side_Name": {
     "荧": "UI_AvatarIcon_Side_PlayerGirl",
@@ -167,6 +168,7 @@
     "凝光": "UI_AvatarIcon_Side_Ningguang",
     "诺艾尔": "UI_AvatarIcon_Side_Noel",
     "云堇": "UI_AvatarIcon_Side_Yunjin",
-    "五郎": "UI_AvatarIcon_Side_Gorou"
+    "五郎": "UI_AvatarIcon_Side_Gorou",
+    "娜维娅": "UI_AvatarIcon_Side_Navia"
   }
 }
