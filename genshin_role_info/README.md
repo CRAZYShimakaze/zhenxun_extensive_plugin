@@ -9,8 +9,7 @@
 - XX面板 (例:甘雨面板、甘雨面板@CRAZYShimakaze、甘雨面板104442596)
 - 更新/刷新原神面板 (uid)
 - XX(羽花沙杯头)推荐
-- 我的原神角色
-- 他的原神角色@CRAZYShimakaze
+- 原神角色排行
 - 最强XX (例:最强甘雨)
 - 最菜XX
 - 圣遗物榜单
@@ -30,6 +29,10 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2024/1/16**[v3.6]
+
+1. 新增个人角色评分排行
 
 **2023/12/21**[v3.5]
 

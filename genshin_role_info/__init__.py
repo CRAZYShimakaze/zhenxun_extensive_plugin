@@ -42,8 +42,7 @@ usage：
         圣遗物导入
         XX(花羽沙杯冠)适配
         XX(花羽沙杯冠)推荐
-        我的原神角色
-        他的原神角色@XXX
+        原神角色排行
         最强XX (例:最强甘雨)
         最菜XX
         圣遗物榜单
@@ -53,7 +52,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单",
                   "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 3.5
+__plugin_version__ = 3.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -79,8 +78,7 @@ Config.add_plugin_config(
 enak_url = 'https://enka.network/api/uid/{}'
 bind = on_regex(r"(原神绑定|绑定原神)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
-my_card = on_command("我的原神角色", priority=4, block=True)
-his_card = on_command("他的原神角色", aliases={"她的原神角色"}, priority=4, block=True)
+card_list = on_command("原神角色排行", priority=4, block=True)
 
 driver: Driver = nonebot.get_driver()
 
@@ -382,7 +380,7 @@ async def _(event: GroupMessageEvent, arg: Message = CommandArg()):
     await reset_best.finish(f'重置群{role}成功!')
 
 
-@my_card.handle()
+@card_list.handle()
 async def _(event: MessageEvent, arg: Message = CommandArg()):
     msg = arg.extract_plain_text().strip().split()
     if msg:
@@ -425,14 +423,8 @@ async def get_char(uid):
         await get_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                               at_sender=True)
     else:
-        await my_card.finish(await draw_role_pic(uid, roles_list, player_info),
+        await card_list.finish(await draw_role_pic(uid, roles_list, player_info),
                              at_sender=True)
-
-
-@his_card.handle()
-async def _(event: MessageEvent):
-    uid = await get_msg_uid(event)
-    await get_char(uid)
 
 
 async def gen(event: MessageEvent, uid, role_name, at_user):

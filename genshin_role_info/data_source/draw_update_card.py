@@ -42,8 +42,15 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
                          (224, 217, 207, 0))
     bg.paste(top_line, (51 * multiple, 84 * multiple))
     role = role_list[-1]
+    '''
     role_list = sorted(role_list,
                        key=lambda x: (player_info.get_roles_info(x)['等级'], len(player_info.get_roles_info(x)['命座']), player_info.get_roles_info(x)['武器']['精炼等级'],
+                                      -['火', '水', '草', '雷', '冰', '风', '岩'].index(
+                                          player_info.get_roles_info(x)['元素'])),
+                       reverse=True)
+    '''
+    role_list = sorted(role_list,
+                       key=lambda x: (player_info.get_roles_info(x).get('评分',''), player_info.get_roles_info(x)['等级'], len(player_info.get_roles_info(x)['命座']), player_info.get_roles_info(x)['武器']['精炼等级'],
                                       -['火', '水', '草', '雷', '冰', '风', '岩'].index(
                                           player_info.get_roles_info(x)['元素'])),
                        reverse=True)
@@ -87,6 +94,19 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
             36 * multiple, (36 + 85) * multiple,
             (5 if top_name else 164) * multiple, 'white',
             get_font(19 * multiple, '优设标题黑.ttf'))
+        # 评分
+        if data.get('评分','') != '':
+            score = round(data['评分'], 1)
+            card_bg_draw.rounded_rectangle((90, card_size[1] + 1 * multiple - 60, 220, card_size[1] + 1 * multiple - 20), 10,
+                                        fill=(101, 101, 101) if score <= 16.5 * 5 else (86, 190, 191) if score <= 23.1 * 5 else (45, 158, 98) if 
+                                            score <= 29.7 * 5 else (61, 146, 183) if score <= 36.3 * 5 else (55, 85, 183) if 
+                                            score <= 42.9 * 5 else (119, 71, 177) if score <= 49.5 * 5 else (245, 89, 40))
+            draw_center_text(
+                card_bg_draw,
+                f"{score}",
+                36 * multiple, (36 + 85) * multiple,
+                (164) * multiple, 'white',
+                get_font(19 * multiple, '优设标题黑.ttf'))
         # 命座
         card_bg_draw.rounded_rectangle((0, card_size[1] + 1 * multiple - 80, 60, card_size[1] + 1 * multiple), 10,
                                        fill=(101, 101, 101) if len(data['命座']) == 0 else (86, 190, 191) if len(data['命座']) == 1 else (45, 158, 98) if len(
