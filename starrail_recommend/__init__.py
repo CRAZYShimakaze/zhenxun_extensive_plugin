@@ -39,7 +39,7 @@ usage：
 __plugin_des__ = "查询星铁攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = 0.4
+__plugin_version__ = 0.5
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -74,7 +74,7 @@ role_guide = on_regex(r"(.*)攻略$", priority=15)
 starrail_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/"
-alias_url = src_url + "alias.json"
+alias_url = src_url + "nickname.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 starrail_role_guide = src_url + "role_guide/{}.png"
@@ -87,7 +87,7 @@ ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'
 COMMON_GUIDE_PATH = RES_PATH + '/common_guide'
 WEAPON_INFO_PATH = RES_PATH + '/weapon_info'
-alias_path = os.path.join(os.path.dirname(__file__), "./alias.json")
+nickname_path = os.path.join(os.path.dirname(__file__), "./nickname.json")
 
 
 def get_img_md5(image_file):
@@ -104,9 +104,9 @@ async def get_img(url, arg, save_path, ignore_exist):
 @role_guide.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for character, nicknames in role_list.items():
-        if role in nicknames + [character]:
-            role = character
+    for key, value in role_list.items():
+        if role in value:
+            role = key
             break
     else:
         return
@@ -152,14 +152,14 @@ async def _(event: MessageEvent):
 @starrail_info.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for character, nicknames in role_list.items():
-        if role in nicknames + [character]:
-            role = character
+    for key, value in role_list.items():
+        if role in value:
+            role = key
             break
     else:
-        for character, nicknames in weapon_list.items():
-            if role in nicknames + [character]:
-                role = character
+        for key, value in weapon_list.items():
+            if role in value:
+                role = key
                 break
         else:
             return
@@ -182,9 +182,9 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @break_material.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    for character, nicknames in role_list.items():
-        if role in nicknames + [character]:
-            role = character
+    for key, value in role_list.items():
+        if role in value:
+            role = key
             break
     else:
         return
@@ -219,12 +219,12 @@ async def _():
     alias_remote_file = await AsyncHttpx.get(get_raw() + alias_url, follow_redirects=True)
     alias_remote = json.loads(alias_remote_file.text)
     # 保存昵称
-    with open(alias_path, "w", encoding="utf8") as f:
+    with open(nickname_path, "w", encoding="utf8") as f:
         json.dump(alias_remote, f, ensure_ascii=False, indent=2)
     # 更新缓存
     alias_file = await get_alias()
-    role_list = alias_file['角色']
-    weapon_list = alias_file['武器']
+    role_list = alias_file['characters']
+    weapon_list = alias_file['light_cones']
     common_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True)).json()
     role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
     role_break_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True)).json()
@@ -259,9 +259,9 @@ async def _():
 
 
 async def get_alias():
-    if not os.path.exists(alias_path):
-        await AsyncHttpx.download_file(get_raw() + alias_url, alias_path, follow_redirects=True)
-    return json.load(open(alias_path, 'r', encoding='utf-8'))
+    if not os.path.exists(nickname_path):
+        await AsyncHttpx.download_file(get_raw() + alias_url, nickname_path, follow_redirects=True)
+    return json.load(open(nickname_path, 'r', encoding='utf-8'))
 
 
 def get_raw():
@@ -312,8 +312,8 @@ async def _check_update(is_cron=False):
 async def _():
     global alias_file, role_list, weapon_list
     alias_file = await get_alias()
-    role_list = alias_file['角色']
-    weapon_list = alias_file['武器']
+    role_list = alias_file['characters']
+    weapon_list = alias_file['light_cones']
     if Config.get_config("starrail_role_recommend", "CHECK_UPDATE"):
         scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59),
                           id='starrail_role_recommend')
