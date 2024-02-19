@@ -106,6 +106,10 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             bg.alpha_composite(role_pic, (450, 0))  # 234))
         elif data['名称'] == '空':
             bg.alpha_composite(role_pic, (400, 0))  # 234))
+        elif data['名称'] == '嘉明':
+            bg.alpha_composite(role_pic, (400, 0))
+        elif data['名称'] == '闲云':
+            bg.alpha_composite(role_pic, (200, 0))
         else:
             bg.alpha_composite(role_pic, (-100, 0))  # 234))
         base_mask = load_image(f'{other_path}/底遮罩.png')
