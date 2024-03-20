@@ -77,7 +77,7 @@
     "米卡": "UI_Gacha_AvatarImg_Mika",
     "菲米尼": "UI_Gacha_AvatarImg_Freminet",
     "莱欧斯利": "UI_Gacha_AvatarImg_Wriothesley",
-	  "夏洛蒂": "UI_Gacha_AvatarImg_Charlotte",
+    "夏洛蒂": "UI_Gacha_AvatarImg_Charlotte",
 
     "钟离": "UI_Gacha_AvatarImg_Zhongli",
     "荒泷一斗": "UI_Gacha_AvatarImg_Itto",
@@ -86,7 +86,8 @@
     "诺艾尔": "UI_Gacha_AvatarImg_Noel",
     "云堇": "UI_Gacha_AvatarImg_Yunjin",
     "五郎": "UI_Gacha_AvatarImg_Gorou",
-    "娜维娅": "UI_Gacha_AvatarImg_Navia"
+    "娜维娅": "UI_Gacha_AvatarImg_Navia",
+    "千织": "UI_Gacha_AvatarImg_Chiori"
   },
   "Side_Name": {
     "荧": "UI_AvatarIcon_Side_PlayerGirl",
@@ -175,6 +176,7 @@
     "诺艾尔": "UI_AvatarIcon_Side_Noel",
     "云堇": "UI_AvatarIcon_Side_Yunjin",
     "五郎": "UI_AvatarIcon_Side_Gorou",
-    "娜维娅": "UI_AvatarIcon_Side_Navia"
+    "娜维娅": "UI_AvatarIcon_Side_Navia",
+    "千织": "UI_AvatarIcon_Side_Chiori"
   }
 }

@@ -29,6 +29,10 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+**2024/3/21**[v3.8]
+
+1. 支持千织
+
 **2024/2/20**[v3.7]
 
 1. 支持夏沃蕾,嘉明,闲云

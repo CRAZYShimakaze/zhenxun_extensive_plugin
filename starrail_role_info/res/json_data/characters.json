@@ -48,16 +48,11 @@
         "portrait": "image/character_portrait/1001.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1001.png",
-            "guide/OriginMirror/character_overview/1001.png"
+            "guide/OriginMirror/character_overview/1001.png",
+            "guide/Gamer/character_overview/1001.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1001.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1001.png",
-                "link": "https://www.gamer.cn/xqtd/article/19314"
-            }
         ]
     },
     "1002": {
@@ -109,16 +104,11 @@
         "portrait": "image/character_portrait/1002.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1002.png",
-            "guide/OriginMirror/character_overview/1002.png"
+            "guide/OriginMirror/character_overview/1002.png",
+            "guide/Gamer/character_overview/1002.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1002.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1002.png",
-                "link": "https://www.gamer.cn/xqtd/article/19315"
-            }
         ]
     },
     "1003": {
@@ -170,16 +160,11 @@
         "portrait": "image/character_portrait/1003.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1003.png",
-            "guide/OriginMirror/character_overview/1003.png"
+            "guide/OriginMirror/character_overview/1003.png",
+            "guide/Gamer/character_overview/1003.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1003.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1003.png",
-                "link": "https://www.gamer.cn/xqtd/article/17877"
-            }
         ]
     },
     "1004": {
@@ -231,16 +216,11 @@
         "portrait": "image/character_portrait/1004.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1004.png",
-            "guide/OriginMirror/character_overview/1004.png"
+            "guide/OriginMirror/character_overview/1004.png",
+            "guide/Gamer/character_overview/1004.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1004.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1004.png",
-                "link": "https://www.gamer.cn/xqtd/article/10107"
-            }
         ]
     },
     "1005": {
@@ -249,7 +229,7 @@
         "tag": "kafka",
         "rarity": 5,
         "path": "Warlock",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 120,
         "ranks": [
             "100501",
@@ -292,12 +272,12 @@
         "portrait": "image/character_portrait/1005.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1005.png",
-            "guide/OriginMirror/character_overview/1005.png"
+            "guide/OriginMirror/character_overview/1005.png",
+            "guide/Gamer/character_overview/1005.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1005.png"
-        ],
-        "guide_evaluation": []
+        ]
     },
     "1006": {
         "id": "1006",
@@ -348,16 +328,11 @@
         "portrait": "image/character_portrait/1006.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1006.png",
-            "guide/OriginMirror/character_overview/1006.png"
+            "guide/OriginMirror/character_overview/1006.png",
+            "guide/Gamer/character_overview/1006.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1006.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1006.png",
-                "link": "https://www.gamer.cn/xqtd/article/20637"
-            }
         ]
     },
     "1008": {
@@ -366,7 +341,7 @@
         "tag": "arlan",
         "rarity": 4,
         "path": "Warrior",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 110,
         "ranks": [
             "100801",
@@ -409,16 +384,11 @@
         "portrait": "image/character_portrait/1008.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1008.png",
-            "guide/OriginMirror/character_overview/1008.png"
+            "guide/OriginMirror/character_overview/1008.png",
+            "guide/Gamer/character_overview/1008.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1008.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1008.png",
-                "link": "https://www.gamer.cn/xqtd/article/19347"
-            }
         ]
     },
     "1009": {
@@ -470,16 +440,11 @@
         "portrait": "image/character_portrait/1009.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1009.png",
-            "guide/OriginMirror/character_overview/1009.png"
+            "guide/OriginMirror/character_overview/1009.png",
+            "guide/Gamer/character_overview/1009.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1009.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1009.png",
-                "link": "https://www.gamer.cn/xqtd/article/19316"
-            }
         ]
     },
     "1013": {
@@ -531,16 +496,11 @@
         "portrait": "image/character_portrait/1013.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1013.png",
-            "guide/OriginMirror/character_overview/1013.png"
+            "guide/OriginMirror/character_overview/1013.png",
+            "guide/Gamer/character_overview/1013.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1013.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1013.png",
-                "link": "https://www.gamer.cn/xqtd/article/19317"
-            }
         ]
     },
     "1101": {
@@ -592,16 +552,11 @@
         "portrait": "image/character_portrait/1101.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1101.png",
-            "guide/OriginMirror/character_overview/1101.png"
+            "guide/OriginMirror/character_overview/1101.png",
+            "guide/Gamer/character_overview/1101.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1101.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1101.png",
-                "link": "https://www.gamer.cn/xqtd/article/17965"
-            }
         ]
     },
     "1102": {
@@ -653,16 +608,11 @@
         "portrait": "image/character_portrait/1102.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1102.png",
-            "guide/OriginMirror/character_overview/1102.png"
+            "guide/OriginMirror/character_overview/1102.png",
+            "guide/Gamer/character_overview/1102.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1102.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1102.png",
-                "link": "https://www.gamer.cn/xqtd/article/10068"
-            }
         ]
     },
     "1103": {
@@ -671,7 +621,7 @@
         "tag": "serval",
         "rarity": 4,
         "path": "Mage",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 100,
         "ranks": [
             "110301",
@@ -714,16 +664,11 @@
         "portrait": "image/character_portrait/1103.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1103.png",
-            "guide/OriginMirror/character_overview/1103.png"
+            "guide/OriginMirror/character_overview/1103.png",
+            "guide/Gamer/character_overview/1103.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1103.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1103.png",
-                "link": "https://www.gamer.cn/xqtd/article/19322"
-            }
         ]
     },
     "1104": {
@@ -775,16 +720,11 @@
         "portrait": "image/character_portrait/1104.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1104.png",
-            "guide/OriginMirror/character_overview/1104.png"
+            "guide/OriginMirror/character_overview/1104.png",
+            "guide/Gamer/character_overview/1104.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1104.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1104.png",
-                "link": "https://www.gamer.cn/xqtd/article/10051"
-            }
         ]
     },
     "1105": {
@@ -836,16 +776,11 @@
         "portrait": "image/character_portrait/1105.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1105.png",
-            "guide/OriginMirror/character_overview/1105.png"
+            "guide/OriginMirror/character_overview/1105.png",
+            "guide/Gamer/character_overview/1105.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1105.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1105.png",
-                "link": "https://www.gamer.cn/xqtd/article/19318"
-            }
         ]
     },
     "1106": {
@@ -897,16 +832,11 @@
         "portrait": "image/character_portrait/1106.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1106.png",
-            "guide/OriginMirror/character_overview/1106.png"
+            "guide/OriginMirror/character_overview/1106.png",
+            "guide/Gamer/character_overview/1106.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1106.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1106.png",
-                "link": "https://www.gamer.cn/xqtd/article/19319"
-            }
         ]
     },
     "1107": {
@@ -958,16 +888,11 @@
         "portrait": "image/character_portrait/1107.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1107.png",
-            "guide/OriginMirror/character_overview/1107.png"
+            "guide/OriginMirror/character_overview/1107.png",
+            "guide/Gamer/character_overview/1107.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1107.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1107.png",
-                "link": "https://www.gamer.cn/xqtd/article/10056"
-            }
         ]
     },
     "1108": {
@@ -1019,16 +944,11 @@
         "portrait": "image/character_portrait/1108.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1108.png",
-            "guide/OriginMirror/character_overview/1108.png"
+            "guide/OriginMirror/character_overview/1108.png",
+            "guide/Gamer/character_overview/1108.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1108.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1108.png",
-                "link": "https://www.gamer.cn/xqtd/article/19320"
-            }
         ]
     },
     "1109": {
@@ -1081,16 +1001,11 @@
         "portrait": "image/character_portrait/1109.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1109.png",
-            "guide/OriginMirror/character_overview/1109.png"
+            "guide/OriginMirror/character_overview/1109.png",
+            "guide/Gamer/character_overview/1109.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1109.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1109.png",
-                "link": "https://www.gamer.cn/xqtd/article/19542"
-            }
         ]
     },
     "1110": {
@@ -1140,9 +1055,14 @@
         "icon": "icon/character/1110.png",
         "preview": "image/character_preview/1110.png",
         "portrait": "image/character_portrait/1110.png",
-        "guide_overview": [],
-        "guide_material": [],
-        "guide_evaluation": []
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1110.png",
+            "guide/OriginMirror/character_overview/1110.png",
+            "guide/Gamer/character_overview/1110.png"
+        ],
+        "guide_material": [
+            "guide/Nwflower/character_material/1110.png"
+        ]
     },
     "1111": {
         "id": "1111",
@@ -1194,7 +1114,8 @@
         "portrait": "image/character_portrait/1111.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1111.png",
-            "guide/OriginMirror/character_overview/1111.png"
+            "guide/OriginMirror/character_overview/1111.png",
+            "guide/Gamer/character_overview/1111.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1111.png"
@@ -1247,7 +1168,11 @@
         "icon": "icon/character/1112.png",
         "preview": "image/character_preview/1112.png",
         "portrait": "image/character_portrait/1112.png",
-        "guide_overview": [],
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1112.png",
+            "guide/OriginMirror/character_overview/1112.png",
+            "guide/Gamer/character_overview/1112.png"
+        ],
         "guide_material": []
     },
     "1201": {
@@ -1300,16 +1225,11 @@
         "portrait": "image/character_portrait/1201.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1201.png",
-            "guide/OriginMirror/character_overview/1201.png"
+            "guide/OriginMirror/character_overview/1201.png",
+            "guide/Gamer/character_overview/1201.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1201.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1201.png",
-                "link": "https://www.gamer.cn/xqtd/article/17773"
-            }
         ]
     },
     "1202": {
@@ -1318,7 +1238,7 @@
         "tag": "tingyun",
         "rarity": 4,
         "path": "Shaman",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 130,
         "ranks": [
             "120201",
@@ -1361,16 +1281,11 @@
         "portrait": "image/character_portrait/1202.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1202.png",
-            "guide/OriginMirror/character_overview/1202.png"
+            "guide/OriginMirror/character_overview/1202.png",
+            "guide/Gamer/character_overview/1202.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1202.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1202.png",
-                "link": "https://www.gamer.cn/xqtd/article/17751"
-            }
         ]
     },
     "1203": {
@@ -1422,16 +1337,11 @@
         "portrait": "image/character_portrait/1203.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1203.png",
-            "guide/OriginMirror/character_overview/1203.png"
+            "guide/OriginMirror/character_overview/1203.png",
+            "guide/Gamer/character_overview/1203.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1203.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1203.png",
-                "link": "https://www.gamer.cn/xqtd/article/20930"
-            }
         ]
     },
     "1204": {
@@ -1440,7 +1350,7 @@
         "tag": "jingyuan",
         "rarity": 5,
         "path": "Mage",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 130,
         "ranks": [
             "120401",
@@ -1483,16 +1393,11 @@
         "portrait": "image/character_portrait/1204.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1204.png",
-            "guide/OriginMirror/character_overview/1204.png"
+            "guide/OriginMirror/character_overview/1204.png",
+            "guide/Gamer/character_overview/1204.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1204.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1204.png",
-                "link": "https://www.gamer.cn/xqtd/article/10067"
-            }
         ]
     },
     "1205": {
@@ -1545,16 +1450,11 @@
         "portrait": "image/character_portrait/1205.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1205.png",
-            "guide/OriginMirror/character_overview/1205.png"
+            "guide/OriginMirror/character_overview/1205.png",
+            "guide/Gamer/character_overview/1205.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1205.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1205.png",
-                "link": "https://www.gamer.cn/xqtd/article/21321"
-            }
         ]
     },
     "1206": {
@@ -1606,16 +1506,11 @@
         "portrait": "image/character_portrait/1206.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1206.png",
-            "guide/OriginMirror/character_overview/1206.png"
+            "guide/OriginMirror/character_overview/1206.png",
+            "guide/Gamer/character_overview/1206.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1206.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1206.png",
-                "link": "https://www.gamer.cn/xqtd/article/19321"
-            }
         ]
     },
     "1207": {
@@ -1667,16 +1562,11 @@
         "portrait": "image/character_portrait/1207.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1207.png",
-            "guide/OriginMirror/character_overview/1207.png"
+            "guide/OriginMirror/character_overview/1207.png",
+            "guide/Gamer/character_overview/1207.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1207.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/1207.png",
-                "link": "https://www.gamer.cn/xqtd/article/20943"
-            }
         ]
     },
     "1208": {
@@ -1726,9 +1616,14 @@
         "icon": "icon/character/1208.png",
         "preview": "image/character_preview/1208.png",
         "portrait": "image/character_portrait/1208.png",
-        "guide_overview": [],
-        "guide_material": [],
-        "guide_evaluation": []
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1208.png",
+            "guide/OriginMirror/character_overview/1208.png",
+            "guide/Gamer/character_overview/1208.png"
+        ],
+        "guide_material": [
+            "guide/Nwflower/character_material/1208.png"
+        ]
     },
     "1209": {
         "id": "1209",
@@ -1779,7 +1674,8 @@
         "portrait": "image/character_portrait/1209.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1209.png",
-            "guide/OriginMirror/character_overview/1209.png"
+            "guide/OriginMirror/character_overview/1209.png",
+            "guide/Gamer/character_overview/1209.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1209.png"
@@ -1832,7 +1728,10 @@
         "icon": "icon/character/1210.png",
         "preview": "image/character_preview/1210.png",
         "portrait": "image/character_portrait/1210.png",
-        "guide_overview": [],
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1210.png",
+            "guide/OriginMirror/character_overview/1210.png"
+        ],
         "guide_material": []
     },
     "1211": {
@@ -1841,7 +1740,7 @@
         "tag": "bailu",
         "rarity": 5,
         "path": "Priest",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 100,
         "ranks": [
             "121101",
@@ -1884,7 +1783,8 @@
         "portrait": "image/character_portrait/1211.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/1211.png",
-            "guide/OriginMirror/character_overview/1211.png"
+            "guide/OriginMirror/character_overview/1211.png",
+            "guide/Gamer/character_overview/1211.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/1211.png"
@@ -2105,7 +2005,10 @@
         "icon": "icon/character/1215.png",
         "preview": "image/character_preview/1215.png",
         "portrait": "image/character_portrait/1215.png",
-        "guide_overview": [],
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1215.png",
+            "guide/OriginMirror/character_overview/1215.png"
+        ],
         "guide_material": []
     },
     "1217": {
@@ -2316,12 +2219,174 @@
         "icon": "icon/character/1305.png",
         "preview": "image/character_preview/1305.png",
         "portrait": "image/character_portrait/1305.png",
-        "guide_overview": [],
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1305.png",
+            "guide/OriginMirror/character_overview/1305.png"
+        ],
+        "guide_material": []
+    },
+    "1306": {
+        "id": "1306",
+        "name": "花火",
+        "tag": "sparkle",
+        "rarity": 5,
+        "path": "Shaman",
+        "element": "Quantum",
+        "max_sp": 110,
+        "ranks": [
+            "130601",
+            "130602",
+            "130603",
+            "130604",
+            "130605",
+            "130606"
+        ],
+        "skills": [
+            "130601",
+            "130602",
+            "130603",
+            "130604",
+            "130606",
+            "130607"
+        ],
+        "skill_trees": [
+            "1306001",
+            "1306002",
+            "1306003",
+            "1306004",
+            "1306007",
+            "1306101",
+            "1306102",
+            "1306103",
+            "1306201",
+            "1306202",
+            "1306203",
+            "1306204",
+            "1306205",
+            "1306206",
+            "1306207",
+            "1306208",
+            "1306209",
+            "1306210"
+        ],
+        "icon": "icon/character/1306.png",
+        "preview": "image/character_preview/1306.png",
+        "portrait": "image/character_portrait/1306.png",
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1306.png",
+            "guide/OriginMirror/character_overview/1306.png"
+        ],
+        "guide_material": []
+    },
+    "1307": {
+        "id": "1307",
+        "name": "黑天鹅",
+        "tag": "blackswan",
+        "rarity": 5,
+        "path": "Warlock",
+        "element": "Wind",
+        "max_sp": 120,
+        "ranks": [
+            "130701",
+            "130702",
+            "130703",
+            "130704",
+            "130705",
+            "130706"
+        ],
+        "skills": [
+            "130701",
+            "130702",
+            "130703",
+            "130704",
+            "130706",
+            "130707"
+        ],
+        "skill_trees": [
+            "1307001",
+            "1307002",
+            "1307003",
+            "1307004",
+            "1307007",
+            "1307101",
+            "1307102",
+            "1307103",
+            "1307201",
+            "1307202",
+            "1307203",
+            "1307204",
+            "1307205",
+            "1307206",
+            "1307207",
+            "1307208",
+            "1307209",
+            "1307210"
+        ],
+        "icon": "icon/character/1307.png",
+        "preview": "image/character_preview/1307.png",
+        "portrait": "image/character_portrait/1307.png",
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1307.png",
+            "guide/OriginMirror/character_overview/1307.png"
+        ],
+        "guide_material": []
+    },
+    "1312": {
+        "id": "1312",
+        "name": "米沙",
+        "tag": "misha",
+        "rarity": 4,
+        "path": "Warrior",
+        "element": "Ice",
+        "max_sp": 100,
+        "ranks": [
+            "131201",
+            "131202",
+            "131203",
+            "131204",
+            "131205",
+            "131206"
+        ],
+        "skills": [
+            "131201",
+            "131202",
+            "131203",
+            "131204",
+            "131206",
+            "131207"
+        ],
+        "skill_trees": [
+            "1312001",
+            "1312002",
+            "1312003",
+            "1312004",
+            "1312007",
+            "1312101",
+            "1312102",
+            "1312103",
+            "1312201",
+            "1312202",
+            "1312203",
+            "1312204",
+            "1312205",
+            "1312206",
+            "1312207",
+            "1312208",
+            "1312209",
+            "1312210"
+        ],
+        "icon": "icon/character/1312.png",
+        "preview": "image/character_preview/1312.png",
+        "portrait": "image/character_portrait/1312.png",
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1312.png",
+            "guide/OriginMirror/character_overview/1312.png"
+        ],
         "guide_material": []
     },
     "8001": {
         "id": "8001",
-        "name": "物主",
+        "name": "{NICKNAME}",
         "tag": "playerboy",
         "rarity": 5,
         "path": "Warrior",
@@ -2370,21 +2435,16 @@
         "portrait": "image/character_portrait/8001.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/8001.png",
-            "guide/OriginMirror/character_overview/8001.png"
+            "guide/OriginMirror/character_overview/8001.png",
+            "guide/Gamer/character_overview/8001.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/8001.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/8001.png",
-                "link": "https://www.gamer.cn/xqtd/article/10106"
-            }
         ]
     },
     "8002": {
         "id": "8002",
-        "name": "物主",
+        "name": "{NICKNAME}",
         "tag": "playergirl",
         "rarity": 5,
         "path": "Warrior",
@@ -2433,21 +2493,16 @@
         "portrait": "image/character_portrait/8002.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/8002.png",
-            "guide/OriginMirror/character_overview/8002.png"
+            "guide/OriginMirror/character_overview/8002.png",
+            "guide/Gamer/character_overview/8002.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/8002.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/8001.png",
-                "link": "https://www.gamer.cn/xqtd/article/10106"
-            }
         ]
     },
     "8003": {
         "id": "8003",
-        "name": "火主",
+        "name": "{NICKNAME}",
         "tag": "playerboy2",
         "rarity": 5,
         "path": "Knight",
@@ -2495,21 +2550,16 @@
         "portrait": "image/character_portrait/8003.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/8003.png",
-            "guide/OriginMirror/character_overview/8003.png"
+            "guide/OriginMirror/character_overview/8003.png",
+            "guide/Gamer/character_overview/8003.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/8003.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/8003.png",
-                "link": "https://www.gamer.cn/xqtd/article/10615"
-            }
         ]
     },
     "8004": {
         "id": "8004",
-        "name": "火主",
+        "name": "{NICKNAME}",
         "tag": "playergirl2",
         "rarity": 5,
         "path": "Knight",
@@ -2557,16 +2607,11 @@
         "portrait": "image/character_portrait/8004.png",
         "guide_overview": [
             "guide/Nwflower/character_overview/8004.png",
-            "guide/OriginMirror/character_overview/8004.png"
+            "guide/OriginMirror/character_overview/8004.png",
+            "guide/Gamer/character_overview/8004.png"
         ],
         "guide_material": [
             "guide/Nwflower/character_material/8004.png"
-        ],
-        "guide_evaluation": [
-            {
-                "image": "guide/Gamer/character_evaluation/8003.png",
-                "link": "https://www.gamer.cn/xqtd/article/10615"
-            }
         ]
     }
 }

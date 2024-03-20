@@ -50,7 +50,7 @@ __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["星铁角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "遗器榜单",
                   "群遗器榜单"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = 0.8
+__plugin_version__ = 0.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -134,7 +134,7 @@ async def get_msg_uid(event):
 
 
 async def get_starrail_info(url, uid, update_info):
-    update_role_list = []
+    update_role_list = set()
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
         for i in range(3):
             try:
@@ -151,18 +151,17 @@ async def get_starrail_info(url, uid, update_info):
             return await get_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
-        if 'avatarDetailList' in data['detailInfo'] or 'assistAvatarDetail' in data['detailInfo']:
+        if 'avatarDetailList' in data['detailInfo'] or 'assistAvatarList' in data['detailInfo']:
             player_info.set_player(data['detailInfo'])
             detail = []
             if 'avatarDetailList' in data['detailInfo']:
-                detail += data['detailInfo'].get('avatarDetailList')
-            if 'assistAvatarDetail' in data['detailInfo']:
-                if data['detailInfo']['assistAvatarDetail']['avatarId'] not in [item['avatarId'] for item in detail]:
-                    detail.append(data['detailInfo'].get('assistAvatarDetail'))
+                detail += (data['detailInfo'].get('avatarDetailList'))
+            if 'assistAvatarList' in data['detailInfo']:
+                detail += (data['detailInfo'].get('assistAvatarList'))
             for role in detail:
                 try:
                     player_info.set_role(role)
-                    update_role_list.append(get_name_by_id(str(role['avatarId'])))
+                    update_role_list.add(get_name_by_id(str(role['avatarId'])))
                 except Exception as e:
                     await get_card.send(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
             player_info.save()
@@ -172,7 +171,7 @@ async def get_starrail_info(url, uid, update_info):
             return await get_card.finish(guide + "在游戏中打开显示详情选项!")
     else:
         player_info = PlayerInfo(uid)
-    return player_info, update_role_list
+    return player_info, list(update_role_list)
 
 
 async def check_artifact(event, player_info, uid, group_save):
@@ -182,7 +181,10 @@ async def check_artifact(event, player_info, uid, group_save):
     player_info.data['小毕业遗器'] = 0
     for role_name in roles_list:
         role_data = player_info.get_roles_info(role_name)
-        _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
+        try:
+            _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
+        except:
+            pass
     player_info.save()
     if group_save and isinstance(event, GroupMessageEvent):
         check_group_artifact(event, player_info)
@@ -496,7 +498,7 @@ def check_uid(uid: int):
 
 
 async def get_update_info():
-    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/README.md"
+    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/README.md"
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
@@ -508,7 +510,7 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update():
-    url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/__init__.py"
+    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/__init__.py"
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
