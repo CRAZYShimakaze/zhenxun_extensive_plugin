@@ -39,7 +39,7 @@ usage：
 __plugin_des__ = "查询星铁攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = 0.5
+__plugin_version__ = 0.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -76,11 +76,11 @@ break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/"
 alias_url = src_url + "nickname.json"
 
-common_guide = src_url + "common_guide/{}.jpg"
-starrail_role_guide = src_url + "role_guide/{}.png"
-starrail_role_break = src_url + "role_break/{}.png"
-starrail_role_info = src_url + "role_info/{}.png"
-starrail_weapon_info = src_url + "weapon_info/{}.png"
+common_guide = src_url + "common_guide/{}"
+starrail_role_guide = src_url + "role_guide/{}"
+starrail_role_break = src_url + "role_break/{}"
+starrail_role_info = src_url + "role_info/{}"
+starrail_weapon_info = src_url + "weapon_info/{}"
 RES_PATH = str(DATA_PATH) + '/starrail_recommend'
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
@@ -110,7 +110,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             break
     else:
         return
-    save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
+    save_path = f'{ROLE_GUIDE_PATH}/{role}'
     await get_img(starrail_role_guide, role, save_path, ignore_exist=False)
     try:
         #await check_gold(event, coin=50)
@@ -122,18 +122,18 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 @common_weapon_grade.handle()
 async def _(event: MessageEvent):
     arg = '光锥推荐'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1', f'{COMMON_GUIDE_PATH}/{arg}2', f'{COMMON_GUIDE_PATH}/{arg}3']
     #await check_gold(event, coin=10, percent=1)
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
         await common_weapon_grade.send(image(Path(item)))
 
 
 @common_artifact_guide.handle()
 async def _(event: MessageEvent):
     arg = '遗器推荐'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
-    #await check_gold(event, coin=1)
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1', f'{COMMON_GUIDE_PATH}/{arg}2']
+    #await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_artifact_guide.send(image(Path(item)))
@@ -142,8 +142,8 @@ async def _(event: MessageEvent):
 @common_abyss.handle()
 async def _(event: MessageEvent):
     arg = '角色配队'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
-    #await check_gold(event, coin=1)
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1', f'{COMMON_GUIDE_PATH}/{arg}2']
+    #await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_abyss.send(image(Path(item)))
@@ -163,14 +163,14 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
                 break
         else:
             return
-        save_path = f'{WEAPON_INFO_PATH}/{role}.png'
+        save_path = f'{WEAPON_INFO_PATH}/{role}'
         await get_img(starrail_weapon_info, role, save_path, ignore_exist=False)
         try:
             await starrail_info.send(image(Path(save_path)))
         except:
             os.unlink(save_path)
         return
-    save_path = f'{ROLE_INFO_PATH}/{role}.png'
+    save_path = f'{ROLE_INFO_PATH}/{role}'
     await get_img(starrail_role_info, role, save_path, ignore_exist=False)
     try:
         #await check_gold(event, coin=50)
@@ -188,7 +188,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             break
     else:
         return
-    save_path = f'{ROLE_BREAK_PATH}/{role}.png'
+    save_path = f'{ROLE_BREAK_PATH}/{role}'
     await get_img(starrail_role_break, role, save_path, ignore_exist=False)
     try:
         #await check_gold(event, coin=50)
@@ -233,23 +233,23 @@ async def _():
     update_list = set()
 
     for item in common_guide_md5.keys():
-        save_path = Path(f'{COMMON_GUIDE_PATH}/{item}.jpg')
+        save_path = Path(f'{COMMON_GUIDE_PATH}/{item}')
         if await check_md5(save_path, item, common_guide, common_guide_md5):
             update_list.add(item)
     for role in role_info_md5.keys():
-        save_path = Path(f'{ROLE_INFO_PATH}/{role}.png')
+        save_path = Path(f'{ROLE_INFO_PATH}/{role}')
         if await check_md5(save_path, role, starrail_role_info, role_info_md5):
             update_list.add(role)
     for role in role_break_md5.keys():
-        save_path = Path(f'{ROLE_BREAK_PATH}/{role}.png')
+        save_path = Path(f'{ROLE_BREAK_PATH}/{role}')
         if await check_md5(save_path, role, starrail_role_break, role_break_md5):
             update_list.add(role)
     for role in role_guide_md5.keys():
-        save_path = Path(f'{ROLE_GUIDE_PATH}/{role}.png')
+        save_path = Path(f'{ROLE_GUIDE_PATH}/{role}')
         if await check_md5(save_path, role, starrail_role_guide, role_guide_md5):
             update_list.add(role)
     for item in weapon_info_md5.keys():
-        save_path = Path(f'{WEAPON_INFO_PATH}/{item}.png')
+        save_path = Path(f'{WEAPON_INFO_PATH}/{item}')
         if await check_md5(save_path, item, starrail_weapon_info, weapon_info_md5):
             update_list.add(item)
 
