@@ -40,7 +40,7 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 2.0
+__plugin_version__ = 1.9
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {
     "level": 5,
@@ -82,11 +82,11 @@ break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
 alias_url = src_url + "alias.json"
 
-common_guide = src_url + "common_guide/{}"
-genshin_role_guide = src_url + "role_guide/{}"
-genshin_role_break = src_url + "role_break/{}"
-genshin_role_info = src_url + "role_info/{}"
-genshin_weapon_info = src_url + "weapon_info/{}"
+common_guide = src_url + "common_guide/{}.jpg"
+genshin_role_guide = src_url + "role_guide/{}.png"
+genshin_role_break = src_url + "role_break/{}.jpg"
+genshin_role_info = src_url + "role_info/{}.png"
+genshin_weapon_info = src_url + "weapon_info/{}.png"
 RES_PATH = str(DATA_PATH) + '/genshin_recommend'
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
@@ -110,54 +110,55 @@ async def get_img(url, arg, save_path, ignore_exist):
 @common_role_equip.handle()
 async def _(event: MessageEvent):
     arg = '角色配装'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_role_equip.send(image(Path(item)))
 
 
 @common_role_grade.handle()
 async def _(event: MessageEvent):
     arg = '角色评级'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_role_grade.send(image(Path(item)))
 
 
 @common_weapon_grade.handle()
 async def _(event: MessageEvent):
     arg = '武器推荐'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_weapon_grade.send(image(Path(item)))
 
 
 @common_artifact_guide.handle()
 async def _(event: MessageEvent):
     arg = '副本分析'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_artifact_guide.send(image(Path(item)))
 
 
 @common_abyss.handle()
 async def _(event: MessageEvent):
     arg = '深渊配队'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_abyss.send(image(Path(item)))
 
 
 @common_material.handle()
 async def _(event: MessageEvent):
     arg = '每日素材'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1', f'{COMMON_GUIDE_PATH}/{arg}2', f'{COMMON_GUIDE_PATH}/{arg}3']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg',
+                 f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
     for item in save_path:
-        await get_img(common_guide, item.split('/')[-1].strip(''), item, ignore_exist=False)
+        await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_material.send(image(Path(item)))
 
 
@@ -170,7 +171,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             break
     else:
         return
-    save_path = f'{ROLE_GUIDE_PATH}/{role}'
+    save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, ignore_exist=False)
     await role_guide.send(image(Path(save_path)))
 
@@ -189,11 +190,11 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
                 break
         else:
             return
-        save_path = f'{WEAPON_INFO_PATH}/{role}'
+        save_path = f'{WEAPON_INFO_PATH}/{role}.png'
         await get_img(genshin_weapon_info, role, save_path, ignore_exist=False)
         await genshin_info.send(image(Path(save_path)))
         return
-    save_path = f'{ROLE_INFO_PATH}/{role}'
+    save_path = f'{ROLE_INFO_PATH}/{role}.png'
     await get_img(genshin_role_info, role, save_path, ignore_exist=False)
     await genshin_info.send(image(Path(save_path)))
 
@@ -207,7 +208,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             break
     else:
         return
-    save_path = f'{ROLE_BREAK_PATH}/{role}'
+    save_path = f'{ROLE_BREAK_PATH}/{role}.jpg'
     await get_img(genshin_role_break, role, save_path, ignore_exist=False)
     await break_material.send(image(Path(save_path)))
 
