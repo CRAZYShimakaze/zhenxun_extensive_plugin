@@ -19,7 +19,7 @@
 
 ## 效果图
 
-<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
+<img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
 
 ## 致谢
 
