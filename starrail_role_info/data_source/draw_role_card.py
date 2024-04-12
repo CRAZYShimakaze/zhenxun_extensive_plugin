@@ -279,6 +279,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             artifact_all[i].append(copy.deepcopy(artifact))
 
     player_info.data['遗器榜单'] = sorted(player_info.data['遗器榜单'], key=lambda x: float(x['评分']), reverse=True)[:20]
+    data['评分'] = total_all
     if not only_cal:
         # 遗器评分
         if total_cnt and total_all <= 55 * total_cnt:

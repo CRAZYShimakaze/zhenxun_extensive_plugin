@@ -2,7 +2,8 @@ from typing import Union
 
 from PIL import ImageDraw, Image
 
-from ..utils.card_utils import json_path, get_font, bg_path, avatar_path
+from .draw_role_card import weapon_url
+from ..utils.card_utils import json_path, get_font, bg_path, avatar_path,other_path,weapon_path
 from ..utils.image_utils import load_image, draw_center_text, get_img, image_build
 from ..utils.json_utils import load_json
 
@@ -58,9 +59,10 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
             'RGBA', (card_size[0] + 1 * multiple, card_size[1] + 1 * multiple),
             (80, 78, 91, 0))
 
+        data = player_info.get_roles_info(role)
         # 角色卡背景
         card_bg = Image.new('RGBA', card_size, (240, 236, 227, 0))
-        bg_img = load_image(f"{bg_path}/背景_{player_info.get_roles_info(role)['元素']}.png",
+        bg_img = load_image(f"{bg_path}/背景_{data['元素']}.png",
                             mode='RGBA')
         card_bg.alpha_composite(
             bg_img.resize((card_bg.width, card_bg.height), Image.ANTIALIAS),
@@ -68,8 +70,8 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
         card_bg_draw = ImageDraw.Draw(card_bg)
 
         # 角色图
-        role_bg = f"{avatar_path}/{player_info.get_roles_info(role)['角色ID']}.png"
-        role_bg = await get_img(url=role_url.format(player_info.get_roles_info(role)['角色ID']),
+        role_bg = f"{avatar_path}/{data['角色ID']}.png"
+        role_bg = await get_img(url=role_url.format(data['角色ID']),
                                 save_path=role_bg,
                                 mode='RGBA')
 
@@ -80,10 +82,60 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
         # 角色卡内部角色名
         draw_center_text(
             card_bg_draw,
-            f"{role}Lv.{(player_info.get_roles_info(role))['等级']}",
+            f"{role}Lv.{data['等级']}",
             36 * multiple, (36 + 85) * multiple,
             (5 if top_name else 164) * multiple, 'white',
             get_font(19 * multiple, '优设标题黑.ttf'))
+        card_bg_shadow.paste(card_bg, (-1, -1))
+        bg.paste(card_bg_shadow, (45 * multiple + x, 123 * multiple + y))
+        # 评分
+        if data.get('评分', '') != '':
+            score = round(data['评分'], 1)
+            card_bg_draw.rounded_rectangle((90, card_size[1] + 1 * multiple - 60, 220, card_size[1] + 1 * multiple - 20), 10,
+                                           fill=(101, 101, 101) if score <= 104.8 else (86, 190, 191) if score <= 139.7 else (45, 158, 98) if
+                                           score <= 174.6 else (61, 146, 183) if score <= 200 else (55, 85, 183) if
+                                           score <= 227 else (119, 71, 177) if score <= 262.0 else (245, 89, 40))
+            draw_center_text(
+                card_bg_draw,
+                f"{score}",
+                36 * multiple, (36 + 85) * multiple,
+                (164) * multiple, 'white',
+                get_font(19 * multiple, '优设标题黑.ttf'))
+        # 命座
+        card_bg_draw.rounded_rectangle((0, card_size[1] + 1 * multiple - 80, 60, card_size[1] + 1 * multiple), 10,
+                                       fill=(101, 101, 101) if len(data['星魂']) == 0 else (86, 190, 191) if len(data['星魂']) == 1 else (45, 158, 98) if len(
+                                           data['星魂']) == 2 else (61, 146, 183) if len(data['星魂']) == 3 else (55, 85, 183) if len(
+                                           data['星魂']) == 4 else (119, 71, 177) if len(data['星魂']) == 5 else (245, 89, 40))
+        draw_center_text(
+            card_bg_draw,
+            f"{len(data['星魂'])}",
+            0, 60,
+            card_size[1] + 1 * multiple - 80, 'white',
+            get_font(30 * multiple, '优设标题黑.ttf'))
+
+        # 武器
+        weapon_bg = load_image(f'{other_path}/star{data["光锥"]["星级"]}.png',
+                               size=(60, 60))
+        card_bg.alpha_composite(weapon_bg, (card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 140))
+        weapon_icon = f'{weapon_path}/{data["光锥"]["图标"]}.png'
+        weapon_icon = await get_img(
+            url=weapon_url.format(data["光锥"]["图标"]),
+            size=(60, 60),
+            save_path=weapon_icon,
+            mode='RGBA')
+        card_bg.alpha_composite(weapon_icon, (card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 140))
+
+        card_bg_draw.rounded_rectangle((card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 80, card_size[0] + 1 * multiple, card_size[1] + 1 * multiple), 10,
+                                       fill=(86, 190, 191) if data["光锥"]["精炼等级"] == 1 else (45, 158, 98) if
+                                       data["光锥"]["精炼等级"] == 2 else (61, 146, 183) if data['星魂'] == 3 else (55, 85, 183) if
+                                       data["光锥"]["精炼等级"] == 4 else (119, 71, 177))
+        draw_center_text(
+            card_bg_draw,
+            f'{data["光锥"]["精炼等级"]}',
+            card_size[0] + 1 * multiple - 60, card_size[0] + 1 * multiple,
+            card_size[1] + 1 * multiple - 80, 'white',
+            get_font(30 * multiple, '优设标题黑.ttf'))
+
         card_bg_shadow.paste(card_bg, (-1, -1))
         bg.paste(card_bg_shadow, (45 * multiple + x, 123 * multiple + y))
 
