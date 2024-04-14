@@ -425,8 +425,8 @@ async def update(event, uid, group_save):
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         mod_time = os.path.getmtime(f'{player_info_path}/{uid}.json')
         cd_time = int(time.time() - mod_time)
-        if cd_time < 130:
-            await get_card.finish(f'{130 - cd_time}秒后可再次更新!', at_sender=True)
+        if cd_time < 60:
+            await get_card.finish(f'{60 - cd_time}秒后可再次更新!', at_sender=True)
     player_info, update_role_list = await get_starrail_info(url, uid, update_info=True)
     #await check_gold(event, coin=1, percent=1)
     await check_artifact(event, player_info, uid, group_save)

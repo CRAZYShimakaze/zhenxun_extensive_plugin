@@ -20,7 +20,7 @@
 
 ## 效果图
 
-<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/sample.jpg" height="700px">
+<img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/sample.jpg" height="700px">
 
 ## 致谢
 
