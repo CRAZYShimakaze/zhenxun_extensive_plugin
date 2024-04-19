@@ -744,7 +744,7 @@ async def getfiles(url, plugin_folder_path, upper_path):
     max_retry = 3
     while max_retry:
         try:
-            res = await AsyncHttpx.get(url, timeout=10, headers=header)
+            res = await AsyncHttpx.get(url, timeout=10, headers=header, follow_redirects=True)
         except:
             max_retry -= 1
             await asyncio.sleep(0.5)
@@ -766,7 +766,7 @@ async def getfiles(url, plugin_folder_path, upper_path):
                 relative_path = copy.deepcopy(i["path"])
                 full_path = plugin_folder_path + '/' + relative_path.replace(upper_path, '', 1)
                 if not os.path.exists(full_path) or git_blob_hash(full_path) != i["sha"]:
-                    while (max_retry and not await AsyncHttpx.download_file("https://ghproxy.com/" + i["download_url"],
+                    while (max_retry and not await AsyncHttpx.download_file("https://mirror.ghproxy.com/" + i["download_url"],
                                                                             full_path, headers=header,
                                                                             timeout=10, follow_redirects=True)):
                         await asyncio.sleep(0.5)

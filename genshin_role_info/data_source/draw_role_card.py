@@ -246,23 +246,24 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
 
         total_all += round(grade, 1)
         total_cnt += 1
-        artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png', size=(100, 100))
-        bg.alpha_composite(artifact_bg, (270 + offset_x + 317 * i, 1002 + offset_y))
-        reli_icon = f'{reli_path}/{artifact["图标"]}.png'
-        reli_icon = await get_img(url=artifact_url.format(artifact["图标"]), size=(100, 100), save_path=reli_icon, mode='RGBA')
-        bg.alpha_composite(reli_icon, (270 + offset_x + 317 * i, 1002 + offset_y))
-        bg_draw.text((94 + offset_x + 317 * i, 951 + offset_y), artifact['名称'], fill='white', font=get_font(40))
-        bg_draw.text((95 + offset_x + 317 * i, 998 + offset_y), f'{artifact_score}-{round(grade, 1)}', fill='#ffde6b', font=get_font(28, 'number.ttf'))
-        level_mask = load_image(path=f'{other_path}/等级遮罩.png')
-        bg.alpha_composite(level_mask.resize((98, 30)), (95 + offset_x + 317 * i, 1032 + offset_y))
-        if artifact['等级'] != 20:
-            no_list = '*'
-        draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + offset_x + 317 * i, 95 + offset_x + 317 * i + 98, 1033 + offset_y, 'black', get_font(27, 'number.ttf'))
-        bg_draw.text((94 + offset_x + 317 * i, 1069 + offset_y), artifact['主属性']['属性名'], fill='white', font=get_font(25))
-        if artifact['主属性']['属性名'] not in ['生命值', '攻击力', '元素精通']:
-            bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}%", fill='white', font=get_font(48, 'number.ttf'))
-        else:
-            bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}", fill='white', font=get_font(48, 'number.ttf'))
+        if not only_cal:
+            artifact_bg = load_image(f'{other_path}/star{artifact["星级"]}.png', size=(100, 100))
+            bg.alpha_composite(artifact_bg, (270 + offset_x + 317 * i, 1002 + offset_y))
+            reli_icon = f'{reli_path}/{artifact["图标"]}.png'
+            reli_icon = await get_img(url=artifact_url.format(artifact["图标"]), size=(100, 100), save_path=reli_icon, mode='RGBA')
+            bg.alpha_composite(reli_icon, (270 + offset_x + 317 * i, 1002 + offset_y))
+            bg_draw.text((94 + offset_x + 317 * i, 951 + offset_y), artifact['名称'], fill='white', font=get_font(40))
+            bg_draw.text((95 + offset_x + 317 * i, 998 + offset_y), f'{artifact_score}-{round(grade, 1)}', fill='#ffde6b', font=get_font(28, 'number.ttf'))
+            level_mask = load_image(path=f'{other_path}/等级遮罩.png')
+            bg.alpha_composite(level_mask.resize((98, 30)), (95 + offset_x + 317 * i, 1032 + offset_y))
+            if artifact['等级'] != 20:
+                no_list = '*'
+            draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + offset_x + 317 * i, 95 + offset_x + 317 * i + 98, 1033 + offset_y, 'black', get_font(27, 'number.ttf'))
+            bg_draw.text((94 + offset_x + 317 * i, 1069 + offset_y), artifact['主属性']['属性名'], fill='white', font=get_font(25))
+            if artifact['主属性']['属性名'] not in ['生命值', '攻击力', '元素精通']:
+                bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}%", fill='white', font=get_font(48, 'number.ttf'))
+            else:
+                bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}", fill='white', font=get_font(48, 'number.ttf'))
         for j in range(len(artifact['词条'])):
             text = artifact['词条'][j]['属性名'].replace('百分比', '')
             up_num = ''

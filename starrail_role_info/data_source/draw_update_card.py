@@ -3,7 +3,7 @@ from typing import Union
 from PIL import ImageDraw, Image
 
 from .draw_role_card import weapon_url
-from ..utils.card_utils import json_path, get_font, bg_path, avatar_path,other_path,weapon_path
+from ..utils.card_utils import json_path, get_font, bg_path, avatar_path, other_path, weapon_path
 from ..utils.image_utils import load_image, draw_center_text, get_img, image_build
 from ..utils.json_utils import load_json
 
@@ -114,27 +114,29 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
             get_font(30 * multiple, '优设标题黑.ttf'))
 
         # 武器
-        weapon_bg = load_image(f'{other_path}/star{data["光锥"]["星级"]}.png',
-                               size=(60, 60))
-        card_bg.alpha_composite(weapon_bg, (card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 140))
-        weapon_icon = f'{weapon_path}/{data["光锥"]["图标"]}.png'
-        weapon_icon = await get_img(
-            url=weapon_url.format(data["光锥"]["图标"]),
-            size=(60, 60),
-            save_path=weapon_icon,
-            mode='RGBA')
-        card_bg.alpha_composite(weapon_icon, (card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 140))
+        if data["光锥"].get("星级", "") != "":
+            weapon_bg = load_image(f'{other_path}/star{data["光锥"]["星级"]}.png',
+                                   size=(60, 60))
+            card_bg.alpha_composite(weapon_bg, (card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 140))
+            weapon_icon = f'{weapon_path}/{data["光锥"]["图标"]}.png'
+            weapon_icon = await get_img(
+                url=weapon_url.format(data["光锥"]["图标"]),
+                size=(60, 60),
+                save_path=weapon_icon,
+                mode='RGBA')
+            card_bg.alpha_composite(weapon_icon, (card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 140))
 
-        card_bg_draw.rounded_rectangle((card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 80, card_size[0] + 1 * multiple, card_size[1] + 1 * multiple), 10,
-                                       fill=(86, 190, 191) if data["光锥"]["精炼等级"] == 1 else (45, 158, 98) if
-                                       data["光锥"]["精炼等级"] == 2 else (61, 146, 183) if data['星魂'] == 3 else (55, 85, 183) if
-                                       data["光锥"]["精炼等级"] == 4 else (119, 71, 177))
-        draw_center_text(
-            card_bg_draw,
-            f'{data["光锥"]["精炼等级"]}',
-            card_size[0] + 1 * multiple - 60, card_size[0] + 1 * multiple,
-            card_size[1] + 1 * multiple - 80, 'white',
-            get_font(30 * multiple, '优设标题黑.ttf'))
+            card_bg_draw.rounded_rectangle((card_size[0] + 1 * multiple - 60, card_size[1] + 1 * multiple - 80, card_size[0] + 1 * multiple, card_size[1] + 1 * multiple),
+                                           10,
+                                           fill=(86, 190, 191) if data["光锥"]["精炼等级"] == 1 else (45, 158, 98) if
+                                           data["光锥"]["精炼等级"] == 2 else (61, 146, 183) if data['星魂'] == 3 else (55, 85, 183) if
+                                           data["光锥"]["精炼等级"] == 4 else (119, 71, 177))
+            draw_center_text(
+                card_bg_draw,
+                f'{data["光锥"]["精炼等级"]}',
+                card_size[0] + 1 * multiple - 60, card_size[0] + 1 * multiple,
+                card_size[1] + 1 * multiple - 80, 'white',
+                get_font(30 * multiple, '优设标题黑.ttf'))
 
         card_bg_shadow.paste(card_bg, (-1, -1))
         bg.paste(card_bg_shadow, (45 * multiple + x, 123 * multiple + y))

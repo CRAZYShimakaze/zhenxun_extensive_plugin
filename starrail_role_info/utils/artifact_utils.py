@@ -29,6 +29,8 @@ integer_property = ['生命值', '攻击力', '防御力', '速度']
 
 def get_artifact_score(effective, artifact, role_info, pos_idx):
     sub_score = []
+    if role_info['名称'] not in role_score["满词条"]:
+        return '', 0, [0, 0, 0, 0]
     for sub in artifact['词条']:
         val = sub['属性值'] if sub['属性名'] in integer_property else sub['属性值'] * 100
         if sub['属性名'] in ['生命值', '攻击力', '防御力']:
@@ -68,7 +70,7 @@ def get_effective(data):
     :return: 有效词条列表
     """
     role_name = data['名称']
-    return role_score['权重'].get(role_name), role_name
+    return role_score['权重'].get(role_name, {}), role_name
 
 
 def check_effective(prop_name: str, effective: dict):
