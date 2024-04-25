@@ -17,6 +17,7 @@
     "林尼": "UI_Gacha_AvatarImg_Liney",
     "夏沃蕾": "UI_Gacha_AvatarImg_Chevreuse",
     "嘉明": "UI_Gacha_AvatarImg_Gaming",
+    "阿蕾奇诺": "UI_Gacha_AvatarImg_Arlecchino",
 
     "达达利亚": "UI_Gacha_AvatarImg_Tartaglia",
     "夜兰": "UI_Gacha_AvatarImg_Yelan",
@@ -28,7 +29,7 @@
     "坎蒂丝": "UI_Gacha_AvatarImg_Candace",
     "妮露": "UI_Gacha_AvatarImg_Nilou",
     "那维莱特": "UI_Gacha_AvatarImg_Neuvillette",
-	  "芙宁娜": "UI_Gacha_AvatarImg_Furina",
+	"芙宁娜": "UI_Gacha_AvatarImg_Furina",
 
     "温迪": "UI_Gacha_AvatarImg_Venti",
     "砂糖": "UI_Gacha_AvatarImg_Sucrose",
@@ -107,6 +108,7 @@
     "林尼": "UI_AvatarIcon_Side_Liney",
     "夏沃蕾": "UI_AvatarIcon_Side_Chevreuse",
     "嘉明": "UI_AvatarIcon_Side_Gaming",
+    "阿蕾奇诺": "UI_AvatarIcon_Side_Arlecchino",
 
     "达达利亚": "UI_AvatarIcon_Side_Tartaglia",
     "夜兰": "UI_AvatarIcon_Side_Yelan",
