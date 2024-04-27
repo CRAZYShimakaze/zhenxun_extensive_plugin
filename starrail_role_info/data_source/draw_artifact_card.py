@@ -7,12 +7,13 @@ from configs.path_config import TEMP_PATH
 
 from .draw_role_card import artifact_url, role_url
 from ..utils.artifact_utils import integer_property
-from ..utils.card_utils import other_path, get_font, bg_path, reli_path, avatar_path
+from ..utils.card_utils import other_path, get_font, bg_path, reli_path, avatar_path, json_path
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img, image_build
+from ..utils.json_utils import load_json
 
 avatar_url = 'https://enka.network/ui/{}.png'
 qq_logo_url = 'http://q1.qlogo.cn/g?b=qq&nk={}&s=640'
-
+role_name = load_json(f'{json_path}/characters.json')
 
 async def draw_qq_logo_mask(artifact, mask_bottom):
     qq_logo_pic = await get_img(
@@ -84,15 +85,20 @@ async def draw_artifact_card(title, uid, artifact_info, ace2_num, ace_num, plugi
             save_path=reli_icon,
             mode='RGBA')
         bg.alpha_composite(reli_icon, (slice_offset_x + 200, slice_offset_y + 67))
-        if h == 4:
-            avatar_icon = f'{avatar_path}/{artifact["ID"]}.png'
+        if '角色' in artifact and artifact.get("角色", ''):
+            for item in role_name.keys():
+                if artifact.get("角色", '') in role_name.get(item)['name']:
+                    break
+            else:
+                item = '1001'
+            avatar_icon = f'{avatar_path}/{item}.png'
             avatar_icon = await get_img(
                 url=role_url.format(
-                    artifact["ID"]),
-                size=(100, 100),
+                    item),
+                size=(80, 80),
                 save_path=avatar_icon,
                 mode='RGBA')
-            bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 30, slice_offset_y + 67 + 30))
+            bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 50, slice_offset_y + 67 + 50))
         bg_draw.text((slice_offset_x + 24, slice_offset_y + 16),
                      artifact['名称'],
                      fill='white',
@@ -135,7 +141,7 @@ async def draw_artifact_card(title, uid, artifact_info, ace2_num, ace_num, plugi
                 fill=artifact['副属性'][j]['颜色'],
                 font=get_font(25))
             num = artifact['副属性'][j]['属性值']
-            if text not in integer_property:
+            if int(num) < 1:
                 num = '+' + str(math.floor(num * 1000) / 10) + '%'
             else:
                 num = '+' + str(math.floor(num))
