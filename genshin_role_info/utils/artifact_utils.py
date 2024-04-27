@@ -165,7 +165,22 @@ def get_effective(data):
     role_name = data['名称']
     artifacts = data['圣遗物']
     try:
-        if role_name == '钟离':
+        if role_name in ['荧', '空']:
+            if data['元素'] == '火':
+                role_name = '火主'
+            elif data['元素'] == '水':
+                role_name = '水主'
+            elif data['元素'] == '冰':
+                role_name = '冰主'
+            elif data['元素'] == '雷':
+                role_name = '雷主'
+            elif data['元素'] == '风':
+                role_name = '风主'
+            elif data['元素'] == '岩':
+                role_name = '岩主'
+            elif data['元素'] == '草':
+                role_name = '草主'
+        elif role_name == '钟离':
             if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[4]['主属性']['属性名'] == '百分比生命值' \

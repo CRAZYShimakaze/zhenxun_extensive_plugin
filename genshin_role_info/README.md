@@ -29,6 +29,11 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+**2024/4/27**[v4.0]
+
+1. 支持空荧的不同属性查询
+2. 同步更新角色权重
+
 **2024/4/25**[v3.9]
 
 1. 支持阿蕾奇诺
