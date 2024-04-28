@@ -11,7 +11,7 @@ from nonebot.permission import SUPERUSER
 
 from utils.http_utils import AsyncHttpx
 from .data_source import get_bt_info
-from ..plugin_utils.auth_utils import check_gold
+# from ..plugin_utils.auth_utils import check_gold
 
 __zx_plugin_name__ = "搜车"
 __plugin_usage__ = """
@@ -52,7 +52,7 @@ async def get_bt(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
     result = await get_bt_info(keyword)
     if not result:
         await check.finish("没有找到结果！")
-    await check_gold(event, coin=10, percent=1)
+    # await check_gold(event, coin=10, percent=1)
     mes_list = []
     cnt = 1
     for item in result:
@@ -79,7 +79,7 @@ async def get_bt(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
 async def check_bt(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
     link = arg.extract_plain_text().strip()
     preview = await get_preview(event, link, True)
-    await check_gold(event, coin=10, percent=1)
+    # await check_gold(event, coin=10, percent=1)
     return await check.send(preview)
     for item in preview:
         await check.send(item["data"]["content"])

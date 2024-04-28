@@ -150,17 +150,20 @@ async def get_enka_info(url, uid, update_info):
                     url=url,
                     follow_redirects=True,
                 )
-            except Exception:
-                await asyncio.sleep(1)
+            except Exception as e:
+                await asyncio.sleep(0.2)
+                print(e)
                 continue
             if req.status_code == 200:
                 break
+            else:
+                print(req.status_code)
         else:
             return await get_card.finish("服务器维护中,请稍后再试...")
         data = req.json()
         player_info = PlayerInfo(uid)
         player_info.set_player(data['playerInfo'])
-        if 'avatarInfoList' in data:
+        if data.get("avatarInfoList", ""):
             for role in data['avatarInfoList']:
                 try:
                     player_info.set_role(role)
@@ -194,7 +197,7 @@ async def check_role_avaliable(role_name, roles_list):
     if not roles_list:
         guide = load_image(f'{other_path}/collections.png')
         guide = image_build(img=guide, quality=100, mode='RGB')
-        await his_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
+        await get_card.finish(guide + "无角色信息,在游戏中将角色放入展柜并输入更新角色卡XXXX(uid)!",
                               at_sender=True)
     if role_name not in roles_list:
         await get_card.finish(
@@ -403,7 +406,7 @@ async def get_char(uid):
         player_info = PlayerInfo(uid)
         try:
             player_info.set_player(data['playerInfo'])
-            if 'avatarInfoList' in data:
+            if data.get("avatarInfoList", ""):
                 for role in data['avatarInfoList']:
                     player_info.set_role(role)
                 player_info.save()
