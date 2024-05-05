@@ -264,6 +264,9 @@ def get_effective(data):
                 if data['武器']['名称'] == '薙草之稻光' and '元素充能效率' not in weight:
                     weight['元素充能效率'] = 45
                     role_name = f'{role_name}-薙刀'
+                if data['武器']['名称'] == '护摩之杖' and '百分比生命值' not in weight:
+                    weight['百分比生命值'] = 45
+                    role_name = f'{role_name}-护摩'
             return weight, role_name
         else:
             return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}, role_name
