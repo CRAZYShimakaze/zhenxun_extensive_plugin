@@ -229,7 +229,7 @@
         "tag": "kafka",
         "rarity": 5,
         "path": "Warlock",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 120,
         "ranks": [
             "100501",
@@ -341,7 +341,7 @@
         "tag": "arlan",
         "rarity": 4,
         "path": "Warrior",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 110,
         "ranks": [
             "100801",
@@ -621,7 +621,7 @@
         "tag": "serval",
         "rarity": 4,
         "path": "Mage",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 100,
         "ranks": [
             "110301",
@@ -1238,7 +1238,7 @@
         "tag": "tingyun",
         "rarity": 4,
         "path": "Shaman",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 130,
         "ranks": [
             "120201",
@@ -1350,7 +1350,7 @@
         "tag": "jingyuan",
         "rarity": 5,
         "path": "Mage",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 130,
         "ranks": [
             "120401",
@@ -1740,7 +1740,7 @@
         "tag": "bailu",
         "rarity": 5,
         "path": "Priest",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 100,
         "ranks": [
             "121101",
@@ -2273,7 +2273,9 @@
         "icon": "icon/character/1304.png",
         "preview": "image/character_preview/1304.png",
         "portrait": "image/character_portrait/1304.png",
-        "guide_overview": [],
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1304.png"
+        ],
         "guide_material": []
     },
     "1305": {
@@ -2441,7 +2443,7 @@
         "tag": "acheron",
         "rarity": 5,
         "path": "Warlock",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 9,
         "ranks": [
             "130801",
@@ -2489,6 +2491,58 @@
         "guide_overview": [
             "guide/Nwflower/character_overview/1308.png",
             "guide/OriginMirror/character_overview/1308.png"
+        ],
+        "guide_material": []
+    },
+    "1309": {
+        "id": "1309",
+        "name": "知更鸟",
+        "tag": "robin",
+        "rarity": 5,
+        "path": "Shaman",
+        "element": "Physical",
+        "max_sp": 160,
+        "ranks": [
+            "130901",
+            "130902",
+            "130903",
+            "130904",
+            "130905",
+            "130906"
+        ],
+        "skills": [
+            "130901",
+            "130902",
+            "130903",
+            "130904",
+            "130906",
+            "130907"
+        ],
+        "skill_trees": [
+            "1309001",
+            "1309002",
+            "1309003",
+            "1309004",
+            "1309007",
+            "1309101",
+            "1309102",
+            "1309103",
+            "1309201",
+            "1309202",
+            "1309203",
+            "1309204",
+            "1309205",
+            "1309206",
+            "1309207",
+            "1309208",
+            "1309209",
+            "1309210"
+        ],
+        "icon": "icon/character/1309.png",
+        "preview": "image/character_preview/1309.png",
+        "portrait": "image/character_portrait/1309.png",
+        "guide_overview": [
+            "guide/Nwflower/character_overview/1309.png"
         ],
         "guide_material": []
     },
@@ -2543,6 +2597,57 @@
             "guide/Nwflower/character_overview/1312.png",
             "guide/OriginMirror/character_overview/1312.png"
         ],
+        "guide_material": []
+    },
+    "1315": {
+        "id": "1315",
+        "name": "波提欧",
+        "tag": "boothill",
+        "rarity": 5,
+        "path": "Rogue",
+        "element": "Physical",
+        "max_sp": 115,
+        "ranks": [
+            "131501",
+            "131502",
+            "131503",
+            "131504",
+            "131505",
+            "131506"
+        ],
+        "skills": [
+            "131501",
+            "131502",
+            "131503",
+            "131504",
+            "131506",
+            "131507",
+            "131508"
+        ],
+        "skill_trees": [
+            "1315001",
+            "1315002",
+            "1315003",
+            "1315004",
+            "1315007",
+            "1315101",
+            "1315102",
+            "1315103",
+            "1315201",
+            "1315202",
+            "1315203",
+            "1315204",
+            "1315205",
+            "1315206",
+            "1315207",
+            "1315208",
+            "1315209",
+            "1315210"
+        ],
+        "icon": "icon/character/1315.png",
+        "preview": "image/character_preview/1315.png",
+        "portrait": "image/character_portrait/1315.png",
+        "guide_overview": [],
         "guide_material": []
     },
     "8001": {
