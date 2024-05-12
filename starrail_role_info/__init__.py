@@ -415,7 +415,7 @@ async def update(event, uid, group_save):
             if time_difference_seconds < 60:
                 await get_card.finish(MessageSegment.reply(event.message_id) + f'{60 - cd_time}秒后可再次更新!', at_sender=False)
     player_info, update_role_list = await get_starrail_info(url, uid, update_info=True, event=event)
-    await check_gold(event, coin=1, percent=1)
+    #await check_gold(event, coin=1, percent=1)
     await check_artifact(event, player_info, update_role_list, uid, group_save)
     await get_card.finish(MessageSegment.reply(event.message_id) + await draw_role_pic(uid, update_role_list, player_info))
 
