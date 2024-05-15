@@ -92,6 +92,6 @@ async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos
         if artifact_pk_info not in artifact_all:
             artifact_all.append(copy.deepcopy(artifact_pk_info))
         artifact_all = sorted(artifact_all, key=lambda x: float(x['评分']),
-                              reverse=True)[:16 if len(artifact_all) > 16 else len(artifact_all)]
+                              reverse=True)[:20 if len(artifact_all) > 20 else len(artifact_all)]
     return await draw_artifact_card(title, role_name, uid, artifact_all, ace2_num=0, ace_num=0,
                                     plugin_version=plugin_version)

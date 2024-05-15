@@ -251,7 +251,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             bg_draw.text((95 + 317 * offset_x, 998 + offset_y), f'{artifact_score}-{round(grade, 1)}', fill='#ffde6b', font=get_font(28, 'number.ttf'))
             level_mask = load_image(path=f'{other_path}/等级遮罩.png')
             bg.alpha_composite(level_mask.resize((98, 30)), (95 + 317 * offset_x, 1032 + offset_y))
-            if artifact['等级'] != 15:
+            if artifact['等级'] != 15 or not artifact_score:
                 no_list = '*'
             draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + 317 * offset_x, 95 + 317 * offset_x + 98, 1033 + offset_y, 'black', get_font(27, 'number.ttf'))
             bg_draw.text((94 + 317 * offset_x, 1069 + offset_y), artifact['主属性']['属性名'], fill='white', font=get_font(25))
