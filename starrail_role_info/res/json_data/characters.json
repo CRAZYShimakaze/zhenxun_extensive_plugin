@@ -229,7 +229,7 @@
         "tag": "kafka",
         "rarity": 5,
         "path": "Warlock",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 120,
         "ranks": [
             "100501",
@@ -341,7 +341,7 @@
         "tag": "arlan",
         "rarity": 4,
         "path": "Warrior",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 110,
         "ranks": [
             "100801",
@@ -621,7 +621,7 @@
         "tag": "serval",
         "rarity": 4,
         "path": "Mage",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 100,
         "ranks": [
             "110301",
@@ -1238,7 +1238,7 @@
         "tag": "tingyun",
         "rarity": 4,
         "path": "Shaman",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 130,
         "ranks": [
             "120201",
@@ -1350,7 +1350,7 @@
         "tag": "jingyuan",
         "rarity": 5,
         "path": "Mage",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 130,
         "ranks": [
             "120401",
@@ -1740,7 +1740,7 @@
         "tag": "bailu",
         "rarity": 5,
         "path": "Priest",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 100,
         "ranks": [
             "121101",
@@ -2443,7 +2443,7 @@
         "tag": "acheron",
         "rarity": 5,
         "path": "Warlock",
-        "element": "Lightning",
+        "element": "Thunder",
         "max_sp": 9,
         "ranks": [
             "130801",
@@ -2879,5 +2879,109 @@
         "guide_material": [
             "guide/Nwflower/character_material/8004.png"
         ]
+    },
+    "8005": {
+        "id": "8005",
+        "name": "虚数主",
+        "tag": "playerboy3",
+        "rarity": 5,
+        "path": "Shaman",
+        "element": "Imaginary",
+        "max_sp": 140,
+        "ranks": [
+            "800501",
+            "800502",
+            "800503",
+            "800504",
+            "800505",
+            "800506"
+        ],
+        "skills": [
+            "800501",
+            "800502",
+            "800503",
+            "800504",
+            "800506",
+            "800507"
+        ],
+        "skill_trees": [
+            "8005001",
+            "8005002",
+            "8005003",
+            "8005004",
+            "8005007",
+            "8005101",
+            "8005102",
+            "8005103",
+            "8005201",
+            "8005202",
+            "8005203",
+            "8005204",
+            "8005205",
+            "8005206",
+            "8005207",
+            "8005208",
+            "8005209",
+            "8005210"
+        ],
+        "icon": "icon/character/8005.png",
+        "preview": "image/character_preview/8005.png",
+        "portrait": "image/character_portrait/8005.png",
+        "guide_overview": [
+            "guide/Nwflower/character_overview/8005.png"
+        ],
+        "guide_material": []
+    },
+    "8006": {
+        "id": "8006",
+        "name": "虚数主",
+        "tag": "playergirl3",
+        "rarity": 5,
+        "path": "Shaman",
+        "element": "Imaginary",
+        "max_sp": 140,
+        "ranks": [
+            "800601",
+            "800602",
+            "800603",
+            "800604",
+            "800605",
+            "800606"
+        ],
+        "skills": [
+            "800601",
+            "800602",
+            "800603",
+            "800604",
+            "800606",
+            "800607"
+        ],
+        "skill_trees": [
+            "8006001",
+            "8006002",
+            "8006003",
+            "8006004",
+            "8006007",
+            "8006101",
+            "8006102",
+            "8006103",
+            "8006201",
+            "8006202",
+            "8006203",
+            "8006204",
+            "8006205",
+            "8006206",
+            "8006207",
+            "8006208",
+            "8006209",
+            "8006210"
+        ],
+        "icon": "icon/character/8006.png",
+        "preview": "image/character_preview/8006.png",
+        "portrait": "image/character_portrait/8006.png",
+        "guide_overview": [
+            "guide/Nwflower/character_overview/8006.png"
+        ],
+        "guide_material": []
     }
 }
