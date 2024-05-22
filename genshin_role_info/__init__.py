@@ -30,7 +30,7 @@ from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, group_info_path
 from .utils.image_utils import load_image, image_build
 
-#from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.auth_utils import check_gold
 
 __zx_plugin_name__ = "原神角色面板"
 __plugin_usage__ = """
@@ -224,7 +224,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
-    # await check_gold(event, coin=10, percent=1)
+    await check_gold(event, coin=10, percent=1)
     role_data = player_info.get_roles_info(role_name)
     for index, item in enumerate(role_data['圣遗物']):
         if item['部位'] == ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"][pos]:
@@ -250,7 +250,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         return
     url = enak_url.format(uid)
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
-    # await check_gold(event, coin=10, percent=1)
+    await check_gold(event, coin=10, percent=1)
     artifact_list = player_info.get_artifact_list(pos)
 
     if not artifact_list:
@@ -268,7 +268,7 @@ async def _(event: GroupMessageEvent):
     if not os.path.exists(f"{group_info_path}/{group_id}.json"):
         return await group_artifact_list.finish(MessageSegment.reply(event.message_id) + '未收录任何圣遗物信息,请先进行查询!')
     else:
-        # await check_gold(event, coin=1, percent=1)
+        await check_gold(event, coin=1, percent=1)
         group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
         img, _ = await draw_artifact_card(f'群圣遗物榜单', None, group_id, group_artifact_info, None, None, __plugin_version__, 1)
         await group_artifact_list.finish(MessageSegment.reply(event.message_id) + img)
@@ -284,7 +284,7 @@ async def _(event: MessageEvent):
         if not player_info.data['圣遗物榜单']:
             return await artifact_list.send(MessageSegment.reply(event.message_id) + "未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=False)
         roles_list = player_info.get_roles_list()
-        # await check_gold(event, coin=1, percent=1)
+        await check_gold(event, coin=1, percent=1)
         img, text = await draw_artifact_card(f'圣遗物榜单', None, uid, player_info.data['圣遗物榜单'], player_info.data['大毕业圣遗物'], player_info.data['小毕业圣遗物'],
                                              __plugin_version__)
         await artifact_list.finish(MessageSegment.reply(event.message_id) + img + text, at_sender=False)  # + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
@@ -412,7 +412,7 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
-    # await check_gold(event, coin=10, percent=1)
+    await check_gold(event, coin=10, percent=1)
     role_data = player_info.get_roles_info(role_name)
     img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
     msg = '' if at_user else check_role(role_name, event, img, score)
@@ -438,7 +438,7 @@ async def update(event, uid, group_save):
             if time_difference_seconds < 60:
                 await get_card.finish(MessageSegment.reply(event.message_id) + f'{60 - cd_time}秒后可再次更新!', at_sender=False)
     player_info, update_role_list = await get_enka_info(url, uid, update_info=True, event=event)
-    # await check_gold(event, coin=1, percent=1)
+    await check_gold(event, coin=1, percent=1)
     await check_artifact(event, player_info, update_role_list, uid, group_save)
     await get_card.finish(MessageSegment.reply(event.message_id) + await draw_role_pic(uid, update_role_list, player_info))
 
@@ -523,7 +523,7 @@ async def _check_update():
     bot = get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r"__plugin_version__ = (\d+\.\d+\.\d+)", str(version.text))
+        version = re.search(r'__plugin_version__ = "(\d+\.\d+\.\d+)"', str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return

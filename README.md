@@ -21,6 +21,14 @@
 
 第三方插件交流群：217496217
 
+## 使用方式
+
+1.下载仓库内plugin_utils文件夹和你想要的插件文件夹
+
+2.将两个文件夹放入`my_plugins`等对应扩展插件目录中
+
+3.重启机器人即可使用。
+
 ## 列表
 
 - [验车](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/whatslink)
