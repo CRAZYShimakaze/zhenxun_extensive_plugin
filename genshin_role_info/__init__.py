@@ -502,7 +502,7 @@ def check_group_artifact(event, player_info):
     save_json(group_artifact_info_20, f"{group_info_path}/{event.group_id}.json")
 
 
-def check_uid(uid: int):
+def check_uid(uid):
     return re.search(r'^[12589]\d{8}$', str(uid)) is not None
 
 

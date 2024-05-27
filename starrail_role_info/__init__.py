@@ -30,7 +30,6 @@ from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo
 from .utils.image_utils import load_image, image_build
 from ..plugin_utils.auth_utils import check_gold
 
-
 __zx_plugin_name__ = "星铁角色面板"
 __plugin_usage__ = """
 usage：
@@ -122,10 +121,7 @@ async def get_starrail_info(url, uid, update_info, event):
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
         for i in range(3):
             try:
-                req = await AsyncHttpx.get(
-                    url=url,
-                    follow_redirects=True,
-                )
+                req = await AsyncHttpx.get(url=url, follow_redirects=True, )
             except Exception:
                 await asyncio.sleep(1)
                 continue
@@ -480,7 +476,7 @@ def check_group_artifact(event, player_info):
     save_json(group_artifact_info_20, f"{group_info_path}/{event.group_id}.json")
 
 
-def check_uid(uid: int):
+def check_uid(uid):
     return re.search(r'^[12589]\d{8}$', str(uid)) is not None
 
 
