@@ -29,6 +29,10 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+**2024/6/10**[v4.0.2]
+
+1. 支持克洛琳德,赛索斯
+
 **2024/5/10**[v4.0.1]
 
 1. 更新版本检查逻辑

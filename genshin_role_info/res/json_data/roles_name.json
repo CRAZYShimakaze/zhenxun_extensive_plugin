@@ -54,7 +54,9 @@
     "北斗": "UI_Gacha_AvatarImg_Beidou",
     "多莉": "UI_Gacha_AvatarImg_Dori",
     "赛诺": "UI_Gacha_AvatarImg_Cyno",
-	
+    "赛索斯": "UI_Gacha_AvatarImg_Sethos",
+    "克洛琳德": "UI_Gacha_AvatarImg_Clorinde",
+
     "柯莱": "UI_Gacha_AvatarImg_Collei",
     "提纳里": "UI_Gacha_AvatarImg_Tighnari",
     "纳西妲": "UI_Gacha_AvatarImg_Nahida",
@@ -145,6 +147,8 @@
     "北斗": "UI_AvatarIcon_Side_Beidou",
     "多莉": "UI_AvatarIcon_Side_Dori",
     "赛诺": "UI_AvatarIcon_Side_Cyno",
+    "赛索斯": "UI_AvatarIcon_Side_Sethos",
+    "克洛琳德": "UI_AvatarIcon_Side_Clorinde",
 
     "柯莱": "UI_AvatarIcon_Side_Collei",
     "提纳里": "UI_AvatarIcon_Side_Tighnari",

@@ -276,15 +276,15 @@ async def _():
         json.dump(alias_remote, f, ensure_ascii=False, indent=2)
     # 更新缓存
     alias_file = await get_alias()
-    role_list = alias_file['roles']
-    weapon_list = alias_file['weapons']
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     if not update_list:
         return await update_info.send(f'所有推荐信息均为最新！')
     await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
 
 
 async def get_alias():
-    if not os.path.exists(alias_path):
+    if 1:#not os.path.exists(alias_path):
         await AsyncHttpx.download_file(get_raw() + alias_url, alias_path, follow_redirects=True)
     return json.load(open(alias_path, 'r', encoding='utf-8'))
 
