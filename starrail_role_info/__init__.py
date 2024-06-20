@@ -50,7 +50,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["星铁角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "遗器榜单", "群遗器榜单"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = "1.2.0"
+__plugin_version__ = "1.2.2"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
