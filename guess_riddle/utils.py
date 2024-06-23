@@ -78,7 +78,7 @@ async def load_font(name: str, fontsize: int) -> FreeTypeFont:
                 name)
             await AsyncHttpx.download_file(url, tff_path)
         except:
-            url = "https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{}".format(
+            url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{}".format(
                 name)
             await AsyncHttpx.download_file(url, tff_path)
     return ImageFont.truetype(str(tff_path), fontsize, encoding="utf-8")

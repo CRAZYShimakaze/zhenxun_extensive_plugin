@@ -113,6 +113,7 @@ async def get_msg_uid(event):
         await artifact_list.finish(MessageSegment.reply(event.message_id) + "请绑定星铁uid后再查询！")
     if not check_uid(uid):
         await artifact_list.finish(MessageSegment.reply(event.message_id) + f"绑定的uid{uid}不合法，请重新绑定!")
+    logger.info(f'UID={uid}')
     return uid
 
 
@@ -484,7 +485,7 @@ async def get_update_info():
     url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/README.md"
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
+        version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
         return ''

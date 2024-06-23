@@ -8,19 +8,19 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
-from configs.config import Config
-from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
+
+from configs.config import Config
+from configs.path_config import DATA_PATH
 from services import logger
 
 from utils.http_utils import AsyncHttpx
 from utils.message_builder import image
 from utils.utils import scheduler, get_bot
-
-# from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.auth_utils import check_gold
 
 driver: Driver = nonebot.get_driver()
 
@@ -41,27 +41,11 @@ __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析"
 __plugin_type__ = ("星铁相关",)
 __plugin_version__ = 0.5
 __plugin_author__ = "CRAZYSHIMAKAZE"
-__plugin_settings__ = {
-    "level": 5,
-    "default_status": True,
-    "limit_superuser": False,
-    "cmd": __plugin_cmd__
-}
-__plugin_cd_limit__ = {"rst": "正在查询中，请等待当前请求完成...", }
-Config.add_plugin_config(
-    "starrail_role_recommend",
-    "CHECK_UPDATE", True,
-    help_="定期自动检查更新",
-    default_value=True
-)
-Config.add_plugin_config(
-    "starrail_role_recommend",
-    "GITHUB_RAW",
-    "https://mirror.ghproxy.com/https://raw.githubusercontent.com",
-    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com",
-    default_value="https://mirror.ghproxy.com/https://raw.githubusercontent.com",
-    type=str,
-)
+__plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__}
+Config.add_plugin_config("starrail_role_recommend", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True)
+Config.add_plugin_config("starrail_role_recommend", "GITHUB_RAW", "https://mirror.ghproxy.com/https://raw.githubusercontent.com",
+    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com", default_value="https://mirror.ghproxy.com/https://raw.githubusercontent.com",
+    type=str, )
 # common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 # common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
 common_weapon_grade = on_regex("^光锥(推荐|适配|评级)$", priority=1, block=True)
@@ -74,7 +58,8 @@ role_guide = on_regex(r"(.*)攻略$", priority=15)
 starrail_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/starrail/"
-alias_url = src_url + "nickname.json"
+nick_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/res/json_data/"
+alias_url = nick_url + "nickname.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 starrail_role_guide = src_url + "role_guide/{}.png"
@@ -112,18 +97,15 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
     await get_img(starrail_role_guide, role, save_path, ignore_exist=False)
-    try:
-        #await check_gold(event, coin=50)
-        await role_guide.send(image(Path(save_path)))
-    except:
-        os.unlink(save_path)
+    await check_gold(event, coin=10, percent=1)
+    await role_guide.send(image(Path(save_path)))
 
 
 @common_weapon_grade.handle()
 async def _(event: MessageEvent):
     arg = '光锥推荐'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
-    #await check_gold(event, coin=10, percent=1)
+    await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_weapon_grade.send(image(Path(item)))
@@ -133,7 +115,7 @@ async def _(event: MessageEvent):
 async def _(event: MessageEvent):
     arg = '遗器推荐'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
-    #await check_gold(event, coin=1)
+    await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_artifact_guide.send(image(Path(item)))
@@ -143,7 +125,7 @@ async def _(event: MessageEvent):
 async def _(event: MessageEvent):
     arg = '角色配队'
     save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg']
-    #await check_gold(event, coin=1)
+    await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_abyss.send(image(Path(item)))
@@ -165,18 +147,12 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             return
         save_path = f'{WEAPON_INFO_PATH}/{role}.png'
         await get_img(starrail_weapon_info, role, save_path, ignore_exist=False)
-        try:
-            await starrail_info.send(image(Path(save_path)))
-        except:
-            os.unlink(save_path)
+        await starrail_info.send(image(Path(save_path)))
         return
     save_path = f'{ROLE_INFO_PATH}/{role}.png'
     await get_img(starrail_role_info, role, save_path, ignore_exist=False)
-    try:
-        #await check_gold(event, coin=50)
-        await starrail_info.send(image(Path(save_path)))
-    except:
-        os.unlink(save_path)
+    await check_gold(event, coin=10, percent=1)
+    await starrail_info.send(image(Path(save_path)))
 
 
 @break_material.handle()
@@ -190,15 +166,11 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
         return
     save_path = f'{ROLE_BREAK_PATH}/{role}.png'
     await get_img(starrail_role_break, role, save_path, ignore_exist=False)
-    try:
-        #await check_gold(event, coin=50)
-        await break_material.send(image(Path(save_path)))
-    except:
-        os.unlink(save_path)
+    await break_material.send(image(Path(save_path)))
 
 
 @update_info.handle()
-async def _():
+async def _update_info(is_cron=False):
     global alias_file, role_list, weapon_list
 
     async def check_md5(path, name, url, md5_list):
@@ -253,9 +225,16 @@ async def _():
         if await check_md5(save_path, item, starrail_weapon_info, weapon_info_md5):
             update_list.add(item)
 
-    if not update_list:
+    if not update_list and not is_cron:
         return await update_info.send(f'所有推荐信息均为最新！')
-    await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
+    if not update_list:
+        return
+    if not is_cron:
+        await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
+    else:
+        bot = get_bot()
+        for admin in bot.config.superusers:
+            await bot.send_private_msg(user_id=int(admin), message=f'已更新{",".join(update_list)}的推荐信息！')
 
 
 async def get_alias():
@@ -304,8 +283,7 @@ async def _check_update(is_cron=False):
     else:
         if not is_cron:
             modify_info = await get_update_info()
-            await check_update.send(
-                f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{modify_info}")
+            await check_update.send(f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{modify_info}")
 
 
 @driver.on_startup
@@ -315,5 +293,5 @@ async def _():
     role_list = alias_file['characters']
     weapon_list = alias_file['light_cones']
     if Config.get_config("starrail_role_recommend", "CHECK_UPDATE"):
-        scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59),
-                          id='starrail_role_recommend')
+        scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_recommend_check_update')
+    scheduler.add_job(_update_info, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_recommend_update_info')

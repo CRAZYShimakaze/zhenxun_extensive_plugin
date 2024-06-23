@@ -192,17 +192,18 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             bg.alpha_composite(lock, (530 + t2 * 84, 813 + 45))
 
         # 武器
-        weapon_bg = load_image(f'{other_path}/star{data["光锥"]["星级"]}.png', size=(150, 150))
-        bg.alpha_composite(weapon_bg, (91, 760))
-        weapon_icon = f'{weapon_path}/{data["光锥"]["图标"]}.png'
-        weapon_icon = await get_img(url=weapon_url.format(data["光锥"]["图标"]), size=(150, 150), save_path=weapon_icon, mode='RGBA')
-        bg.alpha_composite(weapon_icon, (91, 760))
-        bg_draw.text((268, 758), data['光锥']['名称'], fill='white', font=get_font(30, 'hywh.ttf'))
-        star = load_image(f'{other_path}/star.png')
-        for i in range(data['光锥']['星级']):
-            bg.alpha_composite(star, (267 + i * 30, 799))
-        draw_center_text(bg_draw, f'LV{data["光锥"]["等级"]}', 268, 268 + 98, 835, 'black', get_font(27, 'number.ttf'))
-        bg_draw.text((266, 869), f'叠影{data["光锥"]["精炼等级"]}阶', fill='white', font=get_font(30, 'hywh.ttf'))
+        if data.get('光锥',''):
+            weapon_bg = load_image(f'{other_path}/star{data["光锥"]["星级"]}.png', size=(150, 150))
+            bg.alpha_composite(weapon_bg, (91, 760))
+            weapon_icon = f'{weapon_path}/{data["光锥"]["图标"]}.png'
+            weapon_icon = await get_img(url=weapon_url.format(data["光锥"]["图标"]), size=(150, 150), save_path=weapon_icon, mode='RGBA')
+            bg.alpha_composite(weapon_icon, (91, 760))
+            bg_draw.text((268, 758), data['光锥']['名称'], fill='white', font=get_font(30, 'hywh.ttf'))
+            star = load_image(f'{other_path}/star.png')
+            for i in range(data['光锥']['星级']):
+                bg.alpha_composite(star, (267 + i * 30, 799))
+            draw_center_text(bg_draw, f'LV{data["光锥"]["等级"]}', 268, 268 + 98, 835, 'black', get_font(27, 'number.ttf'))
+            bg_draw.text((266, 869), f'叠影{data["光锥"]["精炼等级"]}阶', fill='white', font=get_font(30, 'hywh.ttf'))
     else:
         bg = Image.new('RGBA', (1080, 1920), (0, 0, 0, 0))
         bg_draw = ImageDraw.Draw(bg)

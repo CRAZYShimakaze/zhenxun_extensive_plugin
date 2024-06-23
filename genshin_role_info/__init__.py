@@ -53,13 +53,13 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.0.1"
+__plugin_version__ = "4.0.2"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
 Config.add_plugin_config("genshin_role_info", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True, )
 Config.add_plugin_config("genshin_role_info", "ALPHA", 83, help_="群榜单背景透明度", default_value=83, )
-enak_url = 'https://enka.network/api/uid/{}'
+enak_url = 'https://profile.microgg.cn/api/uid/{}'
 bind = on_regex(r"(原神绑定|绑定原神)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
 card_list = on_command("原神角色排行", priority=4, block=True)
@@ -122,6 +122,7 @@ async def get_msg_uid(event):
         await artifact_list.finish(MessageSegment.reply(event.message_id) + "请绑定uid后再查询！")
     if not check_uid(uid):
         await artifact_list.finish(MessageSegment.reply(event.message_id) + f"绑定的uid{uid}不合法，请重新绑定!")
+    logger.info(f'UID={uid}')
     return uid
 
 
@@ -167,6 +168,13 @@ async def check_artifact(event, player_info, roles_list, uid, group_save):
     player_info.data['圣遗物榜单'] = []
     player_info.data['大毕业圣遗物'] = 0
     player_info.data['小毕业圣遗物'] = 0
+    for i in range(5):
+        for item in player_info.data['圣遗物列表'][i]:
+            if '角色' not in item:
+                item['角色'] = ''
+            elif item['角色'] in roles_list:
+                item['角色'] = ''
+                # break
     for role_name in roles_list:
         role_data = player_info.get_roles_info(role_name)
         try:
@@ -510,7 +518,7 @@ async def get_update_info():
     url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
+        version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
         return ''
