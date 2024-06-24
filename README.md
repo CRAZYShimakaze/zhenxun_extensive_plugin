@@ -31,6 +31,7 @@
 
 ## 列表
 
+- [金币转账](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/gold_trans)
 - [验车](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/whatslink)
 - [星铁角色面板](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/starrail_role_info)
 - [星铁攻略](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/starrail_recommend)
