@@ -29,6 +29,11 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2024/6/26**[v4.0.3]
+
+1. 新增圣遗物套装推荐
+
 **2024/6/10**[v4.0.2]
 
 1. 支持克洛琳德,赛索斯

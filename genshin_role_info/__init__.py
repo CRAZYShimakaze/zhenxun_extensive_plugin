@@ -12,9 +12,10 @@ from typing import Tuple
 
 import nonebot
 from configs.config import Config
-from nonebot import Driver
+from nonebot import Driver, on_message
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent, Bot, MessageSegment
+from nonebot.adapters.onebot.v11.permission import PRIVATE
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
 from services.log import logger
@@ -24,7 +25,7 @@ from utils.http_utils import AsyncHttpx
 from utils.message_builder import at
 from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_artifact_card import draw_artifact_card
-from .data_source.draw_recommend_card import gen_artifact_adapt, gen_artifact_recommend
+from .data_source.draw_recommend_card import gen_artifact_adapt, gen_artifact_recommend, gen_suit_recommend
 from .data_source.draw_role_card import draw_role_card
 from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, group_info_path
@@ -44,6 +45,8 @@ usage：
         圣遗物导入
         XX(花羽沙杯冠)适配
         XX(花羽沙杯冠)推荐
+        XX(乐团/魔女/...)套推荐
+        XX(乐团/魔女/...)独立套推荐
         原神角色排行
         最强XX (例:最强甘雨)
         最菜XX
@@ -53,13 +56,13 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.0.2"
+__plugin_version__ = "4.0.3"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
 Config.add_plugin_config("genshin_role_info", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True, )
 Config.add_plugin_config("genshin_role_info", "ALPHA", 83, help_="群榜单背景透明度", default_value=83, )
-enak_url = 'https://profile.microgg.cn/api/uid/{}'
+enka_url = 'https://profile.microgg.cn/api/uid/{}'
 bind = on_regex(r"(原神绑定|绑定原神)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
 card_list = on_command("原神角色排行", priority=4, block=True)
@@ -70,12 +73,13 @@ get_card = on_regex(r"(.*)面板(.*)", priority=4)
 group_best = on_regex(r"^(最强|群最强)(.*)", priority=4)
 group_worst = on_regex(r"^(最菜|群最菜)(.*)", priority=4)
 artifact_adapt = on_regex("(.*?)([花羽沙杯冠])适配", priority=4)
-artifact_recommend = on_regex("(.*?)([花羽沙杯冠])推荐", priority=4)
+artifact_recommend = on_regex("(.*?)([花羽沙杯冠套])推荐", priority=4)
 artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
 group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=False)
 check_update = on_command("检查原神面板更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(f'{json_path}/alias.json')
+role_name_list = load_json(f'{json_path}/roles_name.json')
 name_list = alias_file['roles']
 
 
@@ -142,7 +146,20 @@ async def get_enka_info(url, uid, update_info, event):
                 print(req.status_code)
                 await asyncio.sleep(0.2)
         else:
-            return await get_card.finish(MessageSegment.reply(event.message_id) + "服务器维护中,请稍后再试...")
+            hint = "未知问题..."
+            if req.status_code == 400:
+                hint = "UID 格式错误..."
+            elif req.status_code == 404:
+                hint = "玩家不存在（MHY 服务器说的）..."
+            elif req.status_code == 424:
+                hint = "游戏维护中 / 游戏更新后一切都崩溃了..."
+            elif req.status_code == 429:
+                hint = "请求频率限制（被我的或者MHY的服务器）..."
+            elif req.status_code == 500:
+                hint = "服务器错误..."
+            elif req.status_code == 503:
+                hint = "我搞砸了..."
+            return await get_card.finish(MessageSegment.reply(event.message_id) + hint)
         data = req.json()
         player_info = PlayerInfo(uid)
         player_info.set_player(data['playerInfo'])
@@ -164,10 +181,8 @@ async def get_enka_info(url, uid, update_info, event):
 
 
 async def check_artifact(event, player_info, roles_list, uid, group_save):
-    roles_list = player_info.get_roles_list()
-    player_info.data['圣遗物榜单'] = []
-    player_info.data['大毕业圣遗物'] = 0
-    player_info.data['小毕业圣遗物'] = 0
+    artifact_all = player_info.data['圣遗物列表']
+    pos_name = ['生之花', '死之羽', '时之沙', '空之杯', '理之冠']
     for i in range(5):
         for item in player_info.data['圣遗物列表'][i]:
             if '角色' not in item:
@@ -175,6 +190,24 @@ async def check_artifact(event, player_info, roles_list, uid, group_save):
             elif item['角色'] in roles_list:
                 item['角色'] = ''
                 # break
+        for role_name in roles_list:
+            role_data = player_info.get_roles_info(role_name)
+            artifact_list = [{} for _ in range(5)]
+            for j in range(len(role_data['圣遗物'])):
+                artifact_list[pos_name.index(role_data['圣遗物'][j]['部位'])] = role_data['圣遗物'][j]
+            artifact_copy = copy.deepcopy(artifact_list[i])
+            if artifact_copy.get('等级', 0) == 20:
+                for name_all in list(role_name_list["Name"].keys()) + ['']:
+                    artifact_copy['角色'] = name_all
+                    if artifact_copy in artifact_all[i]:
+                        artifact_all[i].remove(artifact_copy)
+                artifact_copy['角色'] = role_name
+                artifact_all[i].append(artifact_copy)
+    roles_list = player_info.get_roles_list()
+    player_info.data['圣遗物榜单'] = []
+    player_info.data['大毕业圣遗物'] = 0
+    player_info.data['小毕业圣遗物'] = 0
+
     for role_name in roles_list:
         role_data = player_info.get_roles_info(role_name)
         try:
@@ -228,7 +261,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role_name = get_role_name(role)
     if not role_name:
         return
-    url = enak_url.format(uid)
+    url = enka_url.format(uid)
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
@@ -249,24 +282,51 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
 async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     msg = args[0].strip(), args[1].strip()
     uid = await get_msg_uid(event)
-    if msg[1] not in ["花", "羽", "沙", "杯", "冠"]:
-        return await artifact_recommend.send("请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True)
-    role = msg[0]
-    pos = ["花", "羽", "沙", "杯", "冠"].index(msg[1])
+    main_prop = ['爆伤', '暴击', '精通', '生命', '防御', '攻击', '火伤', '冰伤', '雷伤', '物伤', '风伤', '水伤', '岩伤', '草伤', '治疗', '充能']
+    suit_list = ['冰风', '角斗', '余响', '磐岩', '饰金', '流星', '辰砂', '宗室', '剧团', '逐影', '沉沦', '花海', '绝缘', '谐律', '乐园', '海染', '遐思', '水仙', '少女',
+                 '追忆', '华馆', '染血', '回声', '渡火', '昔时', '平息', '深林', '苍白', '沙上', '如雷', '千岩', '魔女', '乐团', '翠绿']
+    element = ''
+    suit_name = ''
+    is_suit = False
+    occupy = False
+    info = msg[0]
+    for item in main_prop:
+        if item in info:
+            element = item
+            info = info.replace(item, '')
+            break
+    for item in suit_list:
+        if item in info:
+            suit_name = item
+            info = info.replace(item, '')
+            break
+    if '独立' in info:
+        info = info.replace('独立', '')
+        occupy = True
+    role = info
+    pos = ["花", "羽", "沙", "杯", "冠", "套"].index(msg[1])
+    if pos == 5:
+        is_suit = True
     role_name = get_role_name(role)
     if not role_name:
         return
-    url = enak_url.format(uid)
+    url = enka_url.format(uid)
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
     await check_gold(event, coin=10, percent=1)
-    artifact_list = player_info.get_artifact_list(pos)
-
-    if not artifact_list:
-        return await artifact_recommend.send(MessageSegment.reply(event.message_id) + f"{pos}号位没有圣遗物缓存！请先执行'更新面板'指令！", at_sender=False)
+    if not is_suit:
+        artifact_list = player_info.get_artifact_list(pos)
+        if not artifact_list:
+            return await artifact_recommend.send(MessageSegment.reply(event.message_id) + f"{pos}号位没有圣遗物缓存！请先执行'更新面板'指令！", at_sender=False)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     role_data = player_info.get_roles_info(role_name)
-    img, _ = await gen_artifact_recommend(f'{role_name}圣遗物推荐({msg[1]})', role_data, artifact_list, uid, role_name, pos, __plugin_version__)
+    if not is_suit:
+        img, _ = await gen_artifact_recommend(f'{role_name}{suit_name}{element}{msg[1]}推荐', role_data, artifact_list, uid, role_name, pos, element, suit_name,
+                                              __plugin_version__)
+    else:
+        img = await gen_suit_recommend(f'{suit_name}{element}套推荐', role_data, player_info, uid, role_name, suit_name, occupy, __plugin_version__)
+    if not img:
+        await artifact_recommend.finish(MessageSegment.reply(event.message_id) + f"未找到符合条件的圣遗物推荐!")
     await artifact_recommend.finish(MessageSegment.reply(event.message_id) + img + f"注:仅根据当前缓存圣遗物进行推荐,发送'圣遗物导入'可导入背包内所有圣遗物.")
 
 
@@ -380,7 +440,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def get_char(uid, event):
-    url = enak_url.format(uid)
+    url = enka_url.format(uid)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
             req = await AsyncHttpx.get(url=url, follow_redirects=True)
@@ -416,7 +476,7 @@ async def get_char(uid, event):
 
 
 async def gen(event: MessageEvent, uid, role_name, at_user):
-    url = enak_url.format(uid)
+    url = enka_url.format(uid)
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
@@ -429,7 +489,7 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
 
 
 async def update(event, uid, group_save):
-    url = enak_url.format(uid)
+    url = enka_url.format(uid)
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         data = load_json(f'{player_info_path}/{uid}.json')
         if '玩家信息' in data.keys():

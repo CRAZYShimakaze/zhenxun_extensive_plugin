@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 
 from .damage_cal import get_role_dmg
 from ..utils.artifact_utils import get_effective, check_effective, get_artifact_suit, get_miao_score, get_artifact_score
-from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, skill_path, regoin_path, outline_path, talent_path, weapon_path, reli_path
+from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, skill_path, regoin_path, outline_path, talent_path, weapon_path, reli_path, avatar_path
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img
 from ..utils.json_utils import load_json
 
@@ -75,7 +75,7 @@ def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
     return bg
 
 
-async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
+async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title=None):
     artifact_pk = player_info.data['圣遗物榜单']
     artifact_all = player_info.data['圣遗物列表']
     if not only_cal:
@@ -118,7 +118,10 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             region_icon = load_image(path=f'{regoin_path}/{role_data[data["名称"]]["region"]}.png', size=(130, 130))
             bg.alpha_composite(region_icon, (0, 4))
         bg_draw = ImageDraw.Draw(bg)
-        bg_draw.text((131, 100), f"UID{uid}", fill='white', font=get_font(48, 'number.ttf'))
+        if not title:
+            bg_draw.text((131, 100), f"UID{uid}", fill='white', font=get_font(48, 'number.ttf'))
+        else:
+            bg_draw.text((131, 80), title, fill='white', font=get_font(72, '优设标题黑.ttf'))
         bg_draw.text((134, 150), data['名称'], fill='white', font=get_font(72, '优设标题黑.ttf'))
 
         level_mask = load_image(path=f'{other_path}/等级遮罩.png')
@@ -218,26 +221,17 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         artifact = artifact_list[i]
         if not artifact:
             continue
-        artifact_copy = copy.deepcopy(artifact)
-
-        if artifact_copy['等级'] == 20:
-            artifact_copy['角色'] = ''
-            if artifact_copy not in artifact_all[i]:
-                artifact_copy['角色'] = data["名称"]
-                if artifact_copy not in artifact_all[i]:
-                    artifact_all[i].append(artifact_copy)
-            else:
-                artifact_all[i].remove(artifact_copy)
-                artifact_copy['角色'] = data["名称"]
-                artifact_all[i].append(artifact_copy)
+        
         artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
         i = i - 2 if i > 1 else i
-        player_info.data['大毕业圣遗物'] = player_info.data['大毕业圣遗物'] + 1 if artifact_score == 'ACE*' else player_info.data['大毕业圣遗物']
-        player_info.data['小毕业圣遗物'] = player_info.data['小毕业圣遗物'] + 1 if artifact_score == 'ACE' else player_info.data['小毕业圣遗物']
+        if not title:
+            player_info.data['大毕业圣遗物'] = player_info.data['大毕业圣遗物'] + 1 if artifact_score == 'ACE*' else player_info.data['大毕业圣遗物']
+            player_info.data['小毕业圣遗物'] = player_info.data['小毕业圣遗物'] + 1 if artifact_score == 'ACE' else player_info.data['小毕业圣遗物']
 
         artifact_pk_info['星级'] = artifact["星级"]
         artifact_pk_info['图标'] = artifact["图标"]
         artifact_pk_info['名称'] = artifact['名称']
+        artifact_pk_info['所属套装'] = artifact['所属套装']
         artifact_pk_info['评分'] = grade
         artifact_pk_info['评级'] = artifact_score
         artifact_pk_info['等级'] = artifact['等级']
@@ -264,6 +258,18 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}%", fill='white', font=get_font(48, 'number.ttf'))
             else:
                 bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}", fill='white', font=get_font(48, 'number.ttf'))
+
+            if title and '角色' in artifact and artifact.get("角色", ''):
+                avatar_name = role_name["Side_Name"][artifact["角色"]]
+                avatar_icon = f'{avatar_path}/{avatar_name}.png'
+                avatar_icon = await get_img(
+                    url=artifact_url.format(
+                        avatar_name),
+                    size=(100, 100),
+                    save_path=avatar_icon,
+                    mode='RGBA')
+                bg.alpha_composite(avatar_icon, (270 + offset_x + 317 * i + 30, 1002 + offset_y + 30))
+
         for j in range(len(artifact['词条'])):
             text = artifact['词条'][j]['属性名'].replace('百分比', '')
             up_num = ''
@@ -279,11 +285,11 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 num = '+' + str(artifact['词条'][j]['属性值'])
             artifact_pk_info['副属性'].append({'属性名': text, '属性值': num, '强化次数': up_num, '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf'})
             draw_right_text(bg_draw, num, 362 + offset_x + 317 * i, 1163 + 50 * j + offset_y, fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25, 'number.ttf'))
-        if artifact_pk_info not in artifact_pk:
+        if artifact_pk_info not in artifact_pk and (not title):
             artifact_pk.append(copy.deepcopy(artifact_pk_info))
-
-    player_info.data['圣遗物榜单'] = sorted(player_info.data['圣遗物榜单'], key=lambda x: float(x['评分']), reverse=True)[:20]
-    data['评分'] = total_all
+    if not title:
+        player_info.data['圣遗物榜单'] = sorted(player_info.data['圣遗物榜单'], key=lambda x: float(x['评分']), reverse=True)[:20]
+        data['评分'] = total_all
     if not only_cal:
         # 圣遗物评分
         if total_cnt and total_all <= 66 * total_cnt:
@@ -364,5 +370,5 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             weight_name = weight_name.split('-')[-1]
         draw_center_text(bg_draw, f'{weight_name}:{effect}', 0, 1080, bg.size[1] - 85, '#afafaf', get_font(30))
         date = re.sub("\d{4}-", "", data["更新时间"])
-        draw_center_text(bg_draw, f'Updated on {date[:-3]} | v{plugin_version} | Powered by Enka', 0, 1080, bg.size[1] - 50, '#ffffff', get_font(36, '优设标题黑.ttf'))
+        draw_center_text(bg_draw, f'Updated on {date[:-3]} | v{plugin_version}', 0, 1080, bg.size[1] - 50, '#ffffff', get_font(36, '优设标题黑.ttf'))
     return bg, str(total_all) + no_list if no_list == '*' else total_all

@@ -185,10 +185,12 @@ async def _(event: MessageEvent):
 @role_guide.handle()
 async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
-    if not get_role_name(role):
+    role = get_role_name(role)
+    if not role:
         return
     save_path = f'{ROLE_GUIDE_PATH}/{role}.png'
     await get_img(genshin_role_guide, role, save_path, ignore_exist=False)
+    await check_gold(event, coin=10, percent=1)
     await role_guide.send(image(Path(save_path)))
 
 

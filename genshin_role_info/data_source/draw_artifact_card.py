@@ -152,7 +152,7 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
                      0, wid, 5, '#ffffff',
                      get_font(96, '优设标题黑.ttf'))
     draw_center_text(bg_draw,
-                     f'{"group" if is_group else "uid"}:{uid} | v{plugin_version} | Powered by Enka.Network',
+                     f'{"group" if is_group else "uid"}:{uid} | v{plugin_version}',
                      0, wid, bg.size[1] - 70, '#ffffff',
                      get_font(46, '优设标题黑.ttf'))
     if is_group:
