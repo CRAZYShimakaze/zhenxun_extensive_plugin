@@ -49,9 +49,7 @@ __plugin_settings__ = {
     "limit_superuser": False,
     "cmd": __plugin_cmd__,
 }
-__plugin_cd_limit__ = {
-    "rst": "正在查询中，请等待当前请求完成...",
-}
+
 Config.add_plugin_config(
     "genshin_role_recommend",
     "CHECK_UPDATE",
@@ -199,7 +197,7 @@ async def _(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     name = args[0].strip()
     role = get_role_name(name)
     if not role:
-        weapon = get_role_name(name)
+        weapon = get_weapon_name(name)
         if not weapon:
             return
         else:

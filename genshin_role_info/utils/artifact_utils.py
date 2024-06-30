@@ -248,6 +248,9 @@ def get_effective(data):
                     and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
                     and data['属性']['基础生命'] + data['属性']['额外生命'] > 40000:
                 role_name = '迪希雅-血牛'
+        elif role_name == '枫原万叶':
+            if len(data['命座']) == 6:
+                role_name = '枫原万叶-满命'
         if '-' in role_name:
             return role_score.get(role_name), role_name
         elif role_name in role_score:
