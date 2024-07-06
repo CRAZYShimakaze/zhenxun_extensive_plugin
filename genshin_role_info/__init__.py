@@ -133,6 +133,7 @@ async def get_msg_uid(event):
 async def get_enka_info(url, uid, update_info, event):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
+        req = 0
         for i in range(3):
             try:
                 req = await AsyncHttpx.get(url=url, follow_redirects=True, )
@@ -267,6 +268,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     await check_role_avaliable(role_name, roles_list, event)
     await check_gold(event, coin=10, percent=1)
     role_data = player_info.get_roles_info(role_name)
+    pos_list = 0
     for index, item in enumerate(role_data['圣遗物']):
         if item['部位'] == ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"][pos]:
             pos_list = index
@@ -313,15 +315,16 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     url = enka_url.format(uid)
     player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
     await check_gold(event, coin=10, percent=1)
+    artifact_pos_list = []
     if not is_suit:
-        artifact_list = player_info.get_artifact_list(pos)
+        artifact_pos_list = player_info.get_artifact_list(pos)
         if not artifact_list:
             return await artifact_recommend.send(MessageSegment.reply(event.message_id) + f"{pos}号位没有圣遗物缓存！请先执行'更新面板'指令！", at_sender=False)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     role_data = player_info.get_roles_info(role_name)
     if not is_suit:
-        img, _ = await gen_artifact_recommend(f'{role_name}{suit_name}{element}{msg[1]}推荐', role_data, artifact_list, uid, role_name, pos, element, suit_name,
+        img, _ = await gen_artifact_recommend(f'{role_name}{suit_name}{element}{msg[1]}推荐', role_data, artifact_pos_list, uid, role_name, pos, element, suit_name,
                                               __plugin_version__)
     else:
         img = await gen_suit_recommend(f'{suit_name}{element}套推荐', role_data, player_info, uid, role_name, suit_name, occupy, __plugin_version__)
