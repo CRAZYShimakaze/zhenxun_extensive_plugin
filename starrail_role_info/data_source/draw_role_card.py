@@ -403,6 +403,6 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
     else:
         weight_name = weight_name[-2:]
     draw_center_text(bg_draw, f'{weight_name}:{effect}', 0, 1080, bg.size[1] - 85, '#afafaf', get_font(30))
-    date = re.sub("\d{4}-", "", data["更新时间"])
+    date = data["更新时间"]# re.sub("\d{4}-", "", data["更新时间"])
     draw_center_text(bg_draw, f'Updated on {date[:-3]} | v{plugin_version}', 0, 1080, bg.size[1] - 50, '#ffffff', get_font(36, '优设标题黑.ttf'))
     return bg, str(total_all) + no_list if no_list == '*' else total_all

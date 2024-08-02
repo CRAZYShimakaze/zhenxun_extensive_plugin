@@ -58,7 +58,7 @@ role_score = role_tmp
 
 class PlayerInfo:
 
-    def __init__(self, uid: int | str):
+    def __init__(self, uid: [int, str]):
         self.path = f'{player_info_path}/{uid}.json'
         self.data = load_json(path=self.path)
         self.player_info = self.data['玩家信息'] if '玩家信息' in self.data else {}
