@@ -251,6 +251,9 @@ def get_effective(data):
         elif role_name == '枫原万叶':
             if len(data['命座']) == 6:
                 role_name = '枫原万叶-满命'
+        elif role_name == '妮露':
+            if len(data['命座']) == 6:
+                role_name = '妮露-满命'
         if '-' in role_name:
             return role_score.get(role_name), role_name
         elif role_name in role_score:

@@ -119,7 +119,7 @@ async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos
     for artifact in artifact_list:
         if convert['main_prop'].get(element, '') not in artifact['主属性']['属性名']:
             continue
-        if convert['suit_name'].get(suit, '') not in artifact['所属套装']:
+        if suit not in artifact['所属套装']:
             continue
         artifact_pk_info = {}
         if ori_artifact == artifact:
@@ -208,7 +208,7 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
             if occupy and artifact['角色'] not in ['', role_name]:
                 continue
             if grade >= best_grade_score or grade >= best_grade_same_score:
-                if grade >= best_grade_same_score and convert['suit_name'].get(suit, '') in artifact['所属套装']:
+                if grade >= best_grade_same_score and suit in artifact['所属套装']:
                     best_grade_same_score = grade
                     best_grade_same = True
                 if grade >= best_grade_score:

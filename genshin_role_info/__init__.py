@@ -56,7 +56,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.0.3"
+__plugin_version__ = "4.0.4"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -148,17 +148,21 @@ async def get_enka_info(url, uid, update_info, event):
                 await asyncio.sleep(0.2)
         else:
             hint = "未知问题..."
-            if req.status_code == 400:
+            try:
+                status_code = req.status_code
+            except:
+                return await get_card.finish(MessageSegment.reply(event.message_id) + hint)
+            if status_code == 400:
                 hint = "UID 格式错误..."
-            elif req.status_code == 404:
+            elif status_code == 404:
                 hint = "玩家不存在（MHY 服务器说的）..."
-            elif req.status_code == 424:
+            elif status_code == 424:
                 hint = "游戏维护中 / 游戏更新后一切都崩溃了..."
-            elif req.status_code == 429:
+            elif status_code == 429:
                 hint = "请求频率限制（被我的或者MHY的服务器）..."
-            elif req.status_code == 500:
+            elif status_code == 500:
                 hint = "服务器错误..."
-            elif req.status_code == 503:
+            elif status_code == 503:
                 hint = "我搞砸了..."
             return await get_card.finish(MessageSegment.reply(event.message_id) + hint)
         data = req.json()
@@ -285,8 +289,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     msg = args[0].strip(), args[1].strip()
     uid = await get_msg_uid(event)
     main_prop = ['爆伤', '暴击', '精通', '生命', '防御', '攻击', '火伤', '冰伤', '雷伤', '物伤', '风伤', '水伤', '岩伤', '草伤', '治疗', '充能']
-    suit_list = ['冰风', '角斗', '余响', '磐岩', '饰金', '流星', '辰砂', '宗室', '剧团', '逐影', '沉沦', '花海', '绝缘', '谐律', '乐园', '海染', '遐思', '水仙', '少女',
-                 '追忆', '华馆', '染血', '回声', '渡火', '昔时', '平息', '深林', '苍白', '沙上', '如雷', '千岩', '魔女', '乐团', '翠绿']
+    suit_list = list(artifact_info.get('Info').keys())
     element = ''
     suit_name = ''
     is_suit = False
@@ -297,14 +300,14 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
             element = item
             info = info.replace(item, '')
             break
-    for item in suit_list:
-        if item in info:
-            suit_name = item
-            info = info.replace(item, '')
-            break
     if '独立' in info:
         info = info.replace('独立', '')
         occupy = True
+    for item in suit_list:
+        if item[:2] in info:
+            suit_name = item
+            info = info.replace(item[:2], '')
+            break
     role = info
     pos = ["花", "羽", "沙", "杯", "冠", "套"].index(msg[1])
     if pos == 5:
