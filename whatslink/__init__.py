@@ -24,7 +24,7 @@ usage：
 """.strip()
 __plugin_des__ = "搜索关键字并获取预览图"
 __plugin_cmd__ = ["搜车", "验车"]
-__plugin_version__ = 0.2
+__plugin_version__ = 0.3
 __plugin_type__ = ("一些工具",)
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": ["搜车", "验车"], }
@@ -125,16 +125,15 @@ async def get_preview(event, link, title=False):
             for item in screenshots:
                 await asyncio.sleep(1)
                 out_img = ""
-                for i in range(2):
-                    await AsyncHttpx.download_file(proxy + item["screenshot"], save_path, follow_redirects=True, )
-                    try:
-                        ori_image = Image.open(save_path)
-                        ori_image = ori_image.resize((w, h))
-                        new_image.paste(ori_image, (0, y_offset))
-                        y_offset += h
-                        break
-                    except:
-                        await AsyncHttpx.download_file(proxy + item["screenshot"], save_path, follow_redirects=True, )
+                await AsyncHttpx.download_file(proxy + item["screenshot"], save_path, follow_redirects=True, )
+                try:
+                    ori_image = Image.open(save_path)
+                    ori_image = ori_image.resize((w, h))
+                    new_image.paste(ori_image, (0, y_offset))
+                    y_offset += h
+                    break
+                except:
+                    continue
                 if len(screenshots_list) >= 6:
                     break
             os.unlink(save_path)
