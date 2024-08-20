@@ -30,7 +30,6 @@ from .data_source.draw_role_card import draw_role_card
 from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, group_info_path
 from .utils.image_utils import load_image, image_build
-
 from ..plugin_utils.auth_utils import check_gold
 
 __zx_plugin_name__ = "原神角色面板"
@@ -80,6 +79,7 @@ reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=
 check_update = on_command("检查原神面板更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(f'{json_path}/alias.json')
 role_name_list = load_json(f'{json_path}/roles_name.json')
+artifact_info = load_json(f'{json_path}/artifact.json')
 name_list = alias_file['roles']
 
 
