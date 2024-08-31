@@ -55,13 +55,16 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.0.4"
+__plugin_version__ = "4.0.5"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
 Config.add_plugin_config("genshin_role_info", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True, )
 Config.add_plugin_config("genshin_role_info", "ALPHA", 83, help_="群榜单背景透明度", default_value=83, )
-enka_url = 'https://profile.microgg.cn/api/uid/{}'
+enka_url = 'https://enka.network/api/uid/{}'
+microgg_url = 'https://profile.microgg.cn/api/uid/{}'
+hutao_url = 'https://enka-api.hut.ao/{}'
+api_url = [hutao_url, microgg_url, enka_url]
 bind = on_regex(r"(原神绑定|绑定原神)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
 card_list = on_command("原神角色排行", priority=4, block=True)
@@ -130,22 +133,21 @@ async def get_msg_uid(event):
     return uid
 
 
-async def get_enka_info(url, uid, update_info, event):
+async def get_enka_info(uid, update_info, event):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
         req = 0
         for i in range(3):
             try:
-                req = await AsyncHttpx.get(url=url, follow_redirects=True, )
+                logger.info(f"请求{api_url[i].format(uid)}...")
+                req = await AsyncHttpx.get(url=api_url[i].format(uid), follow_redirects=True, )
             except Exception as e:
-                await asyncio.sleep(0.2)
                 print(e)
                 continue
             if req.status_code == 200:
                 break
             else:
                 print(req.status_code)
-                await asyncio.sleep(0.2)
         else:
             hint = "未知问题..."
             try:
@@ -266,8 +268,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role_name = get_role_name(role)
     if not role_name:
         return
-    url = enka_url.format(uid)
-    player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
+    player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     await check_gold(event, coin=10, percent=1)
@@ -315,8 +316,7 @@ async def test(event: MessageEvent, args: Tuple[str, ...] = RegexGroup()):
     role_name = get_role_name(role)
     if not role_name:
         return
-    url = enka_url.format(uid)
-    player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
+    player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     await check_gold(event, coin=10, percent=1)
     artifact_pos_list = []
     if not is_suit:
@@ -482,8 +482,7 @@ async def get_char(uid, event):
 
 
 async def gen(event: MessageEvent, uid, role_name, at_user):
-    url = enka_url.format(uid)
-    player_info, _ = await get_enka_info(url, uid, update_info=False, event=event)
+    player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     await check_gold(event, coin=10, percent=1)
@@ -495,7 +494,6 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
 
 
 async def update(event, uid, group_save):
-    url = enka_url.format(uid)
     if os.path.exists(f'{player_info_path}/{uid}.json'):
         data = load_json(f'{player_info_path}/{uid}.json')
         if '玩家信息' in data.keys():
@@ -511,7 +509,7 @@ async def update(event, uid, group_save):
             cd_time = int(time.time() - mod_time)
             if time_difference_seconds < 60:
                 await get_card.finish(MessageSegment.reply(event.message_id) + f'{60 - cd_time}秒后可再次更新!', at_sender=False)
-    player_info, update_role_list = await get_enka_info(url, uid, update_info=True, event=event)
+    player_info, update_role_list = await get_enka_info(uid, update_info=True, event=event)
     await check_gold(event, coin=1, percent=1)
     await check_artifact(event, player_info, update_role_list, uid, group_save)
     await get_card.finish(MessageSegment.reply(event.message_id) + await draw_role_pic(uid, update_role_list, player_info))

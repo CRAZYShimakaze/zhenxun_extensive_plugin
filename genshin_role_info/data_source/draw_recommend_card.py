@@ -250,6 +250,12 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
     player_info.roles[role_name]['属性']['元素精通'] += prop_diff['元素精通']
     player_info.roles[role_name]['属性']['元素充能效率'] += prop_diff['元素充能效率'] / 100
     player_info.roles[role_name]['属性']['治疗加成'] += prop_diff['治疗加成'] / 100
+
+    player_info.roles[role_name]['属性']['暴击率'] = max(0, player_info.roles[role_name]['属性']['暴击率'])
+    player_info.roles[role_name]['属性']['暴击伤害'] = max(0, player_info.roles[role_name]['属性']['暴击伤害'])
+    player_info.roles[role_name]['属性']['元素精通'] = max(0, player_info.roles[role_name]['属性']['元素精通'])
+    player_info.roles[role_name]['属性']['元素充能效率'] = max(0, player_info.roles[role_name]['属性']['元素充能效率'])
+    player_info.roles[role_name]['属性']['治疗加成'] = max(0, player_info.roles[role_name]['属性']['治疗加成'])
     if any([element_before, element_after]):
         player_info.roles[role_name]['属性']['伤害加成'][ele_list.index(element_before or element_after)] = prop_diff['元素伤害加成'] / 100
     img, _ = await draw_role_card(uid, data, player_info, plugin_version, False, title)

@@ -25,7 +25,9 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
     top_name = 1
     role_list = list(role_dict.keys()) if isinstance(role_dict, dict) else role_dict
     nickname = player_info.get_player_info()['昵称']
-    row_num = 4 + (len(role_list) + 3) // 12
+
+    # row_num = 4 + (len(role_list) + 3) // 12
+    row_num = 6 + (len(role_list) + 3) // 16
 
     bg = Image.new('RGBA',
                    ((56 + 187 * row_num) * multiple,
@@ -77,9 +79,9 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
         card_bg_draw = ImageDraw.Draw(card_bg)
 
         # 角色图
-        role_bg = f"{avatar_path}/{role_name['Side_Name'][role].replace('_Side', '')}.png"
+        role_bg = f"{avatar_path}/{('UI_AvatarIcon_Side_' + role_name['Name'][role]).replace('_Side', '')}.png"
         role_bg = await get_img(url=role_url.format(
-            role_name['Side_Name'][role].replace('_Side', '')),
+            ('UI_AvatarIcon_Side_' + role_name['Name'][role]).replace('_Side', '')),
             save_path=role_bg,
             mode='RGBA')
 

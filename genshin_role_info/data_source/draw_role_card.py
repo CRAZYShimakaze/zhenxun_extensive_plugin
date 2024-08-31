@@ -98,7 +98,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             bg.alpha_composite(bg_card, (0, 0))
         # 立绘
         role_pic = f'{char_pic_path}/{data["名称"]}.png'
-        role_pic = await get_img(url=role_url.format(role_name["Name"][data["名称"]]), save_path=role_pic, mode='RGBA')
+        role_pic = await get_img(url=role_url.format('UI_Gacha_AvatarImg_' + role_name["Name"][data["名称"]]), save_path=role_pic, mode='RGBA')
         new_h = 872
         new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
         role_pic = role_pic.resize((new_w, new_h), Image.ANTIALIAS)
@@ -260,7 +260,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
                 bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}", fill='white', font=get_font(48, 'number.ttf'))
 
             if title and '角色' in artifact and artifact.get("角色", ''):
-                avatar_name = role_name["Side_Name"][artifact["角色"]]
+                avatar_name = 'UI_AvatarIcon_Side_' + role_name["Name"][artifact["角色"]]
                 avatar_icon = f'{avatar_path}/{avatar_name}.png'
                 avatar_icon = await get_img(
                     url=artifact_url.format(
