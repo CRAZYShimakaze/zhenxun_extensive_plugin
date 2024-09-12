@@ -80,7 +80,7 @@ genshin_info = on_regex(r"(.*)图鉴$", priority=15)
 break_material = on_regex(r"(.*)(素材|材料)$", priority=15)
 src_url = "/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/"
 nick_url = "/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/res/json_data/"
-alias_url = nick_url + "alias.json"
+alias_url = src_url + "alias.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
@@ -99,8 +99,8 @@ alias_path = os.path.join(os.path.dirname(__file__), "./alias.json")
 def get_role_name(role):
     role_name = ''
     for item in role_list:
-        if role in role_list.get(item):
-            role_name = role_list.get(item)[0]
+        if role in role_list.get(item) or role == item:
+            role_name = item
             break
     return role_name
 
@@ -250,8 +250,8 @@ async def _update_info(is_cron=False):
         json.dump(alias_remote, f, ensure_ascii=False, indent=2)
     # 更新缓存
     alias_file = await get_alias()
-    role_list = alias_file['roles']
-    weapon_list = alias_file['weapons']
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     common_guide_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}common_guide/md5.json", follow_redirects=True)).json()
     role_info_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_info/md5.json", follow_redirects=True)).json()
     role_break_md5 = (await AsyncHttpx.get(f"{get_raw()}{src_url}role_break/md5.json", follow_redirects=True)).json()
@@ -288,8 +288,8 @@ async def _update_info(is_cron=False):
         json.dump(alias_remote, f, ensure_ascii=False, indent=2)
     # 更新缓存
     alias_file = await get_alias()
-    role_list = alias_file['roles']
-    weapon_list = alias_file['weapons']
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     if not update_list and not is_cron:
         return await update_info.send(f'所有推荐信息均为最新！')
     if not update_list:
@@ -355,8 +355,8 @@ async def _check_update(is_cron=False):
 async def _():
     global alias_file, role_list, weapon_list
     alias_file = await get_alias()
-    role_list = alias_file['roles']
-    weapon_list = alias_file['weapons']
+    role_list = alias_file['角色']
+    weapon_list = alias_file['武器']
     if Config.get_config("genshin_role_recommend", "CHECK_UPDATE"):
         scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='genshin_role_recommend_check_update')
     scheduler.add_job(_update_info, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='genshin_role_recommend_update_info')
