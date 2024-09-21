@@ -9,7 +9,6 @@ from typing import Tuple
 
 import nonebot
 from configs.config import Config
-from configs.path_config import DATA_PATH
 from nonebot import on_command, Driver, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
@@ -41,30 +40,14 @@ usage：
 __plugin_des__ = "查询原神攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = 1.9
+__plugin_version__ = 2.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
-__plugin_settings__ = {
-    "level": 5,
-    "default_status": True,
-    "limit_superuser": False,
-    "cmd": __plugin_cmd__,
-}
+__plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
-Config.add_plugin_config(
-    "genshin_role_recommend",
-    "CHECK_UPDATE",
-    True,
-    help_="定期自动检查更新",
-    default_value=True,
-)
-Config.add_plugin_config(
-    "genshin_role_recommend",
-    "GITHUB_RAW",
-    "https://mirror.ghproxy.com/https://raw.githubusercontent.com",
-    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com",
-    default_value="https://mirror.ghproxy.com/https://raw.githubusercontent.com",
-    type=str,
-)
+Config.add_plugin_config("genshin_role_recommend", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True, )
+Config.add_plugin_config("genshin_role_recommend", "GITHUB_RAW", "https://mirror.ghproxy.com/https://raw.githubusercontent.com",
+    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com", default_value="https://mirror.ghproxy.com/https://raw.githubusercontent.com",
+    type=str, )
 
 common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
@@ -87,7 +70,8 @@ genshin_role_guide = src_url + "role_guide/{}.png"
 genshin_role_break = src_url + "role_break/{}.jpg"
 genshin_role_info = src_url + "role_info/{}.png"
 genshin_weapon_info = src_url + "weapon_info/{}.png"
-RES_PATH = str(DATA_PATH) + '/genshin_recommend'
+
+RES_PATH = os.path.join(os.path.dirname(__file__), ".") + '/data'
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'
@@ -173,8 +157,7 @@ async def _(event: MessageEvent):
 @common_material.handle()
 async def _(event: MessageEvent):
     arg = '每日素材'
-    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg',
-                 f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
+    save_path = [f'{COMMON_GUIDE_PATH}/{arg}1.jpg', f'{COMMON_GUIDE_PATH}/{arg}2.jpg', f'{COMMON_GUIDE_PATH}/{arg}3.jpg']
     for item in save_path:
         await get_img(common_guide, item.split('/')[-1].strip('.jpg'), item, ignore_exist=False)
         await common_material.send(image(Path(item)))
@@ -303,7 +286,7 @@ async def _update_info(is_cron=False):
 
 
 async def get_alias():
-    if 1:#not os.path.exists(alias_path):
+    if 1:  # not os.path.exists(alias_path):
         await AsyncHttpx.download_file(get_raw() + alias_url, alias_path, follow_redirects=True)
     return json.load(open(alias_path, 'r', encoding='utf-8'))
 

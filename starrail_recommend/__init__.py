@@ -14,7 +14,6 @@ from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 
 from configs.config import Config
-from configs.path_config import DATA_PATH
 from services import logger
 
 from utils.http_utils import AsyncHttpx
@@ -39,7 +38,7 @@ usage：
 __plugin_des__ = "查询星铁攻略"
 __plugin_cmd__ = ["角色配装", "角色评级", "武器推荐", "副本分析", "深渊配队", "每日素材"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = 0.5
+__plugin_version__ = 0.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__}
 Config.add_plugin_config("starrail_role_recommend", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True)
@@ -66,7 +65,7 @@ starrail_role_guide = src_url + "role_guide/{}.png"
 starrail_role_break = src_url + "role_break/{}.png"
 starrail_role_info = src_url + "role_info/{}.png"
 starrail_weapon_info = src_url + "weapon_info/{}.png"
-RES_PATH = str(DATA_PATH) + '/starrail_recommend'
+RES_PATH = os.path.join(os.path.dirname(__file__), ".") + '/data'
 ROLE_GUIDE_PATH = RES_PATH + '/role_guide'
 ROLE_BREAK_PATH = RES_PATH + '/role_break'
 ROLE_INFO_PATH = RES_PATH + '/role_info'

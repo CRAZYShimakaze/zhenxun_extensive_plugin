@@ -19,9 +19,7 @@ def load_json(path: Union[Path, str], encoding: str = 'utf-8') -> dict:
     return json.load(path.open('r', encoding=encoding))
 
 
-def save_json(data: Union[dict, list],
-              path: Union[Path, str] = None,
-              encoding: str = 'utf-8'):
+def save_json(data: Union[dict, list], path: Union[Path, str] = None, encoding: str = 'utf-8'):
     """
     保存json文件
     :param data: json数据
@@ -31,7 +29,25 @@ def save_json(data: Union[dict, list],
     if isinstance(path, str):
         path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(data,
-              path.open('w', encoding=encoding),
-              ensure_ascii=False,
-              indent=4)
+    json.dump(data, path.open('w', encoding=encoding), ensure_ascii=False, indent=4)
+
+
+def get_message_at(data):
+    """
+    说明:
+        获取消息中所有的 at 对象的 qq
+    参数:
+        :param data: event.json(), event.message
+    """
+    qq_list = []
+    if isinstance(data, str):
+        event = json.loads(data)
+        if data and (message := event.get("message")):
+            for msg in message:
+                if msg and msg.get("type") == "at":
+                    qq_list.append(int(msg["data"]["qq"]))
+    else:
+        for seg in data:
+            if seg.type == "at":
+                qq_list.append(seg.data["qq"])
+    return qq_list

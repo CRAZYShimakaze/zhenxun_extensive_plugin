@@ -17,18 +17,17 @@ from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent, MessageSegment
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
-from services.log import logger
+from nonebot_plugin_apscheduler import scheduler
 
-from utils.http_utils import AsyncHttpx
-from utils.message_builder import at
-from utils.utils import get_bot, scheduler, get_message_at
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_recommend_card import gen_artifact_recommend
 from .data_source.draw_role_card import draw_role_card
 from .data_source.draw_update_card import draw_role_pic
 from .utils.card_utils import load_json, save_json, player_info_path, PlayerInfo, json_path, other_path, get_name_by_id, group_info_path
 from .utils.image_utils import load_image, image_build
+from .utils.json_utils import get_message_at
 from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.http_utils import AsyncHttpx
 
 __zx_plugin_name__ = "星铁角色面板"
 __plugin_usage__ = """
@@ -50,7 +49,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["星铁角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "遗器榜单", "群遗器榜单"]
 __plugin_type__ = ("星铁相关",)
-__plugin_version__ = "1.2.5"
+__plugin_version__ = "1.2.6"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -113,7 +112,7 @@ async def get_msg_uid(event):
         await artifact_list.finish(MessageSegment.reply(event.message_id) + "请绑定星铁uid后再查询！")
     if not check_uid(uid):
         await artifact_list.finish(MessageSegment.reply(event.message_id) + f"绑定的uid{uid}不合法，请重新绑定!")
-    logger.info(f'UID={uid}')
+    print(f'UID={uid}')
     return uid
 
 
@@ -294,7 +293,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_info = data[-1]
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
-        bot = get_bot()
+        bot = nonebot.get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
         await group_best.finish(MessageSegment.reply(event.message_id) + f"本群最强{role}!仅根据遗器评分评判.\n由'{qq_name}'查询\n" + role_pic)
@@ -314,7 +313,7 @@ async def _(event: GroupMessageEvent, args: Tuple[str, ...] = RegexGroup()):
         role_info = data[0]
         role_pic = load_image(f'{role_path}/{role_info}')
         role_pic = image_build(img=role_pic, quality=100, mode='RGB')
-        bot = get_bot()
+        bot = nonebot.get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split('-')[-1].rstrip('.png')))
         qq_name = qq_name["nickname"]
         await group_worst.finish(MessageSegment.reply(event.message_id) + f"本群最菜{role}!仅根据遗器评分评判.\n由'{qq_name}'查询\n" + role_pic)
@@ -434,7 +433,7 @@ def check_role(role_name, event, img, score):
                 if float(role_info_best[0]) <= score:
                     old_best = int(role_info_best[1].rstrip('.png'))
                     if old_best != event.user_id:
-                        return Message(f"恭喜你击败{at(old_best)}成为本群最强{role_name}!\n")
+                        return Message(f"恭喜你击败{MessageSegment.at(old_best)}成为本群最强{role_name}!\n")
                     else:
                         return f"你仍然是本群最强{role_name}!\n"
                 else:
@@ -445,7 +444,7 @@ def check_role(role_name, event, img, score):
                     img.save(role_path)
                     old_best = int(role_info_best[1].rstrip('.png'))
                     if old_best != event.user_id:
-                        return Message(f"恭喜你击败{at(old_best)}成为本群最强{role_name}!\n")
+                        return Message(f"恭喜你击败{MessageSegment.at(old_best)}成为本群最强{role_name}!\n")
                     else:
                         return f"你仍然是本群最强{role_name}!\n"
                 else:
@@ -455,7 +454,7 @@ def check_role(role_name, event, img, score):
                         img.save(role_path)
                         old_worst = int(role_info_worst[1].rstrip('.png'))
                         if old_worst != event.user_id:
-                            return Message(f"恭喜你帮助{at(old_worst)}摆脱最菜{role_name}的头衔!\n")
+                            return Message(f"恭喜你帮助{MessageSegment.at(old_worst)}摆脱最菜{role_name}的头衔!\n")
                         else:
                             return f"你仍然是本群最菜{role_name}!\n距本群最强{role_name}还有{round(float(role_info_best[0]) - score, 2)}分差距!\n"
                     else:
@@ -487,7 +486,7 @@ async def get_update_info():
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
-        logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
+        print(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
         return ''
     return version.group(1).strip()
 
@@ -495,12 +494,12 @@ async def get_update_info():
 @check_update.handle()
 async def _check_update():
     url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/__init__.py"
-    bot = get_bot()
+    bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r'__plugin_version__ = "(\d+\.\d+\.\d+)"', str(version.text))
     except Exception as e:
-        logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
+        print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return
     if version.group(1) != __plugin_version__:
         update_info = await get_update_info()
@@ -511,7 +510,7 @@ async def _check_update():
             for admin in bot.config.superusers:
                 await bot.send_private_msg(user_id=int(admin),
                                            message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
-            logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
+            print(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
     else:
         update_info = await get_update_info()
         try:

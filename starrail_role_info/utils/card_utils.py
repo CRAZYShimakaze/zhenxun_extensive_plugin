@@ -3,16 +3,16 @@ import os
 
 from PIL import ImageFont
 
-from configs.path_config import DATA_PATH
 from ..utils.json_utils import load_json, save_json
 
 STARRAIL_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
 
-STARRAIL_DATA_PATH = str(DATA_PATH) + '/starrail_role_info'
+STARRAIL_DATA_PATH = STARRAIL_CARD_PATH + '/user_data'
 player_info_path = STARRAIL_DATA_PATH + '/player_info'
 group_info_path = STARRAIL_DATA_PATH + '/group_info'
 card_res_path = STARRAIL_CARD_PATH + '/res/'
 data_res_path = STARRAIL_DATA_PATH + '/res/'
+qq_logo_path = STARRAIL_DATA_PATH + '/qq_logo/'
 json_path = card_res_path + 'json_data'
 bg_path = card_res_path + 'background'
 char_pic_path = data_res_path + 'character'

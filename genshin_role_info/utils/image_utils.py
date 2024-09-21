@@ -5,7 +5,7 @@ from typing import Optional, Union, Tuple
 from PIL import Image
 from nonebot.adapters.onebot.v11 import MessageSegment
 
-from utils.http_utils import AsyncHttpx
+from ...plugin_utils.http_utils import AsyncHttpx
 
 
 def draw_right_text(draw, text: str, width: int, height: int, fill: str, font):

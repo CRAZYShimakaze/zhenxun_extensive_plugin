@@ -4,16 +4,17 @@ import re
 
 from PIL import ImageFont
 
-from configs.path_config import DATA_PATH
+
 from ..utils.json_utils import load_json, save_json
 
 GENSHIN_CARD_PATH = os.path.join(os.path.dirname(__file__), "..")
 
-GENSHIN_DATA_PATH = str(DATA_PATH) + '/genshin_role_info'
+GENSHIN_DATA_PATH = GENSHIN_CARD_PATH + '/user_data'
 player_info_path = GENSHIN_DATA_PATH + '/player_info'
 group_info_path = GENSHIN_DATA_PATH + '/group_info'
 card_res_path = GENSHIN_CARD_PATH + '/res/'
 data_res_path = GENSHIN_DATA_PATH + '/res/'
+qq_logo_path = GENSHIN_DATA_PATH + '/qq_logo/'
 json_path = card_res_path + 'json_data'
 bg_path = card_res_path + 'background'
 char_pic_path = data_res_path + 'character'
