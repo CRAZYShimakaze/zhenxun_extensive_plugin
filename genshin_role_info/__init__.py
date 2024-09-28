@@ -61,8 +61,7 @@ Config.add_plugin_config("genshin_role_info", "CHECK_UPDATE", True, help_="定�
 Config.add_plugin_config("genshin_role_info", "ALPHA", 83, help_="群榜单背景透明度", default_value=83, )
 enka_url = 'https://enka.network/api/uid/{}'
 microgg_url = 'https://profile.microgg.cn/api/uid/{}'
-hutao_url = 'https://enka-api.hut.ao/{}'
-api_url = [hutao_url, microgg_url, enka_url]
+api_url = [microgg_url, enka_url]
 bind = on_regex(r"(原神绑定|绑定原神)(UID|uid)(.*)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
 card_list = on_command("原神角色排行", priority=4, block=True)
@@ -127,10 +126,10 @@ async def get_enka_info(uid, update_info, event):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
         req = 0
-        for i in range(3):
+        for i in range(2):
             try:
                 print(f"请求{api_url[i].format(uid)}...")
-                req = await AsyncHttpx.get(url=api_url[i].format(uid), follow_redirects=True, )
+                req = await AsyncHttpx.get(url=api_url[i].format(uid), follow_redirects=True)
             except Exception as e:
                 print(e)
                 continue

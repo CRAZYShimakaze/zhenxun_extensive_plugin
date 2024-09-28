@@ -121,8 +121,11 @@ async def _(bot: Bot,
     user_coin = await BagUser.get_gold(event.user_id, event.group_id)
     if user_coin < coin:
         await start.finish("你的金币不够！", at_sender=True)
+    #await start.send(
+    #    f"已发起对局，请挑战者在{dati_time}秒内发送'接'+以{lazy_pinyin(idiom)[-1]}开头的成语，赌注{coin}金币！(之前说过的不能再说)",
+    #    at_sender=True)
     await start.send(
-        f"已发起对局，请挑战者在{dati_time}秒内发送'接'+以{lazy_pinyin(idiom)[-1]}开头的成语，赌注{coin}金币！(之前说过的不能再说)",
+        f"已发起对局，请挑战者在{dati_time}秒内轮流发送'接'+以上一个成语尾字拼音开头的成语，赌注{coin}金币！(之前说过的不能再说)",
         at_sender=True)
     vs_player[event.group_id] = {
         "player1": event.user_id,
@@ -233,10 +236,10 @@ async def _(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
                     event.group_id]["player2"]
                 vs_player[event.group_id]["log"].append(msg[0])
                 set_timeout(bot, event, dati_time)
-                await submit.send(
-                    Message(
-                        f"请{at(next_one)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"
-                    ))
+                #await submit.send(
+                #    Message(
+                #        f"请{at(next_one)}在{dati_time}秒内接以{lazy_pinyin(msg[0])[-1]}开头的成语！"
+                #    ))
     except Exception as e:
         print(e)
         pass
