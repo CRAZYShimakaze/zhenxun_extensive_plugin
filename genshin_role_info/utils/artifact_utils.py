@@ -265,6 +265,9 @@ def get_effective(data):
                 role_name = '白术-满命'
         elif role_name == '那维莱特' and data['武器']['名称'] == '万世流涌大典':
             role_name = '那维莱特-专武'
+        elif role_name == '希格雯':
+            if len(data['命座']) == 6:
+                role_name = '希格雯-满命'
         if '-' in role_name:
             return role_score.get(role_name), role_name
         elif role_name in role_score:
