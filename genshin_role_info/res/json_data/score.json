@@ -24,11 +24,12 @@
   "枫原万叶-满命": { "hp": 0, "atk": 75, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 30, "dmg": 100, "phy": 0, "recharge": 55, "heal": 0 },
   "行秋": {  "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "recharge": 75 },
   "行秋-蒸发": { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75 },
-  "钟离": {  "hp": 80, "atk": 75, "cpct": 100, "cdmg": 100, "dmg": 80, "phy": 80, "recharge": 55  },
-  "钟离-血牛": { "hp": 100, "atk": 30, "cpct": 41, "cdmg": 41, "recharge": 30 },
-  "神里绫华": { "atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "phy": 0, "recharge": 30 },
-  "神里绫华-精通": { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 30 },
-  "香菱": { "hp": 0, "atk": 75, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "phy": 0, "recharge": 55, "heal": 0 },
+  "钟离": {  "hp": 100, "atk": 30, "cpct": 40, "cdmg": 40, "dmg": 80, "phy": 0, "recharge": 55  },
+  "钟离-西风": {  "hp": 100, "atk": 30, "cpct": 100, "cdmg": 40, "dmg": 80, "phy": 0, "recharge": 55  },
+  "钟离-战斗": { "hp": 80, "atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 30 },
+  "神里绫华": { "atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "phy": 0, "recharge": 45 },
+  "神里绫华-精通": { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 45 },
+  "香菱": { "hp": 0, "atk": 75, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "phy": 0, "recharge": 75, "heal": 0 },
   "胡桃": { "hp": 80, "atk": 50, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100 },
   "胡桃-核爆": { "hp": 90, "atk": 50, "cdmg": 100, "mastery": 90, "dmg": 100 },
   "温迪": {  "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75 },
@@ -118,5 +119,8 @@
   "艾梅莉埃": { "hp": 0, "atk": 100, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 30, "dmg": 100, "phy": 0, "recharge": 55, "heal": 0 },
   "卡齐娜": { "hp": 0, "atk": 0, "def": 75, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 75, "heal": 0 },
   "玛拉妮": { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 85, "dmg": 100, "phy": 0, "recharge": 45, "heal": 0 },
-  "基尼奇": { "hp": 0, "atk": 85, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 50, "heal": 0 }
+  "基尼奇": { "hp": 0, "atk": 85, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 50, "heal": 0 },
+  "希诺宁": { "hp": 0, "atk": 0, "def": 100, "cpct": 30, "cdmg": 30, "mastery": 0, "dmg": 80, "phy": 0, "recharge": 100, "heal": 100 },
+  "希诺宁-西风": { "hp": 0, "atk": 0, "def": 100, "cpct": 100, "cdmg": 30, "mastery": 0, "dmg": 80, "phy": 0, "recharge": 100, "heal": 100 },
+  "希诺宁-战斗": { "hp": 0, "atk": 0, "def": 100, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 80, "phy": 0, "recharge": 55, "heal": 70 }
 }

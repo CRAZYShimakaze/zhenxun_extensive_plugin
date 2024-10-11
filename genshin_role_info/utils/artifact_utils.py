@@ -181,12 +181,10 @@ def get_effective(data):
             elif data['元素'] == '草':
                 role_name = '草主'
         elif role_name == '钟离':
-            if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
-                    and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
-                    and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
-                    and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] >= 0 \
-                    and data['属性']['基础生命'] + data['属性']['额外生命'] > 40000:
-                role_name = '钟离-血牛'
+            if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.4:
+                role_name = '钟离-战斗'
+            elif data['武器']['名称'] == '西风长枪':
+                role_name = '钟离-西风'
         elif role_name == '芭芭拉':
             if artifacts[3]['主属性']['属性名'] == '水元素伤害加成' and \
                     data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] >= 1.8:
@@ -268,6 +266,11 @@ def get_effective(data):
         elif role_name == '希格雯':
             if len(data['命座']) == 6:
                 role_name = '希格雯-满命'
+        elif role_name == '希诺宁':
+            if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.4:
+                role_name = '希诺宁-战斗'
+            elif data['武器']['名称'] == '西风剑':
+                role_name = '希诺宁-西风'
         if '-' in role_name:
             return role_score.get(role_name), role_name
         elif role_name in role_score:
@@ -275,9 +278,9 @@ def get_effective(data):
                 if data['武器']['名称'] == '磐岩结绿' and '百分比生命值' not in weight:
                     weight['百分比生命值'] = 45
                     role_name = f'{role_name}-绿剑'
-                if data['武器']['名称'] == '赤角石溃杵' and '百分比防御力' not in weight:
-                    weight['百分比防御力'] = 45
-                    role_name = f'{role_name}-赤角'
+                # if data['武器']['名称'] == '赤角石溃杵' and '百分比防御力' not in weight:
+                #     weight['百分比防御力'] = 45
+                #     role_name = f'{role_name}-赤角'
                 if data['武器']['名称'] == '猎人之径' and '元素精通' not in weight:
                     weight['元素精通'] = 45
                     role_name = f'{role_name}-猎人之径'
