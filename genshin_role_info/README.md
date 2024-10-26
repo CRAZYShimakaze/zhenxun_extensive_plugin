@@ -19,7 +19,7 @@
 
 ## 效果图
 
-<img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
+<img src="https://ghp.ci/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
 
 ## 致谢
 
@@ -29,6 +29,10 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2024/10/26**[v4.1.0]
+
+1. 支持圣遗物导入
 
 **2024/9/21**[v4.0.6]
 

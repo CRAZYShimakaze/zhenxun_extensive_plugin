@@ -481,7 +481,7 @@ def check_uid(uid):
 
 
 async def get_update_info():
-    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/README.md"
+    url = "https://ghp.ci/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/README.md"
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
@@ -493,7 +493,7 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update():
-    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/__init__.py"
+    url = "https://ghp.ci/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/__init__.py"
     bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)

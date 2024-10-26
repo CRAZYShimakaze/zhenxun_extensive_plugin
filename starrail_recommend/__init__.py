@@ -42,8 +42,8 @@ __plugin_version__ = 0.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__}
 Config.add_plugin_config("starrail_role_recommend", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True)
-Config.add_plugin_config("starrail_role_recommend", "GITHUB_RAW", "https://mirror.ghproxy.com/https://raw.githubusercontent.com",
-    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com", default_value="https://mirror.ghproxy.com/https://raw.githubusercontent.com",
+Config.add_plugin_config("starrail_role_recommend", "GITHUB_RAW", "https://ghp.ci/https://raw.githubusercontent.com",
+    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com", default_value="https://ghp.ci/https://raw.githubusercontent.com",
     type=str, )
 # common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 # common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
@@ -244,7 +244,7 @@ async def get_alias():
 
 def get_raw():
     if not (raw := Config.get_config("starrail_role_recommend", "GITHUB_RAW")):
-        raw = "https://mirror.ghproxy.com/https://raw.githubusercontent.com"
+        raw = "https://ghp.ci/https://raw.githubusercontent.com"
     return raw
 
 

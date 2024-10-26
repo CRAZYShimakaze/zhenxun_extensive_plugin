@@ -53,7 +53,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.0.6"
+__plugin_version__ = "4.1.0"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -81,6 +81,9 @@ alias_file = load_json(f'{json_path}/alias.json')
 role_name_list = load_json(f'{json_path}/roles_name.json')
 artifact_info = load_json(f'{json_path}/artifact.json')
 name_list = alias_file['roles']
+import_artifact = on_message(permission=PRIVATE, priority=1)
+# import_artifact = on_notice(priority=1, block=False)
+import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
 
 
 def get_role_name(role):
@@ -243,6 +246,88 @@ async def _(event: MessageEvent):
     if get_uid(event.user_id):
         unbind_uid(event.user_id)
         await unbind.send(MessageSegment.reply(event.message_id) + "用户数据删除成功...")
+
+
+@import_artifact_hint.handle()
+async def _():
+    await import_artifact_hint.send(
+        f'请在PC端按以下步骤操作\n1.下载https://ghp.ci/https://github.com/wormtql/yas/releases/download/v0.1.17/yas_artifact_v0.1.17.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.17.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
+
+
+@import_artifact.handle()
+async def import_artifact(bot: Bot, event):
+    match = re.search(r'file=([\w\d_]+\.json)', str(event.message))
+    if match:
+        filename = match.group(1)
+        print(filename)
+        if filename != 'good.json':
+            return
+    else:
+        return
+    match = re.search(r'file_id=([\w-]+)', str(event.message))
+    if match:
+        file_id = match.group(1)
+        print(file_id)
+    x = await bot.get_file(file_id=file_id)
+    '''
+    if event.notice_type != "offline_file":
+        return
+    if event.file.get('name') != 'good.json':
+        return
+    '''
+    convert = load_json(path=f'{json_path}/convert.json')
+    role = convert.get('角色')
+    name = convert.get('名称')
+    # icon = artifact.get('图标')
+    icon = artifact_info.get('Name')
+    suit = convert.get('套装')
+    pos = convert.get('位置')
+    main = convert.get('主词条')
+    sub = convert.get('副词条')
+
+    uid = await get_msg_uid(event)
+    player_info, _ = await get_enka_info(uid, update_info=False, event=event)
+    # await AsyncHttpx.download_file(event.file.get('url'), f'{player_info_path}/{uid}_artifact.json')
+    decoded_data = base64.b64decode(x.get('base64', ''))
+    with open(f'{player_info_path}/{uid}_artifact.json', "wb") as file:
+        file.write(decoded_data)
+    arti = load_json(path=f'{player_info_path}/{uid}_artifact.json')
+    if 'artifacts' in arti:
+        await bot.send_private_msg(user_id=event.user_id, message=f'检测到圣遗物缓存文件,正在导入...')
+        same = 0
+        diff = 0
+        player_info.data['圣遗物列表'] = [[], [], [], [], []]
+        for item in arti.get('artifacts'):
+            if item.get("level", 0) == 20 and item.get("rarity", 0) == 5:
+                mainstatkey = item.get('mainStatKey', '')
+                substats = item.get('substats', [])
+                pos_name = pos.get(item.get("slotKey", ""))
+                pos_id = ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"].index(pos_name)
+                arti_name = name.get(suit.get(item.get("setKey", "")))[pos_id]
+                for key, value in icon.items():
+                    if value == arti_name:
+                        icon_name = key
+                        break
+                else:
+                    print('wrong!')
+                artifact_single = {"名称": arti_name, "图标": icon_name, "部位": pos_name, "所属套装": suit.get(item.get("setKey", "")), "等级": item.get("level", 0),
+                                   "星级": item.get("rarity", 0), "角色": role.get(item.get("location", ''), ''),
+                                   "主属性": {"属性名": main.get(mainstatkey, "")['属性名'], "属性值": main.get(mainstatkey, "")['属性值']}, "词条": [
+                        {"属性名": sub.get(substats[0].get("key", "")),
+                         "属性值": int(substats[0].get('value', 0)) if substats[0].get('value', 0) % 1 == 0 else round(substats[0].get('value', 0), 1)},
+                        {"属性名": sub.get(substats[1].get("key", "")),
+                         "属性值": int(substats[1].get('value', 0)) if substats[1].get('value', 0) % 1 == 0 else round(substats[1].get('value', 0), 1)},
+                        {"属性名": sub.get(substats[2].get("key", "")),
+                         "属性值": int(substats[2].get('value', 0)) if substats[2].get('value', 0) % 1 == 0 else round(substats[2].get('value', 0), 1)},
+                        {"属性名": sub.get(substats[3].get("key", "")),
+                         "属性值": int(substats[3].get('value', 0)) if substats[3].get('value', 0) % 1 == 0 else round(substats[3].get('value', 0), 1)}], }
+                if artifact_single not in player_info.data['圣遗物列表'][pos_id]:
+                    player_info.data['圣遗物列表'][pos_id].append(copy.deepcopy(artifact_single))
+                    diff += 1
+                else:
+                    same += 1
+        player_info.save()
+        await bot.send_private_msg(user_id=event.user_id, message=f'UID{uid}的缓存圣遗物已导入,本次共导入{diff}个,重复圣遗物{same}个.')
 
 
 @artifact_adapt.handle()
@@ -567,7 +652,7 @@ def check_uid(uid):
 
 
 async def get_update_info():
-    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
+    url = "https://ghp.ci/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
@@ -579,7 +664,7 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update():
-    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
+    url = "https://ghp.ci/https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
