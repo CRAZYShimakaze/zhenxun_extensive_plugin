@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
-from configs.config import Config
 from nonebot import Driver
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent, MessageSegment
@@ -53,8 +52,6 @@ __plugin_version__ = "1.2.6"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
-Config.add_plugin_config("startail_role_info", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True, )
-Config.add_plugin_config("startail_role_info", "ALPHA", 83, help_="群榜单背景透明度", default_value=83, )
 starrail_url = 'https://api.mihomo.me/sr_info/{}'
 
 my_card = on_command("我的星铁角色", aliases={"我的崩铁角色"}, priority=4, block=True)
@@ -521,5 +518,4 @@ async def _check_update():
 
 @driver.on_startup
 async def _():
-    if Config.get_config("starrail_role_info", "CHECK_UPDATE"):
-        scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_info')
+    scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_info')

@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Tuple
 
 import nonebot
-from configs.config import Config
 from nonebot import Driver, on_message
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, GroupMessageEvent, Bot, MessageSegment
@@ -57,8 +56,6 @@ __plugin_version__ = "4.1.0"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
-Config.add_plugin_config("genshin_role_info", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True, )
-Config.add_plugin_config("genshin_role_info", "ALPHA", 83, help_="群榜单背景透明度", default_value=83, )
 enka_url = 'https://enka.network/api/uid/{}'
 microgg_url = 'https://profile.microgg.cn/api/uid/{}'
 api_url = [microgg_url, enka_url]
@@ -284,7 +281,7 @@ async def import_artifact(bot: Bot, event):
     pos = convert.get('位置')
     main = convert.get('主词条')
     sub = convert.get('副词条')
-
+    # print(f'x:{x}')
     uid = await get_msg_uid(event)
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     # await AsyncHttpx.download_file(event.file.get('url'), f'{player_info_path}/{uid}_artifact.json')
@@ -692,5 +689,4 @@ async def _check_update():
 
 @driver.on_startup
 async def _():
-    if Config.get_config("genshin_role_info", "CHECK_UPDATE"):
-        scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59), id='genshin_role_info')
+    scheduler.add_job(_check_update, "cron", hour=random.randint(9, 22), minute=random.randint(0, 59), id='genshin_role_info')

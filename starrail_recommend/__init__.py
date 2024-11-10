@@ -9,17 +9,14 @@ from typing import Tuple
 
 import nonebot
 from nonebot import on_command, Driver, on_regex
-from nonebot.adapters.onebot.v11 import MessageEvent
+from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
+from nonebot_plugin_apscheduler import scheduler
 
-from configs.config import Config
-from services import logger
-
-from utils.http_utils import AsyncHttpx
-from utils.message_builder import image
-from utils.utils import scheduler, get_bot
 from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.http_utils import AsyncHttpx
+from ..plugin_utils.image_utils import image
 
 driver: Driver = nonebot.get_driver()
 
@@ -41,10 +38,6 @@ __plugin_type__ = ("星铁相关",)
 __plugin_version__ = 0.6
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__}
-Config.add_plugin_config("starrail_role_recommend", "CHECK_UPDATE", True, help_="定期自动检查更新", default_value=True)
-Config.add_plugin_config("starrail_role_recommend", "GITHUB_RAW", "https://ghp.ci/https://raw.githubusercontent.com",
-    help_="github raw的镜像站,默认https://ghproxy.com/https://raw.githubusercontent.com", default_value="https://ghp.ci/https://raw.githubusercontent.com",
-    type=str, )
 # common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 # common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
 common_weapon_grade = on_regex("^光锥(推荐|适配|评级)$", priority=1, block=True)
@@ -231,7 +224,7 @@ async def _update_info(is_cron=False):
     if not is_cron:
         await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
     else:
-        bot = get_bot()
+        bot = nonebot.get_bot()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin), message=f'已更新{",".join(update_list)}的推荐信息！')
 
@@ -243,8 +236,7 @@ async def get_alias():
 
 
 def get_raw():
-    if not (raw := Config.get_config("starrail_role_recommend", "GITHUB_RAW")):
-        raw = "https://ghp.ci/https://raw.githubusercontent.com"
+    raw = "https://ghp.ci/https://raw.githubusercontent.com"
     return raw
 
 
@@ -254,7 +246,7 @@ async def get_update_info():
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
-        logger.warning(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
+        print(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
         return ''
     return version.group(1).strip()
 
@@ -262,12 +254,12 @@ async def get_update_info():
 @check_update.handle()
 async def _check_update(is_cron=False):
     url = f"{get_raw()}/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_recommend/__init__.py"
-    bot = get_bot()
+    bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"__plugin_version__ = ([0-9.]{3})", str(version.text))
     except Exception as e:
-        logger.warning(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
+        print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return
     if float(version.group(1)) > __plugin_version__:
         modify_info = await get_update_info()
@@ -278,7 +270,7 @@ async def _check_update(is_cron=False):
             for admin in bot.config.superusers:
                 await bot.send_private_msg(user_id=int(admin),
                                            message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{modify_info}")
-            logger.warning(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
+            print(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
     else:
         if not is_cron:
             modify_info = await get_update_info()
@@ -291,6 +283,5 @@ async def _():
     alias_file = await get_alias()
     role_list = alias_file['characters']
     weapon_list = alias_file['light_cones']
-    if Config.get_config("starrail_role_recommend", "CHECK_UPDATE"):
-        scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_recommend_check_update')
+    scheduler.add_job(_check_update, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_recommend_check_update')
     scheduler.add_job(_update_info, "cron", args=[1], hour=random.randint(9, 22), minute=random.randint(0, 59), id='starrail_role_recommend_update_info')
