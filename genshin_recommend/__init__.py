@@ -9,7 +9,7 @@ from typing import Tuple
 
 import nonebot
 from nonebot import on_command, Driver, on_regex
-from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
+from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_apscheduler import scheduler
@@ -41,7 +41,6 @@ __plugin_type__ = ("原神相关",)
 __plugin_version__ = 2.0
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
-
 
 common_role_equip = on_regex("^角色(配装|出装)$", priority=1, block=True)
 common_role_grade = on_regex("^角色(评级|推荐|建议)$", priority=1, block=True)
@@ -274,7 +273,7 @@ async def _update_info(is_cron=False):
     if not is_cron:
         await update_info.send(f'已更新{",".join(update_list)}的推荐信息！')
     else:
-        bot = get_bot()
+        bot = nonebot.get_bot()
         for admin in bot.config.superusers:
             await bot.send_private_msg(user_id=int(admin), message=f'已更新{",".join(update_list)}的推荐信息！')
 

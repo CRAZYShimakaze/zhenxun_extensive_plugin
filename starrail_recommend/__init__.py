@@ -9,7 +9,7 @@ from typing import Tuple
 
 import nonebot
 from nonebot import on_command, Driver, on_regex
-from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
+from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_apscheduler import scheduler
