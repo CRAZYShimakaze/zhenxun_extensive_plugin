@@ -52,7 +52,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.1.0"
+__plugin_version__ = "4.1.1"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -75,9 +75,8 @@ group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=False)
 check_update = on_command("检查原神面板更新", permission=SUPERUSER, priority=3, block=True)
 alias_file = load_json(f'{json_path}/alias.json')
-role_name_list = load_json(f'{json_path}/roles_name.json')
 artifact_info = load_json(f'{json_path}/artifact.json')
-name_list = alias_file['roles']
+role_info_json = load_json(f'{json_path}/role_info.json')
 import_artifact = on_message(permission=PRIVATE, priority=1)
 # import_artifact = on_notice(priority=1, block=False)
 import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
@@ -85,9 +84,9 @@ import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
 
 def get_role_name(role):
     role_name = ''
-    for item in name_list:
-        if role in name_list.get(item):
-            role_name = name_list.get(item)[0]
+    for item in role_info_json.keys():
+        if role in role_info_json.get(item).get('别名', []) or role == item:
+            role_name = item
             break
     return role_name
 
@@ -192,7 +191,7 @@ async def check_artifact(event, player_info, roles_list, uid, group_save):
                 artifact_list[pos_name.index(role_data['圣遗物'][j]['部位'])] = role_data['圣遗物'][j]
             artifact_copy = copy.deepcopy(artifact_list[i])
             if artifact_copy.get('等级', 0) == 20:
-                for name_all in list(role_name_list["Name"].keys()) + ['']:
+                for name_all in list(role_info_json.keys()) + ['']:
                     artifact_copy['角色'] = name_all
                     if artifact_copy in artifact_all[i]:
                         artifact_all[i].remove(artifact_copy)
@@ -248,7 +247,7 @@ async def _(event: MessageEvent):
 @import_artifact_hint.handle()
 async def _():
     await import_artifact_hint.send(
-        f'请在PC端按以下步骤操作\n1.下载https://ghp.ci/https://github.com/wormtql/yas/releases/download/v0.1.17/yas_artifact_v0.1.17.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.17.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
+        f'请在PC端按以下步骤操作\n1.下载https://ghp.ci/https://github.com/wormtql/yas/releases/download/v0.1.18/yas_artifact_v0.1.18.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.17.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
 
 
 @import_artifact.handle()

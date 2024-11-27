@@ -8,8 +8,7 @@ from ..utils.json_utils import load_json
 
 avatar_url = 'https://enka.network/ui/{}.png'
 qq_logo_url = 'http://q1.qlogo.cn/g?b=qq&nk={}&s=640'
-role_name = load_json(f'{json_path}/roles_name.json')
-role_data = load_json(f'{json_path}/roles_data.json')
+role_info_json = load_json(f'{json_path}/role_info.json')
 
 
 async def draw_qq_logo_mask(artifact, mask_bottom):
@@ -46,9 +45,9 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
     wid = bounder_offset[0] + (mask_w * 4 + interval[0] * 3) + bounder_offset[0]
     hei = bounder_offset[1] + (mask_h * h + interval[1] * (h - 1)) + bounder_offset[1] + 50 - 100
     if artifact_info[0].get('角色', '') != '':
-        bg = load_image(f'{bg_path}/背景_{role_data[artifact_info[0]["角色"]]["element"]}.png', size=(wid, hei), mode='RGBA')
+        bg = load_image(f'{bg_path}/背景_{role_info_json[artifact_info[0]["角色"]]["元素"]}.png', size=(wid, hei), mode='RGBA')
     else:
-        bg = load_image(f'{bg_path}/背景_{role_data[name]["element"]}.png', size=(wid, hei), mode='RGBA')
+        bg = load_image(f'{bg_path}/背景_{role_info_json[name]["元素"]}.png', size=(wid, hei), mode='RGBA')
     bg_draw = ImageDraw.Draw(bg)
 
     # artifact_pk = sorted(artifact_info, key=lambda x: float(x['评分']), reverse=True)
@@ -70,7 +69,7 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
         reli_icon = await get_img(url=artifact_url.format(artifact["图标"]), size=(100, 100), save_path=reli_icon, mode='RGBA')
         bg.alpha_composite(reli_icon, (slice_offset_x + 200, slice_offset_y + 67))
         if '角色' in artifact and artifact.get("角色", ''):
-            avatar_name = 'UI_AvatarIcon_Side_' + role_name["Name"][artifact["角色"]]
+            avatar_name = 'UI_AvatarIcon_Side_' + role_info_json[artifact["角色"]]['英文名']
             avatar_icon = f'{avatar_path}/{avatar_name}.png'
             avatar_icon = await get_img(url=artifact_url.format(avatar_name), size=(100, 100), save_path=avatar_icon, mode='RGBA')
             bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 30, slice_offset_y + 67 + 30))

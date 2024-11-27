@@ -104,16 +104,16 @@ def get_miao_score(affix_weight, base_info):
         ",")
     pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
     if pointmark.get("百分比攻击力"):
-        pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["atk"]['90']) + 520) * 100
+        pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["攻击力"]) + 520) * 100
         affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (
-                float(base_info["atk"]['90']) + 520) * 100
+                float(base_info["攻击力"]) + 520) * 100
     if pointmark.get("百分比防御力"):
-        pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["def"]['90']) * 100
+        pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["防御力"]) * 100
         affix_weight["防御力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (
-            float(base_info["def"]['90'])) * 100
+            float(base_info["防御力"])) * 100
     if pointmark.get("百分比生命值"):
-        pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["hp"]['90']) * 100
-        affix_weight["生命值"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["hp"]['90'])) * 100
+        pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["生命值"]) * 100
+        affix_weight["生命值"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["生命值"])) * 100
     affix_weight = dict(  # 排序影响最优主词条选择，通过特定排序使同等权重时非百分比的生命攻击防御词条优先级最低
         sorted(
             affix_weight.items(),

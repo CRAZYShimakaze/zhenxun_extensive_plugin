@@ -9,63 +9,17 @@ from ..utils.json_utils import load_json
 
 avatar_url = 'https://enka.network/ui/{}.png'
 qq_logo_url = 'http://q1.qlogo.cn/g?b=qq&nk={}&s=640'
-role_name = load_json(f'{json_path}/roles_name.json')
-role_data = load_json(f'{json_path}/roles_data.json')
-alias_file = load_json(f'{json_path}/alias.json')
-name_list = alias_file['roles']
+role_info_json = load_json(f'{json_path}/role_info.json')
 
-convert = {'main_prop': {'爆伤': '暴击伤害',
-                         '暴击': '暴击率',
-                         '精通': '元素精通',
-                         '生命': '百分比生命值',
-                         '防御': '百分比防御力',
-                         '攻击': '百分比攻击力',
-                         '火伤': '火元素伤害加成',
-                         '冰伤': '冰元素伤害加成',
-                         '雷伤': '雷元素伤害加成',
-                         '物伤': '物理伤害加成',
-                         '风伤': '风元素伤害加成',
-                         '水伤': '水元素伤害加成',
-                         '岩伤': '岩元素伤害加成',
-                         '草伤': '草元素伤害加成',
-                         '治疗': '治疗加成',
-                         '充能': '元素充能效率'},
-           'suit_name': {'冰风': '冰风迷途的勇士',
-                         '角斗': '角斗士的终幕礼',
-                         '余响': '来歆余响',
-                         '磐岩': '悠古的磐岩',
-                         '饰金': '饰金之梦',
-                         '流星': '逆飞的流星',
-                         '辰砂': '辰砂往生录',
-                         '宗室': '昔日宗室之仪',
-                         '剧团': '黄金剧团',
-                         '逐影': '逐影猎人',
-                         '沉沦': '沉沦之心',
-                         '花海': '花海甘露之光',
-                         '绝缘': '绝缘之旗印',
-                         '谐律': '谐律异想断章',
-                         '乐园': '乐园遗落之花',
-                         '海染': '海染砗磲',
-                         '遐思': '未竟的遐思',
-                         '水仙': '水仙之梦',
-                         '少女': '被怜爱的少女',
-                         '追忆': '追忆之注连',
-                         '华馆': '华馆梦醒形骸记',
-                         '染血': '染血的骑士道',
-                         '回声': '回声之林夜话',
-                         '渡火': '渡过烈火的贤人',
-                         '昔时': '昔时之歌',
-                         '平雷': '平息鸣雷的尊者',
-                         '深林': '深林的记忆',
-                         '苍白': '苍白之火',
-                         '沙上': '沙上楼阁史话',
-                         '如雷': '如雷的盛怒',
-                         '千岩': '千岩牢固',
-                         '魔女': '炽烈的炎之魔女',
-                         '乐团': '流浪大地的乐团',
-                         '翠绿': '翠绿之影'
-                         }
-           }
+convert = {'main_prop': {'爆伤': '暴击伤害', '暴击': '暴击率', '精通': '元素精通', '生命': '百分比生命值', '防御': '百分比防御力', '攻击': '百分比攻击力',
+                         '火伤': '火元素伤害加成', '冰伤': '冰元素伤害加成', '雷伤': '雷元素伤害加成', '物伤': '物理伤害加成', '风伤': '风元素伤害加成',
+                         '水伤': '水元素伤害加成', '岩伤': '岩元素伤害加成', '草伤': '草元素伤害加成', '治疗': '治疗加成', '充能': '元素充能效率'},
+           'suit_name': {'冰风': '冰风迷途的勇士', '角斗': '角斗士的终幕礼', '余响': '来歆余响', '磐岩': '悠古的磐岩', '饰金': '饰金之梦', '流星': '逆飞的流星',
+                         '辰砂': '辰砂往生录', '宗室': '昔日宗室之仪', '剧团': '黄金剧团', '逐影': '逐影猎人', '沉沦': '沉沦之心', '花海': '花海甘露之光',
+                         '绝缘': '绝缘之旗印', '谐律': '谐律异想断章', '乐园': '乐园遗落之花', '海染': '海染砗磲', '遐思': '未竟的遐思', '水仙': '水仙之梦',
+                         '少女': '被怜爱的少女', '追忆': '追忆之注连', '华馆': '华馆梦醒形骸记', '染血': '染血的骑士道', '回声': '回声之林夜话', '渡火': '渡过烈火的贤人',
+                         '昔时': '昔时之歌', '平雷': '平息鸣雷的尊者', '深林': '深林的记忆', '苍白': '苍白之火', '沙上': '沙上楼阁史话', '如雷': '如雷的盛怒',
+                         '千岩': '千岩牢固', '魔女': '炽烈的炎之魔女', '乐团': '流浪大地的乐团', '翠绿': '翠绿之影'}}
 
 
 def sort_recommend(artifact, position):
@@ -74,9 +28,8 @@ def sort_recommend(artifact, position):
         role_name = role_name_full.split('-')[0]
         if '主' in role_name or '旅行者' in role_name:
             role_name = '空'
-        affix_weight, point_mark, max_mark = get_miao_score(effective, role_data[role_name]['attribute'])
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact,
-                                                         role_data[role_name]["element"], position)
+        affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]['属性'])
+        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], position)
 
         artifact_pk_info = {'角色': role_name}
         artifact_pk_info['星级'] = artifact["星级"]
@@ -91,19 +44,16 @@ def sort_recommend(artifact, position):
             text = artifact['词条'][j]['属性名'].replace('百分比', '')
             up_num = ''
             if mark[j] != 0:
-                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[
-                                                                                                               j] == 4 else '⁵'
+                up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
             if artifact['词条'][j]['属性名'] not in ['攻击力', '防御力', '生命值', '元素精通']:
                 num = '+' + str(artifact['词条'][j]['属性值']) + '%'
             else:
                 num = '+' + str(artifact['词条'][j]['属性值'])
-            artifact_pk_info['副属性'].append({'属性名': text, '属性值': num, '强化次数': up_num,
-                                               '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'],
-                                                                                  effective) else '#afafaf'})
+            artifact_pk_info['副属性'].append(
+                {'属性名': text, '属性值': num, '强化次数': up_num, '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf'})
         artifact_recommend.append(copy.deepcopy(artifact_pk_info))
         if len(artifact_recommend) > 20:
-            artifact_recommend = sorted(artifact_recommend, key=lambda x: float(x['评分']),
-                                        reverse=True)[:20]
+            artifact_recommend = sorted(artifact_recommend, key=lambda x: float(x['评分']), reverse=True)[:20]
     return artifact_recommend
 
 
@@ -129,9 +79,8 @@ async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos
             artifact_pk_info['角色'] = artifact["角色"]
         data['圣遗物'][pos] = artifact
         effective, _ = get_effective(data)
-        affix_weight, point_mark, max_mark = get_miao_score(effective, role_data[role_name]['attribute'])
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact,
-                                                         role_data[role_name]["element"], pos)
+        affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]['属性'])
+        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos)
         artifact_pk_info['星级'] = artifact["星级"]
         artifact_pk_info['图标'] = artifact["图标"]
         artifact_pk_info['名称'] = artifact['名称']
@@ -153,12 +102,10 @@ async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos
                 {'属性名': text, '属性值': num, '强化次数': up_num, '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf'})
         if artifact_pk_info not in artifact_all:
             artifact_all.append(copy.deepcopy(artifact_pk_info))
-        artifact_all = sorted(artifact_all, key=lambda x: float(x['评分']),
-                              reverse=True)[:20 if len(artifact_all) > 20 else len(artifact_all)]
+        artifact_all = sorted(artifact_all, key=lambda x: float(x['评分']), reverse=True)[:20 if len(artifact_all) > 20 else len(artifact_all)]
     if not artifact_all:
         return None, None
-    return await draw_artifact_card(title, role_name, uid, artifact_all, ace2_num=0, ace_num=0,
-                                    plugin_version=plugin_version)
+    return await draw_artifact_card(title, role_name, uid, artifact_all, ace2_num=0, ace_num=0, plugin_version=plugin_version)
 
 
 async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occupy, plugin_version):
@@ -168,21 +115,8 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
     artifact_best_same_score = [0, 0, 0, 0, 0]
     artifact_best_score = [0, 0, 0, 0, 0]
     effective, _ = get_effective(data)
-    prop_diff = {
-        "暴击率": 0,
-        "暴击伤害": 0,
-        "元素精通": 0,
-        "百分比攻击力": 0,
-        "百分比生命值": 0,
-        "百分比防御力": 0,
-        "元素充能效率": 0,
-        "元素伤害加成": 0,
-        "物理伤害加成": 0,
-        "治疗加成": 0,
-        "攻击力": 0,
-        "生命值": 0,
-        "防御力": 0,
-    }
+    prop_diff = {"暴击率": 0, "暴击伤害": 0, "元素精通": 0, "百分比攻击力": 0, "百分比生命值": 0, "百分比防御力": 0, "元素充能效率": 0, "元素伤害加成": 0,
+        "物理伤害加成": 0, "治疗加成": 0, "攻击力": 0, "生命值": 0, "防御力": 0, }
     element_before = ''
     element_after = ''
     for pos in range(5):
@@ -202,9 +136,8 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
             artifact_pk_info = {}
             data['圣遗物'][pos] = artifact
             # effective, _ = get_effective(data)
-            affix_weight, point_mark, max_mark = get_miao_score(effective, role_data[role_name]['attribute'])
-            artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact,
-                                                             role_data[role_name]["element"], pos)
+            affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]['属性'])
+            artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos)
             if occupy and artifact['角色'] not in ['', role_name]:
                 continue
             if grade >= best_grade_score or grade >= best_grade_same_score:

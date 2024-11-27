@@ -1,12 +1,12 @@
 import copy
-import re
 from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
 from .damage_cal import get_role_dmg
 from ..utils.artifact_utils import get_effective, check_effective, get_artifact_suit, get_miao_score, get_artifact_score
-from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, skill_path, regoin_path, outline_path, talent_path, weapon_path, reli_path, avatar_path
+from ..utils.card_utils import json_path, other_path, get_font, bg_path, char_pic_path, skill_path, regoin_path, outline_path, talent_path, weapon_path, reli_path, \
+    avatar_path
 from ..utils.image_utils import load_image, draw_center_text, draw_right_text, get_img
 from ..utils.json_utils import load_json
 
@@ -18,8 +18,7 @@ role_url = 'https://enka.network/ui/{}.png'
 
 element_type = ['物理', '火元素', '雷元素', '水元素', '草元素', '风元素', '岩元素', '冰元素']
 
-role_data = load_json(f'{json_path}/roles_data.json')
-role_name = load_json(f'{json_path}/roles_name.json')
+role_info_json = load_json(f'{json_path}/role_info.json')
 
 
 def draw_dmg_pic(dmg: Dict[str, Union[tuple, list]]):
@@ -98,7 +97,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             bg.alpha_composite(bg_card, (0, 0))
         # 立绘
         role_pic = f'{char_pic_path}/{data["名称"]}.png'
-        role_pic = await get_img(url=role_url.format('UI_Gacha_AvatarImg_' + role_name["Name"][data["名称"]]), save_path=role_pic, mode='RGBA')
+        role_pic = await get_img(url=role_url.format('UI_Gacha_AvatarImg_' + role_info_json[data["名称"]]["英文名"]), save_path=role_pic, mode='RGBA')
         new_h = 872
         new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
         role_pic = role_pic.resize((new_w, new_h), Image.ANTIALIAS)
@@ -115,7 +114,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         base_mask = load_image(f'{other_path}/底遮罩.png')
         bg.alpha_composite(base_mask, (0, 0))
         if data['名称'] not in ['荧', '空', '埃洛伊']:
-            region_icon = load_image(path=f'{regoin_path}/{role_data[data["名称"]]["region"]}.png', size=(130, 130))
+            region_icon = load_image(path=f'{regoin_path}/{role_info_json[data["名称"]]["区域"]}.png', size=(130, 130))
             bg.alpha_composite(region_icon, (0, 4))
         bg_draw = ImageDraw.Draw(bg)
         if not title:
@@ -126,7 +125,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
 
         level_mask = load_image(path=f'{other_path}/等级遮罩.png')
         bg.alpha_composite(level_mask, (298 + 60 * (len(data['名称']) - 2), 172))
-        draw_center_text(bg_draw, f'LV{data["等级"]}', 298 + 60 * (len(data['名称']) - 2), 298 + 60 * (len(data['名称']) - 2) + 171, 174, 'black', get_font(48, 'number.ttf'))
+        draw_center_text(bg_draw, f'LV{data["等级"]}', 298 + 60 * (len(data['名称']) - 2), 298 + 60 * (len(data['名称']) - 2) + 171, 174, 'black',
+                         get_font(48, 'number.ttf'))
         # 属性值
         prop = data['属性']
         bg_draw.text((89, 262), '生命值', fill='white', font=get_font(34, 'hywh.ttf'))
@@ -180,8 +180,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         t = 0
         for talent in data['命座']:
             bg.alpha_composite(base_icon.resize((83, 90)), (510 + t * 84, 790 + 45))
-            talent_icon = f'{talent_path}/{talent["图标"]}.png'
-            talent_icon = await get_img(url=talent_url.format(talent["图标"]), size=(45, 45), save_path=talent_icon, mode='RGBA')
+            talent_icon = f'{talent_path}/{talent}.png'
+            talent_icon = await get_img(url=talent_url.format(talent), size=(45, 45), save_path=talent_icon, mode='RGBA')
             bg.alpha_composite(talent_icon, (529 + t * 84, 813 + 45))
             t += 1
         for t2 in range(t, 6):
@@ -206,7 +206,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
     # 圣遗物
     no_list = ''
     effective, weight_name = get_effective(data)
-    affix_weight, point_mark, max_mark = get_miao_score(effective, role_data[data['名称']]['attribute'])
+    affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[data["名称"]]['属性'])
     total_all = 0
     total_cnt = 0
     artifact_pk_info = {'角色': data["名称"]}
@@ -221,7 +221,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         artifact = artifact_list[i]
         if not artifact:
             continue
-        
+
         artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data['元素'], i)
         i = i - 2 if i > 1 else i
         if not title:
@@ -252,7 +252,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             bg.alpha_composite(level_mask.resize((98, 30)), (95 + offset_x + 317 * i, 1032 + offset_y))
             if artifact['等级'] != 20:
                 no_list = '*'
-            draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + offset_x + 317 * i, 95 + offset_x + 317 * i + 98, 1033 + offset_y, 'black', get_font(27, 'number.ttf'))
+            draw_center_text(bg_draw, f"LV{artifact['等级']}", 95 + offset_x + 317 * i, 95 + offset_x + 317 * i + 98, 1033 + offset_y, 'black',
+                             get_font(27, 'number.ttf'))
             bg_draw.text((94 + offset_x + 317 * i, 1069 + offset_y), artifact['主属性']['属性名'], fill='white', font=get_font(25))
             if artifact['主属性']['属性名'] not in ['生命值', '攻击力', '元素精通']:
                 bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}%", fill='white', font=get_font(48, 'number.ttf'))
@@ -260,14 +261,9 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
                 bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}", fill='white', font=get_font(48, 'number.ttf'))
 
             if title and '角色' in artifact and artifact.get("角色", ''):
-                avatar_name = 'UI_AvatarIcon_Side_' + role_name["Name"][artifact["角色"]]
+                avatar_name = 'UI_AvatarIcon_Side_' + role_info_json[data["名称"]]["英文名"]
                 avatar_icon = f'{avatar_path}/{avatar_name}.png'
-                avatar_icon = await get_img(
-                    url=artifact_url.format(
-                        avatar_name),
-                    size=(100, 100),
-                    save_path=avatar_icon,
-                    mode='RGBA')
+                avatar_icon = await get_img(url=artifact_url.format(avatar_name), size=(100, 100), save_path=avatar_icon, mode='RGBA')
                 bg.alpha_composite(avatar_icon, (270 + offset_x + 317 * i + 30, 1002 + offset_y + 30))
 
         for j in range(len(artifact['词条'])):
@@ -276,15 +272,18 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             if mark[j] != 0:
                 up_num = '¹' if mark[j] == 1 else '²' if mark[j] == 2 else '³' if mark[j] == 3 else '⁴' if mark[j] == 4 else '⁵'
                 x_offset = 25 * len(text)
-                bg_draw.text((94 + offset_x + 317 * i + x_offset, 1163 + 50 * j - 5 + offset_y), up_num, fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf',
-                             font=get_font(25, 'tahomabd.ttf'))
-            bg_draw.text((94 + offset_x + 317 * i, 1163 + 50 * j + offset_y), text, fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25))
+                bg_draw.text((94 + offset_x + 317 * i + x_offset, 1163 + 50 * j - 5 + offset_y), up_num,
+                             fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25, 'tahomabd.ttf'))
+            bg_draw.text((94 + offset_x + 317 * i, 1163 + 50 * j + offset_y), text,
+                         fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25))
             if artifact['词条'][j]['属性名'] not in ['攻击力', '防御力', '生命值', '元素精通']:
                 num = '+' + str(artifact['词条'][j]['属性值']) + '%'
             else:
                 num = '+' + str(artifact['词条'][j]['属性值'])
-            artifact_pk_info['副属性'].append({'属性名': text, '属性值': num, '强化次数': up_num, '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf'})
-            draw_right_text(bg_draw, num, 362 + offset_x + 317 * i, 1163 + 50 * j + offset_y, fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25, 'number.ttf'))
+            artifact_pk_info['副属性'].append(
+                {'属性名': text, '属性值': num, '强化次数': up_num, '颜色': 'white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf'})
+            draw_right_text(bg_draw, num, 362 + offset_x + 317 * i, 1163 + 50 * j + offset_y,
+                            fill='white' if check_effective(artifact['词条'][j]['属性名'], effective) else '#afafaf', font=get_font(25, 'number.ttf'))
         if artifact_pk_info not in artifact_pk and (not title):
             artifact_pk.append(copy.deepcopy(artifact_pk_info))
     if not title:
@@ -359,7 +358,9 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         effect = {}
         for item in effective:
             if item not in ['元素伤害加成', '物理伤害加成']:
-                name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace('暴击伤害', '爆伤').replace('元素精通', '精通').replace('治疗加成', '治疗')
+                name = item.replace('百分比', '').replace('元素充能效率', '充能').replace('暴击率', '暴击').replace('暴击伤害', '爆伤').replace('元素精通',
+                                                                                                                                                '精通').replace(
+                    '治疗加成', '治疗')
                 if name not in effect:
                     effect[name] = effective.get(item)
         effect = str(effect).replace("'", "").replace(" ", "").strip("{}")
@@ -369,6 +370,6 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         else:
             weight_name = weight_name.split('-')[-1]
         draw_center_text(bg_draw, f'{weight_name}:{effect}', 0, 1080, bg.size[1] - 85, '#afafaf', get_font(30))
-        date = data["更新时间"]# re.sub("\d{4}-", "", data["更新时间"])
+        date = data["更新时间"]  # re.sub("\d{4}-", "", data["更新时间"])
         draw_center_text(bg_draw, f'Updated on {date[:-3]} | v{plugin_version}', 0, 1080, bg.size[1] - 50, '#ffffff', get_font(36, '优设标题黑.ttf'))
     return bg, str(total_all) + no_list if no_list == '*' else total_all
