@@ -261,7 +261,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
                 bg_draw.text((91 + offset_x + 317 * i, 1100 + offset_y), f"+{artifact['主属性']['属性值']}", fill='white', font=get_font(48, 'number.ttf'))
 
             if title and '角色' in artifact and artifact.get("角色", ''):
-                avatar_name = 'UI_AvatarIcon_Side_' + role_info_json[data["名称"]]["英文名"]
+                avatar_name = 'UI_AvatarIcon_Side_' + role_info_json[artifact.get("角色")]["英文名"]
                 avatar_icon = f'{avatar_path}/{avatar_name}.png'
                 avatar_icon = await get_img(url=artifact_url.format(avatar_name), size=(100, 100), save_path=avatar_icon, mode='RGBA')
                 bg.alpha_composite(avatar_icon, (270 + offset_x + 317 * i + 30, 1002 + offset_y + 30))
