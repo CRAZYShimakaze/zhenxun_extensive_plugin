@@ -77,7 +77,7 @@ check_update = on_command("检查原神面板更新", permission=SUPERUSER, prio
 alias_file = load_json(f'{json_path}/alias.json')
 artifact_info = load_json(f'{json_path}/artifact.json')
 role_info_json = load_json(f'{json_path}/role_info.json')
-import_artifact = on_message(permission=PRIVATE, priority=1)
+import_artifact = on_message(permission=PRIVATE, priority=1, block=False)
 # import_artifact = on_notice(priority=1, block=False)
 import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
 
