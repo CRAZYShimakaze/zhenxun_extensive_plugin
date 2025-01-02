@@ -794,8 +794,7 @@
       "班尼特",
       "班爷",
       "班神",
-      "点赞哥",
-      "火神"
+      "点赞哥"
     ],
     "英文名": "Bennett",
     "id": "10000032",
@@ -3323,7 +3322,7 @@
   },
   "水主": {
     "角色名": "水主",
-    "英文名": "Player",
+    "英文名": "PlayerWater",
     "区域": "其它",
     "武器": "单手剑",
     "属性": {
@@ -3360,7 +3359,7 @@
   },
   "风主": {
     "角色名": "风主",
-    "英文名": "Player",
+    "英文名": "PlayerWind",
     "区域": "其它",
     "武器": "单手剑",
     "属性": {
@@ -3397,7 +3396,7 @@
   },
   "雷主": {
     "角色名": "雷主",
-    "英文名": "Player",
+    "英文名": "PlayerElectric",
     "区域": "其它",
     "武器": "单手剑",
     "属性": {
@@ -3434,7 +3433,7 @@
   },
   "岩主": {
     "角色名": "岩主",
-    "英文名": "Player",
+    "英文名": "PlayerRock",
     "区域": "其它",
     "武器": "单手剑",
     "属性": {
@@ -3471,7 +3470,7 @@
   },
   "草主": {
     "角色名": "草主",
-    "英文名": "Player",
+    "英文名": "PlayerGrass",
     "区域": "其它",
     "武器": "单手剑",
     "属性": {
@@ -3496,6 +3495,107 @@
     "命座转换": [
       0,
       1
+    ],
+    "命座": [
+      "UI_Talent_S_PlayerGrass_01",
+      "UI_Talent_S_PlayerGrass_02",
+      "UI_Talent_U_PlayerGrass_01",
+      "UI_Talent_S_PlayerGrass_03",
+      "UI_Talent_U_PlayerGrass_02",
+      "UI_Talent_S_PlayerGrass_04"
+    ]
+  },
+  "火主": {
+    "角色名": "火主",
+    "英文名": "PlayerFire",
+    "区域": "其它",
+    "武器": "单手剑",
+    "属性": {
+      "生命值": "10875",
+      "攻击力": "212",
+      "防御力": "683"
+    },
+    "星级": "5",
+    "元素": "火",
+    "技能": {
+      "10067": "Skill_S_PlayerWind_01",
+      "10068": "Skill_E_PlayerWind_01",
+      "10077": "Skill_S_PlayerRock_01",
+      "10078": "Skill_E_PlayerRock_01",
+      "10087": "Skill_S_PlayerWater_01",
+      "10088": "Skill_E_PlayerWater_01",
+      "10117": "Skill_E_PlayerGrass_01",
+      "10118": "Skill_S_PlayerGrass_01",
+      "10602": "Skill_S_PlayerElectric_01",
+      "10605": "Skill_E_PlayerElectric_01"
+    },
+    "命座转换": [
+      1,
+      0
+    ],
+    "命座": [
+      "UI_Talent_S_PlayerWind_01",
+      "UI_Talent_S_PlayerWind_02",
+      "UI_Talent_U_PlayerWind_01",
+      "UI_Talent_S_PlayerWind_03",
+      "UI_Talent_U_PlayerWind_02",
+      "UI_Talent_S_PlayerWind_04"
+    ]
+  },
+  "茜特菈莉": {
+    "角色名": "茜特菈莉",
+    "别名": [
+      "茜特菈莉",
+      "奶奶"
+    ],
+    "英文名": "Citlali",
+    "id": "10000107",
+    "区域": "纳塔",
+    "武器": "法器",
+    "属性": {
+      "生命值": "11634",
+      "攻击力": "127",
+      "防御力": "763"
+    },
+    "星级": "5",
+    "元素": "冰",
+    "命座转换": [
+      1,
+      2
+    ],
+    "命座": [
+      "UI_Talent_S_PlayerGrass_01",
+      "UI_Talent_S_PlayerGrass_02",
+      "UI_Talent_U_PlayerGrass_01",
+      "UI_Talent_S_PlayerGrass_03",
+      "UI_Talent_U_PlayerGrass_02",
+      "UI_Talent_S_PlayerGrass_04"
+    ]
+  },
+  "玛薇卡": {
+    "角色名": "玛薇卡",
+    "别名": [
+      "玛薇卡",
+      "火神"
+    ],
+    "英文名": "Mavuika",
+    "id": "10000106",
+    "区域": "纳塔",
+    "武器": "大剑",
+    "属性": {
+      "生命值": "12552",
+      "攻击力": "359",
+      "防御力": "792"
+    },
+    "星级": "5",
+    "元素": "火",
+    "技能": {
+      "10972": "Skill_S_Mavuika_01",
+      "10975": "Skill_E_Mavuika_01"
+    },
+    "命座转换": [
+      1,
+      2
     ],
     "命座": [
       "UI_Talent_S_PlayerGrass_01",

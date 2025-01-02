@@ -27,13 +27,22 @@ weapon_path = data_res_path + 'weapon'
 reli_path = data_res_path + 'reli'
 font_path = card_res_path + 'fonts'
 weapon = load_json(path=f'{json_path}/weapon.json')
-prop_list = load_json(path=f'{json_path}/prop.json')
+prop_list = {"FIGHT_PROP_BASE_ATTACK": "基础攻击力", "FIGHT_PROP_BASE_DEFENSE": "基础防御力", "FIGHT_PROP_BASE_HP": "基础生命值", "FIGHT_PROP_ATTACK": "攻击力",
+             "FIGHT_PROP_ATTACK_PERCENT": "百分比攻击力", "FIGHT_PROP_HP": "生命值", "FIGHT_PROP_HP_PERCENT": "百分比生命值", "FIGHT_PROP_DEFENSE": "防御力",
+             "FIGHT_PROP_DEFENSE_PERCENT": "百分比防御力", "FIGHT_PROP_ELEMENT_MASTERY": "元素精通", "FIGHT_PROP_CRITICAL": "暴击率",
+             "FIGHT_PROP_CRITICAL_HURT": "暴击伤害", "FIGHT_PROP_ANTI_CRITICAL": "暴击抗性", "FIGHT_PROP_CHARGE_EFFICIENCY": "元素充能效率",
+             "FIGHT_PROP_FIRE_SUB_HURT": "火元素抗性", "FIGHT_PROP_ELEC_SUB_HURT": "雷元素抗性", "FIGHT_PROP_ICE_SUB_HURT": "冰元素抗性",
+             "FIGHT_PROP_WATER_SUB_HURT": "水元素抗性", "FIGHT_PROP_WIND_SUB_HURT": "风元素抗性", "FIGHT_PROP_ROCK_SUB_HURT": "岩元素抗性",
+             "FIGHT_PROP_GRASS_SUB_HURT": "草元素抗性", "FIGHT_PROP_FIRE_ADD_HURT": "火元素伤害加成", "FIGHT_PROP_ELEC_ADD_HURT": "雷元素伤害加成",
+             "FIGHT_PROP_ICE_ADD_HURT": "冰元素伤害加成", "FIGHT_PROP_WATER_ADD_HURT": "水元素伤害加成", "FIGHT_PROP_WIND_ADD_HURT": "风元素伤害加成",
+             "FIGHT_PROP_ROCK_ADD_HURT": "岩元素伤害加成", "FIGHT_PROP_GRASS_ADD_HURT": "草元素伤害加成", "FIGHT_PROP_PHYSICAL_ADD_HURT": "物理伤害加成",
+             "FIGHT_PROP_HEAL_ADD": "治疗加成", "FIGHT_PROP_HEALED_ADD": "受治疗加成"}
 artifact_list = load_json(path=f'{json_path}/artifact.json')
 role_score = load_json(path=f'{json_path}/score.json')
 role_skill = load_json(path=f'{json_path}/roles_skill.json')
 role_info_json = load_json(path=f'{json_path}/role_info.json')
 convert = {'hp': '百分比生命值', 'atk': '百分比攻击力', 'def': '百分比防御力', 'cpct': '暴击率', 'cdmg': '暴击伤害', 'mastery': '元素精通', 'dmg': '元素伤害加成',
-    'phy': '物理伤害加成', 'recharge': '元素充能效率', 'heal': '治疗加成'}
+           'phy': '物理伤害加成', 'recharge': '元素充能效率', 'heal': '治疗加成'}
 role_tmp = {}
 for item in role_score.keys():
     role_tmp[item] = {}
@@ -92,7 +101,7 @@ class PlayerInfo:
 
             role_info['天赋'] = []
             for skill in data['skillLevelMap']:
-                if skill not in role_info_json[role_name]['技能'].keys():
+                if skill[-1] == '1':
                     if role_info_json[role_name]['武器'] == '单手剑':
                         skill_detail = {'等级': data['skillLevelMap'][skill], '图标': 'Skill_A_01'}
                     elif role_info_json[role_name]['武器'] == '弓':
@@ -103,8 +112,10 @@ class PlayerInfo:
                         skill_detail = {'等级': data['skillLevelMap'][skill], '图标': 'Skill_A_04'}
                     else:  # role_info_json[role_name]['武器'] == '法器':
                         skill_detail = {'等级': data['skillLevelMap'][skill], '图标': 'Skill_A_Catalyst_MD'}
-                else:
-                    skill_detail = {'等级': data['skillLevelMap'][skill], '图标': role_info_json[role_name]['技能'][skill]}
+                elif skill[-1] == '2':
+                    skill_detail = {'等级': data['skillLevelMap'][skill], '图标': f'Skill_S_{role_info_json[role_name]["英文名"]}_01'}
+                else:  # if skill[-1] == '5':
+                    skill_detail = {'等级': data['skillLevelMap'][skill], '图标': f'Skill_E_{role_info_json[role_name]["英文名"]}_01'}
                 role_info['天赋'].append(skill_detail)
             if role_info['名称'] == '神里绫华':
                 role_info['天赋'][0], role_info['天赋'][-1] = role_info['天赋'][-1], role_info['天赋'][0]
@@ -132,8 +143,13 @@ class PlayerInfo:
                         role_name = '草主'
                     elif role_info['元素'] == '水':
                         role_name = '水主'
+                    elif role_info['元素'] == '火':
+                        role_name = '火主'
+                talent = [f'UI_Talent_S_{role_info_json[role_name]["英文名"]}_01', f'UI_Talent_S_{role_info_json[role_name]["英文名"]}_02',
+                          f'UI_Talent_U_{role_info_json[role_name]["英文名"]}_01', f'UI_Talent_S_{role_info_json[role_name]["英文名"]}_03',
+                          f'UI_Talent_U_{role_info_json[role_name]["英文名"]}_02', f'UI_Talent_S_{role_info_json[role_name]["英文名"]}_04']
                 for i in range(len(data['talentIdList'])):
-                    talent_detail = role_info_json[role_name]['命座'][i]
+                    talent_detail = talent[i]
                     role_info['命座'].append(talent_detail)
 
             prop = {}
@@ -172,7 +188,7 @@ class PlayerInfo:
             weapon_info['基础攻击'] = weapon_data['flat']['weaponStats'][0]['statValue']
             try:
                 weapon_info['副属性'] = {'属性名': prop_list[weapon_data['flat']['weaponStats'][1]['appendPropId']],
-                    '属性值': weapon_data['flat']['weaponStats'][1]['statValue']}
+                                         '属性值': weapon_data['flat']['weaponStats'][1]['statValue']}
             except IndexError:
                 weapon_info['副属性'] = {'属性名': '无属性', '属性值': 0}
             weapon_info['特效'] = '待补充'
@@ -188,7 +204,7 @@ class PlayerInfo:
                 artifact_info['等级'] = artifact['reliquary']['level'] - 1
                 artifact_info['星级'] = artifact['flat']['rankLevel']
                 artifact_info['主属性'] = {'属性名': prop_list[artifact['flat']['reliquaryMainstat']['mainPropId']],
-                    '属性值': artifact['flat']['reliquaryMainstat']['statValue']}
+                                           '属性值': artifact['flat']['reliquaryMainstat']['statValue']}
                 artifact_info['词条'] = []
                 for reliquary in artifact['flat'].get('reliquarySubstats', []):
                     artifact_info['词条'].append({'属性名': prop_list[reliquary['appendPropId']], '属性值': reliquary['statValue']})

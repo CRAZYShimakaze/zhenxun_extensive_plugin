@@ -208,6 +208,8 @@
     "1257396043": "白雨心弦",
     "1363661611": "星鹫赤羽",
     "4019353779": "缀花之翎",
+    "2466897131": "祭星者之望",
+    "1876377995": "焚曜千阳",
     "4137694339": "(test)竿测试",
     "2719832059": "(test)穿模测试",
     "500987603": "(test)穿模测试",
@@ -422,6 +424,8 @@
     "白雨心弦": "弓",
     "星鹫赤羽": "弓",
     "缀花之翎": "弓",
+    "焚曜千阳": "双手剑",
+    "祭星者之望": "法器",
     "(test)竿测试": "单手剑",
     "(test)穿模测试": "弓"
   },
@@ -629,6 +633,8 @@
     "猎人之径": "UI_EquipIcon_Bow_Ayus",
     "最初的大魔术": "UI_EquipIcon_Bow_Pledge",
     "白雨心弦": "UI_EquipIcon_Bow_Arcdange",
+    "焚曜千阳": "UI_EquipIcon_Claymore_RadianceSword_Awaken",
+    "祭星者之望": "UI_EquipIcon_Catalyst_Figurines_Awaken",
     "(test)竿测试": "UI_EquipIcon_FishingRod",
     "(test)穿模测试": "UI_EquipIcon_Bow_Template"
   }
