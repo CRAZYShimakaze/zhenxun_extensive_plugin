@@ -25,7 +25,7 @@
 
 ## 效果图
 
-<img src="https://ghp.ci/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://mirror.ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
+<img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
 
 ## 致谢
 
@@ -35,6 +35,11 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2025/1/8**[v4.1.2]
+
+1. 修改角色权重
+2. 修复茜特菈莉名字显示异常
 
 **2024/11/27**[v4.1.1]
 

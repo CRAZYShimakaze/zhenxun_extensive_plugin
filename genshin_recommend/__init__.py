@@ -285,7 +285,7 @@ async def get_alias():
 
 
 def get_raw():
-    raw = "https://ghp.ci/https://raw.githubusercontent.com"
+    raw = "https://raw.githubusercontent.com"
     return raw
 
 

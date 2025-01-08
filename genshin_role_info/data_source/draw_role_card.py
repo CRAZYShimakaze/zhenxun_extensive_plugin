@@ -121,7 +121,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             bg_draw.text((131, 100), f"UID{uid}", fill='white', font=get_font(48, 'number.ttf'))
         else:
             bg_draw.text((131, 80), title, fill='white', font=get_font(72, '优设标题黑.ttf'))
-        bg_draw.text((134, 150), data['名称'], fill='white', font=get_font(72, '优设标题黑.ttf'))
+        bg_draw.text((134, 150), data['名称'], fill='white', font=get_font(72, 'hywh.ttf'))
 
         level_mask = load_image(path=f'{other_path}/等级遮罩.png')
         bg.alpha_composite(level_mask, (298 + 60 * (len(data['名称']) - 2), 172))

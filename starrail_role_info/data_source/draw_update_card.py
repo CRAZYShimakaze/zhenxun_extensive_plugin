@@ -7,7 +7,7 @@ from ..utils.card_utils import json_path, get_font, bg_path, avatar_path, other_
 from ..utils.image_utils import load_image, draw_center_text, get_img, image_build
 from ..utils.json_utils import load_json
 
-role_url = 'https://ghp.ci/https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/{}.png'
+role_url = 'https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/{}.png'
 
 role_data = load_json(f'{json_path}/roles_data.json')
 role_name = load_json(f'{json_path}/roles_name.json')

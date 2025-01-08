@@ -271,6 +271,9 @@ def get_effective(data):
                 role_name = '希诺宁-战斗'
             elif data['武器']['名称'] == '西风剑':
                 role_name = '希诺宁-西风'
+        elif role_name == '茜特菈莉':
+            if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.0:
+                role_name = '茜特菈莉-战斗'
         if '-' in role_name:
             return role_score.get(role_name), role_name
         elif role_name in role_score:

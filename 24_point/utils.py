@@ -14,11 +14,11 @@ async def load_font(name: str, fontsize: int) -> FreeTypeFont:
     tff_path = FONT_PATH / name
     if not tff_path.exists():
         try:
-            url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{}".format(
+            url = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{}".format(
                 name)
             await AsyncHttpx.download_file(url, tff_path)
         except:
-            url = "https://ghproxy.com/https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{}".format(
+            url = "https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{}".format(
                 name)
             await AsyncHttpx.download_file(url, tff_path)
     return ImageFont.truetype(str(tff_path), fontsize, encoding="utf-8")

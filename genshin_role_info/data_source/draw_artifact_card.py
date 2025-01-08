@@ -92,7 +92,7 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
             bg_draw.text((slice_offset_x + 23, slice_offset_y + 228 + 50 * j), text, fill=artifact['副属性'][j]['颜色'], font=get_font(25))
             num = artifact['副属性'][j]['属性值']
             draw_right_text(bg_draw, num, slice_offset_x + 291, slice_offset_y + 228 + 50 * j, fill=artifact['副属性'][j]['颜色'], font=get_font(25, 'number.ttf'))
-    draw_center_text(bg_draw, f'{title}', 0, wid, 5, '#ffffff', get_font(96, '优设标题黑.ttf'))
+    draw_center_text(bg_draw, f'{title}', 0, wid, 5, '#ffffff', get_font(96, 'hywh.ttf'))
     draw_center_text(bg_draw, f'{"group" if is_group else "uid"}:{uid} | v{plugin_version}', 0, wid, bg.size[1] - 70, '#ffffff', get_font(46, '优设标题黑.ttf'))
     if is_group:
         text_info = ''

@@ -16,7 +16,7 @@ handle_txt_path.mkdir(exist_ok=True, parents=True)
 
 async def random_idiom() -> str:
     if not idiom_path.exists():
-        url = "https://ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/data/idioms.txt"
+        url = "https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/data/idioms.txt"
         try:
             await AsyncHttpx.download_file(url, idiom_path)
         except Exception as e:
