@@ -247,7 +247,7 @@ async def _(event: MessageEvent):
 @import_artifact_hint.handle()
 async def _():
     await import_artifact_hint.send(
-        f'请在PC端按以下步骤操作\n1.下载https://ghp.ci/https://github.com/wormtql/yas/releases/download/v0.1.18/yas_artifact_v0.1.18.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.17.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
+        f'请在PC端按以下步骤操作\n1.下载https://github.com/FungusOVO/yas-lock/releases/download/0.1.19/yas_artifact.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
 
 
 @import_artifact.handle()

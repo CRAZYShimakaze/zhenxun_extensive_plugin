@@ -52,8 +52,13 @@ async def get_img(url: str,
         if save_path and not Path(save_path).exists():
             save_path = Path(save_path)
             save_path.parent.mkdir(parents=True, exist_ok=True)
-        await AsyncHttpx.download_file(url, save_path, follow_redirects=True)
-        img = Image.open(save_path)
+        for _ in range(2):
+            await AsyncHttpx.download_file(url, save_path, follow_redirects=True)
+            try:
+                img = Image.open(save_path)
+                break
+            except:
+                continue
     if size:
         if isinstance(size, float):
             img = img.resize(

@@ -44,7 +44,7 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
     role = role_list[-1]
     role_list = sorted(role_list,
                        key=lambda x: (player_info.get_roles_info(x)['等级'],
-                                      -['Warrior', 'Priest', 'Knight', 'Shaman', 'Mage', 'Rogue', 'Warlock'].index(
+                                      -['Warrior', 'Priest', 'Knight', 'Shaman', 'Mage', 'Rogue', 'Warlock', 'Memory'].index(
                                           player_info.get_roles_info(x)['命途'])),
                        reverse=True)
     # 绘制角色卡片
