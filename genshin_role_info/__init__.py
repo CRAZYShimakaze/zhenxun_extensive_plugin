@@ -52,7 +52,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.1.3"
+__plugin_version__ = "4.1.4"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -74,7 +74,6 @@ artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, prior
 group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=False)
 check_update = on_command("检查原神面板更新", permission=SUPERUSER, priority=3, block=True)
-alias_file = load_json(f'{json_path}/alias.json')
 artifact_info = load_json(f'{json_path}/artifact.json')
 role_info_json = load_json(f'{json_path}/role_info.json')
 import_artifact = on_message(permission=PRIVATE, priority=1, block=False)
