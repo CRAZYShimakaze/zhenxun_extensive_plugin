@@ -1,6 +1,7 @@
 {
   "property": {
     "HPDelta": "生命值",
+    "BaseSpeed": "基础速度",
     "AttackDelta": "攻击力",
     "DefenceDelta": "防御力",
     "HPAddedRatio": "百分比生命值",

@@ -38,18 +38,17 @@ prop_list = {"FIGHT_PROP_BASE_ATTACK": "基础攻击力", "FIGHT_PROP_BASE_DEFEN
     "FIGHT_PROP_GRASS_ADD_HURT": "草元素伤害加成", "FIGHT_PROP_PHYSICAL_ADD_HURT": "物理伤害加成", "FIGHT_PROP_HEAL_ADD": "治疗加成",
     "FIGHT_PROP_HEALED_ADD": "受治疗加成"}
 artifact_list = load_json(path=f'{json_path}/artifact.json')
-role_score = load_json(path=f'{json_path}/score.json')
+role_ori = load_json(path=f'{json_path}/score.json')
 role_skill = load_json(path=f'{json_path}/roles_skill.json')
 role_info_json = load_json(path=f'{json_path}/role_info.json')
 convert = {'hp': '百分比生命值', 'atk': '百分比攻击力', 'def': '百分比防御力', 'cpct': '暴击率', 'cdmg': '暴击伤害', 'mastery': '元素精通', 'dmg': '元素伤害加成',
            'phy': '物理伤害加成', 'recharge': '元素充能效率', 'heal': '治疗加成'}
-role_tmp = {}
-for item in role_score.keys():
-    role_tmp[item] = {}
-    for info in role_score.get(item).keys():
-        if role_score.get(item).get(info) != 0:
-            role_tmp[item][convert.get(info)] = role_score.get(item).get(info)
-role_score = role_tmp
+role_score = {}
+for item in role_ori.keys():
+    role_score[item] = {}
+    for info in role_ori.get(item).keys():
+        if role_ori.get(item).get(info) != 0:
+            role_score[item][convert.get(info)] = role_ori.get(item).get(info)
 
 
 class PlayerInfo:

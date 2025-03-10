@@ -1,7 +1,29 @@
 import copy
 import math
 
-from ..utils.card_utils import role_score
+from ..utils.card_utils import convert, role_ori
+
+weapon_cfg = {
+    "磐岩结绿": {
+        "attr": "百分比生命值",
+        "abbr": "绿剑",
+        "max": 30,
+        "min": 15
+    },
+    "猎人之径": {
+        "attr": "元素精通"
+    },
+    "薙草之稻光": {
+        "attr": "元素充能效率",
+        "abbr": "薙刀"
+    },
+    "护摩之杖": {
+        "attr": "百分比生命值",
+        "abbr": "护摩",
+        "max": 18,
+        "min": 10
+    }
+}
 
 grow_max_value = {  # 词条成长值
     "暴击率": 3.89,
@@ -156,6 +178,26 @@ def get_miao_score(affix_weight, base_info):
     return affix_weight, pointmark, max_mark
 
 
+def check(weight, affix, key, max_value=75, max_plus=75, is_weapon=True):
+    original = weight.get(key, 0)
+
+    if original < max_value:
+        plus = max_plus * (1 + affix / 5) / 2 if is_weapon else max_plus
+        weight[key] = min(round(original + plus), max_value)
+        return True
+
+    return False
+def weapon_check(weight, affix, key, max_affix_attr=20, min_affix_attr=10, max_value=100):
+    original = weight.get(key, 0)
+
+    if original == max_value:
+        return False
+    else:
+        plus = min_affix_attr + (max_affix_attr - min_affix_attr) * (affix - 1) / 4
+        weight[key] = min(round(original + plus), max_value)
+        return True
+
+
 def get_effective(data):
     """
     根据角色的武器、圣遗物来判断获取该角色有效词条列表
@@ -164,6 +206,7 @@ def get_effective(data):
     """
     role_name = data['名称']
     artifacts = data['圣遗物']
+    suffix = ''
     try:
         if role_name in ['荧', '空']:
             if data['元素'] == '火':
@@ -180,122 +223,156 @@ def get_effective(data):
                 role_name = '岩主'
             elif data['元素'] == '草':
                 role_name = '草主'
-        elif role_name == '钟离':
+
+        weight = copy.deepcopy(role_ori.get(role_name))
+
+        if role_name == '钟离':
             if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.4:
-                role_name = '钟离-战斗'
-            elif data['武器']['名称'] == '西风长枪':
-                role_name = '钟离-西风'
+                weight = { "hp": 80, "atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 30 }
+                suffix += '战斗'
         elif role_name == '芭芭拉':
             if artifacts[3]['主属性']['属性名'] == '水元素伤害加成' and \
                     data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] >= 1.8:
-                role_name = '芭芭拉-暴力'
+                weight = { "hp": 50, "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 30, "heal": 50 }
+                suffix += '暴力'
         elif role_name == '甘雨':
             suit = get_artifact_suit(artifacts)
             if '冰' in suit[0][0] and '冰' in suit[1][0]:
-                role_name = '甘雨-永冻'
+                weight = { "atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 55 }
+                suffix += '永冻'
         elif role_name == '刻晴':
             if data['属性']['元素精通'] > 50:
-                role_name = '刻晴-精通'
+                weight = { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100 }
+                suffix += '精通'
         elif role_name == '神里绫人':
             if data['属性']['元素精通'] > 120:
-                role_name = '神里绫人-精通'
+                weight = { "hp": 45, "atk": 60, "cpct": 100, "cdmg": 100, "mastery": 60, "dmg": 100, "recharge": 30 }
+                suffix += '精通'
         elif role_name == '温迪':
             if data['属性']['元素充能效率'] > 240:
-                role_name = '温迪-充能'
+                weight = { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 100 }
+                suffix += '充能'
         elif role_name == '宵宫':
             if data['属性']['元素精通'] < 50 and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 3.2:
-                role_name = '宵宫-纯火'
+                weight = { "atk": 85, "cpct": 100, "cdmg": 100, "dmg": 100 }
+                suffix += '纯火'
             if data['属性']['元素精通'] > 200 and artifacts[2]['主属性']['属性名'] == '元素精通':
-                role_name = '宵宫-精通'
+                weight = { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 100, "dmg": 100 }
+                suffix += '精通'
         elif role_name == '行秋':
             if data['属性']['元素精通'] > 120:
-                role_name = '行秋-蒸发'
+                weight = { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75 }
+                suffix += '蒸发'
         elif role_name == '云堇':
             if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 1.8 \
                     and artifacts[3]['主属性']['属性名'] == '岩元素伤害加成' \
                     and artifacts[4]['主属性']['属性名'] in ['暴击率', '暴击伤害', '百分比防御力', '百分比攻击力']:
-                role_name = '云堇-输出'
+                weight = { "atk": 75, "def": 100, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 75 }
+                suffix += '输出'
         elif role_name == '雷电将军':
             if data['属性']['元素精通'] > 500:
-                role_name = '雷电将军-精通'
+                weight = { "atk": 75, "cpct": 90, "cdmg": 90, "mastery": 100, "dmg": 75, "recharge": 90 }
+                suffix += '精通'
             elif data['武器']['名称'] == '薙草之稻光' and data["武器"]["精炼等级"] >= 3:
-                role_name = '雷电将军-高精'
+                weight = { "atk": 90, "cpct": 100, "cdmg": 100, "dmg": 90, "recharge": 90 }
+                suffix += '高精'
         elif role_name == '胡桃':
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2.8:
-                role_name = '胡桃-核爆'
+                weight = { "hp": 90, "atk": 50, "cdmg": 100, "mastery": 90, "dmg": 100 }
+                suffix += '核爆'
         elif role_name == '夜兰':
             if data['属性']['元素精通'] > 50:
-                role_name = '夜兰-精通'
+                weight['mastery'] = 75
+                suffix += '精通'
             if data['武器']['名称'] == '若水':
-                role_name = '夜兰-若水'
-            if data['属性']['元素精通'] > 50 and data['武器']['名称'] == '若水':
-                role_name = '夜兰-精通若水'
+                weight['hp'] = 100
+                suffix += '若水'
         elif role_name == '神里绫华':
             if data['属性']['元素精通'] > 120:
-                role_name = '神里绫华-精通'
+                weight = { "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 45 }
+                suffix += '精通'
         elif role_name == '可莉':
             if data['属性']['元素精通'] < 50 and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 3.2:
-                role_name = '可莉-纯火'
+                weight = { "atk": 85, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 55 }
+                suffix += '纯火'
         elif role_name == '优菈':
             if data['属性']['暴击率'] < 0.15 and data['属性']['暴击伤害'] > 2:
-                role_name = '优菈-核爆'
+                weight = { "atk": 100, "cdmg": 100, "phy": 100 }
+                suffix += '核爆'
         elif role_name == '迪希雅':
             if artifacts[2]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[3]['主属性']['属性名'] == '百分比生命值' \
                     and artifacts[4]['主属性']['属性名'] == '百分比生命值' \
                     and data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] < 1 \
                     and data['属性']['基础生命'] + data['属性']['额外生命'] > 40000:
-                role_name = '迪希雅-血牛'
+                weight = { "hp": 100, "atk": 30, "cpct": 41, "cdmg": 41, "recharge": 30 }
+                suffix += '血牛'
         elif role_name == '枫原万叶':
             if len(data['命座']) == 6:
-                role_name = '枫原万叶-满命'
+                weight = { "hp": 0, "atk": 75, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 30, "dmg": 100, "phy": 0, "recharge": 55, "heal": 0 }
+                suffix += '满命'
         elif role_name == '妮露':
             if len(data['命座']) == 6:
-                role_name = '妮露-满命'
+                weight = { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 80, "dmg": 100, "phy": 0, "recharge": 30, "heal": 0 }
+                suffix += '满命'
         elif role_name == '闲云':
             if len(data['命座']) == 6:
-                role_name = '闲云-满命'
+                weight = { "hp": 0, "atk": 100, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 35, "heal": 75 }
+                suffix += '满命'
         elif role_name == '芙宁娜':
             if len(data['命座']) == 6:
-                role_name = '芙宁娜-满命'
+                weight =  { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 45, "dmg": 100, "phy": 0, "recharge": 75, "heal": 95 }
+                suffix += '满命'
         elif role_name == '白术':
             if len(data['命座']) == 6:
-                role_name = '白术-满命'
+                weight = { "hp": 100, "atk": 75, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 50, "dmg": 100, "phy": 0, "recharge": 35, "heal": 100 }
+                suffix += '满命'
         elif role_name == '那维莱特' and data['武器']['名称'] == '万世流涌大典':
-            role_name = '那维莱特-专武'
+            weight = { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 40, "heal": 0 }
+            suffix += '专武'
         elif role_name == '希格雯':
             if len(data['命座']) == 6:
-                role_name = '希格雯-满命'
+                weight = { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 75, "heal": 90 }
+                suffix += '满命'
         elif role_name == '希诺宁':
             if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.4:
-                role_name = '希诺宁-战斗'
-            elif data['武器']['名称'] == '西风剑':
-                role_name = '希诺宁-西风'
+                weight = { "hp": 0, "atk": 0, "def": 100, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 80, "phy": 0, "recharge": 55, "heal": 70 }
+                suffix += '战斗'
         elif role_name == '茜特菈莉':
             if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.0:
-                role_name = '茜特菈莉-战斗'
-        if '-' in role_name:
-            return role_score.get(role_name), role_name
-        elif role_name in role_score:
-            if '百分比攻击力' in (weight := copy.deepcopy(role_score.get(role_name))):
-                if data['武器']['名称'] == '磐岩结绿' and '百分比生命值' not in weight:
-                    weight['百分比生命值'] = 45
-                    role_name = f'{role_name}-绿剑'
-                # if data['武器']['名称'] == '赤角石溃杵' and '百分比防御力' not in weight:
-                #     weight['百分比防御力'] = 45
-                #     role_name = f'{role_name}-赤角'
-                if data['武器']['名称'] == '猎人之径' and '元素精通' not in weight:
-                    weight['元素精通'] = 45
-                    role_name = f'{role_name}-猎人之径'
-                if data['武器']['名称'] == '薙草之稻光' and '元素充能效率' not in weight:
-                    weight['元素充能效率'] = 45
-                    role_name = f'{role_name}-薙刀'
-                if data['武器']['名称'] == '护摩之杖' and '百分比生命值' not in weight:
-                    weight['百分比生命值'] = 45
-                    role_name = f'{role_name}-护摩'
-            return weight, role_name
-        else:
-            return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}, role_name
+                weight = { "hp": 0, "atk": 50, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 100, "dmg": 80, "phy": 0, "recharge": 75, "heal": 0 }
+                suffix += '战斗'
+            if len(data['命座']) == 4:
+                weight['recharge'] = 75
+                suffix += '4命'
+        elif role_name == '基尼奇':
+            if len(data['命座']) == 4:
+                weight['recharge'] = 35
+                suffix += '4命'
+        elif role_name == '玛拉妮':
+            if len(data['命座']) == 4:
+                weight['recharge'] = 30
+                suffix += '4命'
+        # weight = copy.deepcopy(role_score.get(role_name))
+        role_score = {}
+        for info in weight.keys():
+            if weight.get(info) != 0:
+                role_score[convert.get(info)] = weight.get(info)
+        weight = role_score
+        if suffix:
+            return weight, f'{role_name}-{suffix}'
+        if weight.get('百分比攻击力',0) > 0 and (weapon_weight:=weapon_cfg.get(data['武器']['名称'],'')):
+            if weapon_check(weight, data['武器']['精炼等级'], weapon_weight.get('attr'), weapon_weight.get('max', 20), weapon_weight.get('min', 10)):
+                suffix += f'{weapon_weight.get("abbr","")}'
+        if '西风' in data['武器']['名称'] and weight.get('暴击率',0) != 100:
+            weight['暴击率'] = 100
+            suffix += '西风'
+        max_weight = max(weight.get('百分比攻击力', 0), weight.get('百分比生命值', 0), weight.get('百分比防御力', 0), weight.get('元素精通', 0))
+        suit = get_artifact_suit(artifacts)
+        if len(suit) == 2:
+            if suit[0][0] == suit[1][0] and suit[0][0] == '绝缘之旗印' and check(weight, data['武器']['精炼等级'],'元素充能效率', max_weight, 75, False):
+                suffix += '绝缘4'
+        return weight, f'{role_name}-{suffix}' if suffix else role_name
     except:
         return {'百分比攻击力': 75, '暴击率': 100, '暴击伤害': 100}, role_name
 
