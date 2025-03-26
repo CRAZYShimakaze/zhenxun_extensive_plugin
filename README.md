@@ -51,6 +51,7 @@
 - [原神角色卡片](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/genshin_role_card)
 - [扫雷赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/minesweeper)
 - [猜成语赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/guess_riddle)
+- [发涩图](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/setu)
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/CRAZYShimakaze/zhenxun_extensive_plugin.svg?variant=adaptive)](https://starchart.cc/CRAZYShimakaze/zhenxun_extensive_plugin)
