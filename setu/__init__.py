@@ -61,8 +61,6 @@ async def se(bot, event, arg: Message = CommandArg()):
     if not tags:
         return
     r18, tags = 1 if tags[0] == "r" else 0, tags[1:] if tags[0] == "r" else tags
-    if event.user_id != 674015283:
-        r18 = 0
     num, tags = tags[-1] if tags[-1].isdigit() else 1, tags[:-1] if tags[-1].isdigit() else tags
     params = {"r18": r18,  # 添加r18参数 0为否，1为是，2为混合
               "tag": tags.split(','),  # 若指定tag
