@@ -52,7 +52,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.1.5"
+__plugin_version__ = "4.1.6"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -196,10 +196,12 @@ async def check_artifact(event, player_info, roles_list, uid, group_save):
         for role_name in roles_list:
             role_data = player_info.get_roles_info(role_name)
             artifact_list = [{} for _ in range(5)]
+            if '圣遗物' not in role_data:
+                continue
             for j in range(len(role_data['圣遗物'])):
                 artifact_list[pos_name.index(role_data['圣遗物'][j]['部位'])] = role_data['圣遗物'][j]
             artifact_copy = copy.deepcopy(artifact_list[i])
-            if artifact_copy.get('等级', 0) == 20:
+            if artifact_copy.get('等级', 0) >= 10:
                 for name_all in list(role_info_json.keys()) + ['']:
                     artifact_copy['角色'] = name_all
                     if artifact_copy in artifact_all[i]:
@@ -293,7 +295,7 @@ async def import_artifact(bot: Bot, event):
         return
     '''
     convert = load_json(path=f'{json_path}/convert.json')
-    role = convert.get('角色')
+    role = role_info_json
     name = convert.get('名称')
     # icon = artifact.get('图标')
     icon = artifact_info.get('Name')
@@ -318,8 +320,7 @@ async def import_artifact(bot: Bot, event):
             if item.get("level", 0) == 20 and item.get("rarity", 0) == 5:
                 mainstatkey = item.get('mainStatKey', '')
                 substats = item.get('substats', [])
-                pos_name = pos.get(item.get("slotKey", ""))
-                pos_id = ["生之花", "死之羽", "时之沙", "空之杯", "理之冠"].index(pos_name)
+                pos_id = pos.get(item.get("slotKey", ""))
                 arti_name = name.get(suit.get(item.get("setKey", "")))[pos_id]
                 for key, value in icon.items():
                     if value == arti_name:
@@ -327,8 +328,14 @@ async def import_artifact(bot: Bot, event):
                         break
                 else:
                     print('wrong!')
+                role_name = ''
+                for key, value in role.items():
+                    print(value["英文名"], item.get("location", ''))
+                    if value["英文名"] == item.get("location", ''):
+                        role_name = key
+                        break
                 artifact_single = {"名称": arti_name, "图标": icon_name, "部位": pos_name, "所属套装": suit.get(item.get("setKey", "")), "等级": item.get("level", 0),
-                                   "星级": item.get("rarity", 0), "角色": role.get(item.get("location", ''), ''),
+                                   "星级": item.get("rarity", 0), "角色": role_name,
                                    "主属性": {"属性名": main.get(mainstatkey, "")['属性名'], "属性值": main.get(mainstatkey, "")['属性值']}, "词条": [
                         {"属性名": sub.get(substats[0].get("key", "")),
                          "属性值": int(substats[0].get('value', 0)) if substats[0].get('value', 0) % 1 == 0 else round(substats[0].get('value', 0), 1)},

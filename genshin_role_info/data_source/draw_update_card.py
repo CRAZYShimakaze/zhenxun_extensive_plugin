@@ -72,7 +72,7 @@ async def draw_role_pic(uid: str, role_dict: Union[dict, list], player_info):
 
         # 角色卡内部角色名
         draw_center_text(card_bg_draw, f"{role}Lv.{data['等级']}", 36 * multiple, (36 + 85) * multiple, (5 if top_name else 164) * multiple, 'white',
-            get_font(19 * multiple, 'hywh.ttf'))
+            get_font(19 * multiple, '优设标题黑.ttf'))
         # 评分
         if data.get('评分', '') != '':
             score = round(data['评分'], 1)

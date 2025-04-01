@@ -58,8 +58,8 @@ def get_artifact_score(effective, artifact, role_info, pos_idx):
     # 最终圣遗物评级
 
     calc_rank_str = 'ACE' if all_score > 43.7 \
-        else 'SSS' if all_score > 37.8 else 'SS' if all_score > 33.5 else 'S' if all_score > 29.1 else 'A' \
-        if all_score > 23.3 else 'B' if all_score > 17.5 else 'C' if all_score > 11.6 else 'D'
+        else 'ACE' if all_score > 37.8 else 'SSS' if all_score > 33.5 else 'SS' if all_score > 29.1 else 'S' \
+        if all_score > 23.3 else 'A' if all_score > 17.5 else 'B' if all_score > 11.6 else 'C'
     return calc_rank_str, all_score, mark
 
 

@@ -292,7 +292,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
                 if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
             '''
-            total_rank = 'ACE' if total_all > 262.0 else 'SSS' if total_all > 227.0 else 'SS' if total_all > 200.8 else 'S' if total_all > 174.6 else 'A' if total_all > 139.7 else 'B' if total_all > 104.8 else 'C' if total_all > 69.9 else 'D'
+            total_rank = 'ACE' if total_all > 262.0 else 'ACE' if total_all > 227.0 else 'SSS' if total_all > 200.8 else 'SS' if total_all > 174.6 else 'S' if total_all > 139.7 else 'A' if total_all > 104.8 else 'B' if total_all > 69.9 else 'C'
         else:
             total_rank = 'D'
         total_int = round(total_all)
