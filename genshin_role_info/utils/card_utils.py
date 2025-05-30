@@ -36,7 +36,7 @@ prop_list = {"FIGHT_PROP_BASE_ATTACK": "基础攻击力", "FIGHT_PROP_BASE_DEFEN
     "FIGHT_PROP_FIRE_ADD_HURT": "火元素伤害加成", "FIGHT_PROP_ELEC_ADD_HURT": "雷元素伤害加成", "FIGHT_PROP_ICE_ADD_HURT": "冰元素伤害加成",
     "FIGHT_PROP_WATER_ADD_HURT": "水元素伤害加成", "FIGHT_PROP_WIND_ADD_HURT": "风元素伤害加成", "FIGHT_PROP_ROCK_ADD_HURT": "岩元素伤害加成",
     "FIGHT_PROP_GRASS_ADD_HURT": "草元素伤害加成", "FIGHT_PROP_PHYSICAL_ADD_HURT": "物理伤害加成", "FIGHT_PROP_HEAL_ADD": "治疗加成",
-    "FIGHT_PROP_HEALED_ADD": "受治疗加成"}
+    "FIGHT_PROP_HEALED_ADD": "受治疗加成", "FIGHT_PROP_NONE": ""}
 artifact_list = load_json(path=f'{json_path}/artifact.json')
 role_ori = load_json(path=f'{json_path}/score.json')
 role_skill = load_json(path=f'{json_path}/roles_skill.json')

@@ -52,7 +52,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.1.6"
+__plugin_version__ = "4.1.7"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -316,11 +316,13 @@ async def import_artifact(bot: Bot, event):
         same = 0
         diff = 0
         player_info.data['圣遗物列表'] = [[], [], [], [], []]
+        conver_name = ['生之花', '死之羽', '时之沙', '空之杯', '理之冠']
         for item in arti.get('artifacts'):
             if item.get("level", 0) == 20 and item.get("rarity", 0) == 5:
                 mainstatkey = item.get('mainStatKey', '')
                 substats = item.get('substats', [])
                 pos_id = pos.get(item.get("slotKey", ""))
+                pos_name = conver_name[pos_id]
                 arti_name = name.get(suit.get(item.get("setKey", "")))[pos_id]
                 for key, value in icon.items():
                     if value == arti_name:

@@ -316,9 +316,20 @@ def get_effective(data):
                 weight = { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 80, "dmg": 100, "phy": 0, "recharge": 30, "heal": 0 }
                 suffix += '满命'
         elif role_name == '闲云':
+            recharge = data['属性']['元素充能效率']
+            if data['武器']['名称'] == '鹤鸣余音':
+                recharge -= 30
+            if len(data['命座']) > 0:
+                recharge -= 30
+            if recharge != weight['recharge']:
+                weight['recharge'] = recharge
+                suffix += '高配'
             if len(data['命座']) == 6:
-                weight = { "hp": 0, "atk": 100, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 0, "dmg": 100, "phy": 0, "recharge": 35, "heal": 75 }
-                suffix += '满命'
+                weight['cpct'] = 100
+                weight['cdmg'] = 100
+                weight['dmg'] = 100
+                weight['heal'] = 95
+                suffix += '战斗'
         elif role_name == '芙宁娜':
             if len(data['命座']) == 6:
                 weight =  { "hp": 100, "atk": 0, "def": 0, "cpct": 100, "cdmg": 100, "mastery": 45, "dmg": 100, "phy": 0, "recharge": 75, "heal": 95 }
@@ -353,6 +364,17 @@ def get_effective(data):
             if len(data['命座']) == 4:
                 weight['recharge'] = 30
                 suffix += '4命'
+        elif role_name == '希诺宁':
+            if data['属性']['暴击率'] * 2 + data['属性']['暴击伤害'] > 2.4:
+                weight['cpct'] = 100
+                weight['cdmg'] = 100
+                weight['recharge'] = 55
+                weight['heal'] = 70
+                suffix += '战斗'
+        elif role_name == '申鹤':
+            if len(data['命座']) > 0:
+                weight['recharge'] = 75
+                suffix += '高命'
         # weight = copy.deepcopy(role_score.get(role_name))
         role_score = {}
         for info in weight.keys():
