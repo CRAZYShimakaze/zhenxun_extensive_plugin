@@ -113,7 +113,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             bg.alpha_composite(role_pic, (-100, 0))  # 234))
         base_mask = load_image(f'{other_path}/底遮罩.png')
         bg.alpha_composite(base_mask, (0, 0))
-        if data['名称'] not in ['荧', '空', '埃洛伊']:
+        if role_info_json[data["名称"]]["区域"] != '其它':
             region_icon = load_image(path=f'{regoin_path}/{role_info_json[data["名称"]]["区域"]}.png', size=(130, 130))
             bg.alpha_composite(region_icon, (0, 4))
         bg_draw = ImageDraw.Draw(bg)

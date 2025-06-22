@@ -52,7 +52,7 @@ usage：
 __plugin_des__ = "查询橱窗内角色的面板"
 __plugin_cmd__ = ["原神角色面板", "更新角色面板", "我的角色", "他的角色", "XX面板", "最强XX", "最菜XX", "圣遗物榜单", "群圣遗物榜单"]
 __plugin_type__ = ("原神相关",)
-__plugin_version__ = "4.1.7"
+__plugin_version__ = "4.1.8"
 __plugin_author__ = "CRAZYSHIMAKAZE"
 __plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": __plugin_cmd__, }
 
@@ -270,7 +270,7 @@ async def _(event: MessageEvent):
 @import_artifact_hint.handle()
 async def _():
     await import_artifact_hint.send(
-        f'请在PC端按以下步骤操作\n1.下载https://github.com/FungusOVO/yas-lock/releases/download/0.1.20/yas_artifact.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
+        f'请在PC端按以下步骤操作\n1.下载https://github.com/CRAZYShimakaze/yas/releases/download/0.1.21/yas_artifact_v0.1.21.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.21.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。')
 
 
 @import_artifact.handle()
