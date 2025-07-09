@@ -215,6 +215,7 @@
     "2559426851": "溢彩心念",
     "518077587": "香韵奏者",
     "1479741275": "苍耀",
+    "590019915": "厄水之祸",
     "4137694339": "(test)竿测试",
     "2719832059": "(test)穿模测试",
     "500987603": "(test)穿模测试",
@@ -436,6 +437,7 @@
     "溢彩心念": "法器",
     "香韵奏者": "长柄武器",
     "苍耀": "单手剑",
+    "厄水之祸": "单手剑",
     "(test)竿测试": "单手剑",
     "(test)穿模测试": "弓"
   },
@@ -650,6 +652,7 @@
     "溢彩心念": "UI_EquipIcon_Catalyst_VaresaTransformer",
     "香韵奏者": "UI_EquipIcon_Pole_Trident_Awaken",
     "苍耀": "UI_EquipIcon_Sword_OuterSword_Awaken",
+    "厄水之祸": "UI_EquipIcon_Sword_SacrificialNgombe_Awaken",
     "(test)竿测试": "UI_EquipIcon_FishingRod",
     "(test)穿模测试": "UI_EquipIcon_Bow_Template"
   }
