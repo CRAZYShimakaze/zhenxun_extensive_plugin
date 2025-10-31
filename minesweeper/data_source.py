@@ -1,13 +1,14 @@
-import time
-import random
+from dataclasses import dataclass
 from enum import Enum
 from io import BytesIO
-from dataclasses import dataclass
-from typing import List, Tuple, Optional, Iterator
+import random
+import time
+from typing import Iterator, List, Optional, Tuple
+
 from PIL import Image, ImageDraw
 from PIL.Image import Image as IMG
 
-from .utils import load_skin, load_font, save_png
+from .utils import load_font, load_skin, save_png
 
 
 class GameState(Enum):
@@ -152,7 +153,9 @@ class MineSweeper:
                 if tile.is_open or tile.marked:
                     continue
                 text = chr(i + 65) + str(j + 1)
-                text_w, text_h = font.getsize(text)
+                # text_w, text_h = font.getsize(text)
+                bbox = font.getbbox(text)
+                text_w, text_h = (bbox[2] - bbox[0], bbox[3] - bbox[1])
                 x = dx + tile_w * j + (tile_w - text_w) / 2
                 y = dy + tile_h * i + (tile_h - text_h) / 2
                 draw = ImageDraw.Draw(bg)

@@ -1,68 +1,50 @@
-import re
-import shlex
 import asyncio
-from io import BytesIO
 from asyncio import TimerHandle
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple, Optional, NoReturn
+from io import BytesIO
+import re
+import shlex
+from typing import Dict, List, NoReturn, Optional, Tuple
 
-from configs.config import Config
-from models.bag_user import BagUser
-
-from nonebot.matcher import Matcher
-from nonebot.exception import ParserExit
-from nonebot.rule import ArgumentParser
 from nonebot import on_command, on_shell_command
-from nonebot.params import ShellCommandArgv, Command, RawCommand, CommandArg
 from nonebot.adapters.onebot.v11 import (
-    MessageEvent,
+    Bot,
     GroupMessageEvent,
     Message,
-    MessageSegment, Bot,
+    MessageEvent,
+    MessageSegment,
 )
+from nonebot.exception import ParserExit
+from nonebot.matcher import Matcher
+from nonebot.params import Command, CommandArg, RawCommand, ShellCommandArgv
+from nonebot.rule import ArgumentParser
 
-from .data_source import MineSweeper, GameState, OpenResult, MarkResult
+from ..plugin_utils.auth_utils import add_gold
+from .data_source import GameState, MarkResult, MineSweeper, OpenResult
 from .utils import skin_list
 
-__zx_plugin_name__ = "扫雷"
-__plugin_des__ = "扫雷游戏"
-__plugin_usage__ = f"""
-扫雷 开始游戏；
-扫雷初级 / 扫雷中级 / 扫雷高级 可开始不同难度的游戏；
-可使用 -r/--row ROW 、-c/--col COL 、-n/--num NUM 自定义行列数和雷数；
-可使用 -s/--skin SKIN 指定皮肤，默认为 winxp；
-使用 挖开/open + 位置 来挖开方块，可同时指定多个位置；
-使用 标记/mark + 位置 来标记方块，可同时指定多个位置；
-位置为 字母+数字 的组合，如“A1”；
-发送 查看游戏 查看当前游戏状态；
-发送 结束扫雷 结束游戏；
-发送 添加人员 + qq/@ 可以添加人员到游戏内，只能当前局内能进行游戏的人来进行添加；
-""".strip()
-__plugin_cmd__ = [
-    "扫雷/open",
-    "扫雷初级",
-    "扫雷中级",
-    "扫雷高级",
-    "挖开/open",
-    "标记/mark",
-    "查看游戏/查看游戏盘/显示游戏/显示游戏盘",
-    "结束扫雷",
-]
-__plugin_type__ = ("群内小游戏",)
-__plugin_version__ = 0.1
-__plugin_author__ = "CRAZYSHIMAKAZE"
-__plugin_settings__ = {
-    "level": 5,
-    "default_status": True,
-    "limit_superuser": False,
-    "cmd": __plugin_cmd__,
-}
-__plugin_configs__ = {
-    "gold_weight": {
-        "value": 1,
-        "help": "金币奖励系数,默认为1时总金币为格子数乘以地雷数",
-        "default_value": 1, },
-}
+__plugin_meta__ = PluginMetadata(
+    name="扫雷",
+    description="扫雷",
+    usage="""
+    扫雷 开始游戏；
+    扫雷初级 / 扫雷中级 / 扫雷高级 可开始不同难度的游戏；
+    可使用 -r/--row ROW 、-c/--col COL 、-n/--num NUM 自定义行列数和雷数；
+    可使用 -s/--skin SKIN 指定皮肤，默认为 winxp；
+    使用 挖开/open + 位置 来挖开方块，可同时指定多个位置；
+    使用 标记/mark + 位置 来标记方块，可同时指定多个位置；
+    位置为 字母+数字 的组合，如“A1”；
+    发送 查看游戏 查看当前游戏状态；
+    发送 结束扫雷 结束游戏；
+    发送 添加人员 + qq/@ 可以添加人员到游戏内，只能当前局内能进行游戏的人来进行添加；
+    """.strip(),
+    extra=PluginExtraData(
+        author="CRAZYSHIMAKAZE",
+        version="1.1",
+        plugin_type=PluginType.NORMAL,
+    ).to_dict(),
+)
+
 parser = ArgumentParser("minesweeper", description="扫雷")
 parser.add_argument("-r", "--row", type=int, default=8, help="行数")
 parser.add_argument("-c", "--col", type=int, default=8, help="列数")
@@ -96,7 +78,10 @@ minesweeper = on_shell_command("minesweeper", parser=parser, block=True, priorit
 
 @minesweeper.handle()
 async def _(
-        matcher: Matcher, bot: Bot, event: MessageEvent, argv: List[str] = ShellCommandArgv()
+    matcher: Matcher,
+    bot: Bot,
+    event: MessageEvent,
+    argv: List[str] = ShellCommandArgv(),
 ):
     await handle_minesweeper(matcher, event, argv)
 
@@ -116,7 +101,7 @@ def game_running(event: MessageEvent) -> bool:
 
 # 命令前缀为空则需要to_me，否则不需要
 def smart_to_me(
-        event: MessageEvent, cmd: Tuple[str, ...] = Command(), raw_cmd: str = RawCommand()
+    event: MessageEvent, cmd: Tuple[str, ...] = Command(), raw_cmd: str = RawCommand()
 ) -> bool:
     return not raw_cmd.startswith(cmd[0]) or event.is_tome()
 
@@ -125,7 +110,9 @@ def shortcut(cmd: str, argv: List[str] = [], **kwargs):
     command = on_command(cmd, **kwargs, block=True, priority=12)
 
     @command.handle()
-    async def _(matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
+    async def _(
+        matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()
+    ):
         try:
             args = shlex.split(msg.extract_plain_text().strip())
         except:
@@ -139,7 +126,12 @@ shortcut("扫雷中级", ["--row", "16", "--col", "16", "--num", "40"])
 shortcut("扫雷高级", ["--row", "16", "--col", "30", "--num", "99"])
 shortcut("挖开", ["--open"], aliases={"open", "wk"}, rule=game_running)
 shortcut("标记", ["--mark"], aliases={"mark", "bj"}, rule=game_running)
-shortcut("查看游戏", ["--show"], aliases={"查看游戏盘", "显示游戏", "显示游戏盘"}, rule=game_running)
+shortcut(
+    "查看游戏",
+    ["--show"],
+    aliases={"查看游戏盘", "显示游戏", "显示游戏盘"},
+    rule=game_running,
+)
 shortcut("结束", ["--stop"], aliases={"停", "停止游戏", "结束游戏"}, rule=game_running)
 
 add_player = on_command("添加人员", aliases={"添加玩家"}, rule=game_running)
@@ -150,7 +142,9 @@ def is_qq(msg: str):
 
 
 @add_player.handle()
-async def _(matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
+async def _(
+    matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()
+):
     args = []
     for seg in msg["at"]:
         args.append(seg.data["qq"])
@@ -183,9 +177,11 @@ def set_timeout(matcher: Matcher, cid: str, timeout: float = 600):
     timers[cid] = timer
 
 
-async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, argv: List[str]):
+async def handle_minesweeper(
+    matcher: Matcher, bot: Bot, event: MessageEvent, argv: List[str]
+):
     async def send(
-            message: Optional[str] = None, image: Optional[BytesIO] = None
+        message: Optional[str] = None, image: Optional[BytesIO] = None
     ) -> NoReturn:
         if not (message or image):
             await matcher.finish()
@@ -276,18 +272,23 @@ async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, ar
             msg = ""
             if game.state == GameState.WIN:
                 if isinstance(event, GroupMessageEvent):
-                    msg = f"恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
-                    gold_weight = Config.get_config("minesweeper", "gold_weight")
+                    msg = "恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
+                    gold_weight = 1
                     gold_all = game.column * game.row * gold_weight
                     c_all = 0
                     for p, c in game.players.items():
                         c_all += c
                     for p, c in game.players.items():
                         p = int(p)  # 可下标对象不可await
-                        name = await bot.get_group_member_info(group_id=event.group_id, user_id=p)
+                        name = await bot.get_group_member_info(
+                            group_id=event.group_id, user_id=p
+                        )
                         name = name["nickname"]
-                        await BagUser.add_gold(p, event.group_id, gold_all * c // c_all)
-                        msg = msg + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
+                        await add_gold(p, gold_all * c // c_all)
+                        msg = (
+                            msg
+                            + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
+                        )
                 else:
                     msg = "恭喜你获得游戏胜利！"
             elif game.state == GameState.FAIL:
@@ -307,18 +308,23 @@ async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, ar
         res = game.mark(pos[0], pos[1])
         if res == MarkResult.WIN:
             if isinstance(event, GroupMessageEvent):
-                msg = f"恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
-                gold_weight = Config.get_config("minesweeper", "gold_weight")
+                msg = "恭喜扫雷英雄们获得游戏胜利！以下为游戏战报:\n"
+                gold_weight = 1
                 gold_all = game.column * game.row // len(game.players) * gold_weight
                 c_all = 0
                 for p, c in game.players.items():
                     c_all += c
                 for p, c in game.players.items():
                     p = int(p)  # 可下标对象不可await
-                    name = await bot.get_group_member_info(group_id=event.group_id, user_id=p)
+                    name = await bot.get_group_member_info(
+                        group_id=event.group_id, user_id=p
+                    )
                     name = name["nickname"]
-                    await BagUser.add_gold(p, event.group_id, gold_all * c // c_all)
-                    msg = msg + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
+                    await add_gold(p, gold_all * c // c_all)
+                    msg = (
+                        msg
+                        + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
+                    )
             else:
                 msg = "恭喜你获得游戏胜利！"
             games.pop(cid)

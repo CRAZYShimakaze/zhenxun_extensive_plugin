@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
 from typing import List, Tuple
-from dataclasses import dataclass
+
 from PIL import Image, ImageFont
 from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
@@ -55,7 +56,7 @@ def load_skin(row: int, column: int, skin_name: str = "winxp") -> Skin:
         ((28, 82, 69, 107), (16, 15, 57, 40)),
         ((28, 82, 69, 107), (w * 16 - 33, 15, 8 + w * 16, 40)),
     ]
-    for (s, t) in b:
+    for s, t in b:
         background.paste(image.crop(s).resize((t[2] - t[0], t[3] - t[1])), t)
 
     return Skin(numbers, icons, digits, faces, background)
