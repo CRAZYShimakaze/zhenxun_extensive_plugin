@@ -1,13 +1,13 @@
 import io
 from pathlib import Path
-from typing import Optional, Union
 
-from nonebot.adapters.onebot.v11.message import Message, MessageSegment
+from nonebot.adapters.onebot.v11.message import MessageSegment
 from PIL import Image
 
+
 def image(
-    file: Optional[Union[str, Path, bytes, io.BytesIO]] = None,
-    b64: Optional[str] = None,
+    file: str | Path | bytes | io.BytesIO | None = None,
+    b64: str | None = None,
 ) -> MessageSegment:
     """
     说明:
@@ -28,7 +28,7 @@ def image(
                 out_img = io.BytesIO()
                 check_image.save(out_img, format="PNG")
                 return image(out_img)
-                #return MessageSegment.image(IMAGE_PATH / file)
+                # return MessageSegment.image(IMAGE_PATH / file)
             print(f"图片 {(file)}缺失...")
             return MessageSegment.image("")
     if isinstance(file, Path):
@@ -37,7 +37,7 @@ def image(
             out_img = io.BytesIO()
             check_image.save(out_img, format="PNG")
             return image(out_img)
-            #return MessageSegment.image(file)
+            # return MessageSegment.image(file)
         print(f"图片 {file.absolute()}缺失...")
     if isinstance(file, (bytes, io.BytesIO)):
         return MessageSegment.image(file)

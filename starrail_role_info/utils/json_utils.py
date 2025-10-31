@@ -1,9 +1,8 @@
 import json
 from pathlib import Path
-from typing import Union
 
 
-def load_json(path: Union[Path, str], encoding: str = 'utf-8') -> dict:
+def load_json(path: Path | str, encoding: str = "utf-8") -> dict:
     """
     说明：
         读取本地json文件，返回json字典。
@@ -16,10 +15,10 @@ def load_json(path: Union[Path, str], encoding: str = 'utf-8') -> dict:
         path = Path(path)
     if not path.exists():
         save_json({}, path, encoding)
-    return json.load(path.open('r', encoding=encoding))
+    return json.load(path.open("r", encoding=encoding))
 
 
-def save_json(data: Union[dict, list], path: Union[Path, str] = None, encoding: str = 'utf-8'):
+def save_json(data: dict | list, path: Path | str = None, encoding: str = "utf-8"):
     """
     保存json文件
     :param data: json数据
@@ -29,7 +28,7 @@ def save_json(data: Union[dict, list], path: Union[Path, str] = None, encoding: 
     if isinstance(path, str):
         path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(data, path.open('w', encoding=encoding), ensure_ascii=False, indent=4)
+    json.dump(data, path.open("w", encoding=encoding), ensure_ascii=False, indent=4)
 
 
 def get_message_at(data):

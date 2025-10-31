@@ -1,7 +1,7 @@
 import asyncio
+from asyncio import TimerHandle
 import os
 import time
-from asyncio import TimerHandle
 from typing import Dict
 
 from nonebot import on_command
@@ -16,6 +16,7 @@ from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
 from pypinyin import lazy_pinyin
+
 from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
 
@@ -40,7 +41,7 @@ __plugin_meta__ = PluginMetadata(
 
 vs_player = {}
 dati_time = 40
-timers: Dict[str, TimerHandle] = {}
+timers: dict[str, TimerHandle] = {}
 
 start = on_command("成语接龙", permission=GROUP, priority=5, block=True)
 
@@ -52,7 +53,7 @@ stop_game = on_command("接龙结算", permission=GROUP, priority=5, block=True)
 dirname, _ = os.path.split(os.path.abspath(__file__))
 work_dir = os.getcwd()
 rel_path = dirname.replace(work_dir + "/", "")
-idiom_data = open(f"{rel_path}/idiom.txt", "r", encoding="utf-8")
+idiom_data = open(f"{rel_path}/idiom.txt", encoding="utf-8")
 idiom_list = idiom_data.read()
 
 

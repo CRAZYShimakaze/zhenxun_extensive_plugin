@@ -32,10 +32,7 @@ def twentyfour(cards):
             bds3 = "{0}{4}({1}{5}({2}{6}{3}))".format(*nums, *ops)  # a/(b-(c/d))
             for bds in [bds1, bds2, bds3]:  # 遍历
                 try:
-                    if (
-                        abs(eval(bds) - 24.0) < 1e-10
-                        and abs(eval(bds.replace("/", "//")) - 24.0) < 1e-10
-                    ):  # eval函数
+                    if abs(eval(bds) - 24.0) < 1e-10 and abs(eval(bds.replace("/", "//")) - 24.0) < 1e-10:  # eval函数
                         bds_list.append(bds)
                 except ZeroDivisionError:  # 零除错误！
                     continue
@@ -61,14 +58,7 @@ def random_question():
 def check_result(submit: str, question) -> bool:
     try:
         if not any(e.isalpha() for e in submit) and eval(submit) == 24:
-            num = (
-                submit.replace("+", ",")
-                .replace("-", ",")
-                .replace("*", ",")
-                .replace("/", ",")
-                .replace("(", ",")
-                .replace(")", ",")
-            )
+            num = submit.replace("+", ",").replace("-", ",").replace("*", ",").replace("/", ",").replace("(", ",").replace(")", ",")
             num = num.split(",")
             if str(question[0]) in num:
                 num.remove(str(question[0]))

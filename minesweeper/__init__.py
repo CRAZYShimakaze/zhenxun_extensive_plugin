@@ -17,7 +17,11 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.exception import ParserExit
 from nonebot.matcher import Matcher
 from nonebot.params import Command, CommandArg, RawCommand, ShellCommandArgv
+from nonebot.plugin import PluginMetadata
 from nonebot.rule import ArgumentParser
+
+from zhenxun.configs.utils import PluginExtraData
+from zhenxun.utils.enum import PluginType
 
 from ..plugin_utils.auth_utils import add_gold
 from .data_source import GameState, MarkResult, MineSweeper, OpenResult
@@ -65,13 +69,13 @@ class Options:
     skin: str = ""
     show: bool = False
     stop: bool = False
-    open: List[str] = field(default_factory=list)
-    mark: List[str] = field(default_factory=list)
-    add: List[str] = field(default_factory=list)
+    open: list[str] = field(default_factory=list)
+    mark: list[str] = field(default_factory=list)
+    add: list[str] = field(default_factory=list)
 
 
-games: Dict[str, MineSweeper] = {}
-timers: Dict[str, TimerHandle] = {}
+games: dict[str, MineSweeper] = {}
+timers: dict[str, TimerHandle] = {}
 
 minesweeper = on_shell_command("minesweeper", parser=parser, block=True, priority=13)
 
@@ -81,17 +85,13 @@ async def _(
     matcher: Matcher,
     bot: Bot,
     event: MessageEvent,
-    argv: List[str] = ShellCommandArgv(),
+    argv: list[str] = ShellCommandArgv(),
 ):
     await handle_minesweeper(matcher, event, argv)
 
 
 def get_cid(event: MessageEvent):
-    return (
-        f"group_{event.group_id}"
-        if isinstance(event, GroupMessageEvent)
-        else f"private_{event.user_id}"
-    )
+    return f"group_{event.group_id}" if isinstance(event, GroupMessageEvent) else f"private_{event.user_id}"
 
 
 def game_running(event: MessageEvent) -> bool:
@@ -100,19 +100,15 @@ def game_running(event: MessageEvent) -> bool:
 
 
 # 命令前缀为空则需要to_me，否则不需要
-def smart_to_me(
-    event: MessageEvent, cmd: Tuple[str, ...] = Command(), raw_cmd: str = RawCommand()
-) -> bool:
+def smart_to_me(event: MessageEvent, cmd: tuple[str, ...] = Command(), raw_cmd: str = RawCommand()) -> bool:
     return not raw_cmd.startswith(cmd[0]) or event.is_tome()
 
 
-def shortcut(cmd: str, argv: List[str] = [], **kwargs):
+def shortcut(cmd: str, argv: list[str] = [], **kwargs):
     command = on_command(cmd, **kwargs, block=True, priority=12)
 
     @command.handle()
-    async def _(
-        matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()
-    ):
+    async def _(matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
         try:
             args = shlex.split(msg.extract_plain_text().strip())
         except:
@@ -142,9 +138,7 @@ def is_qq(msg: str):
 
 
 @add_player.handle()
-async def _(
-    matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()
-):
+async def _(matcher: Matcher, bot: Bot, event: MessageEvent, msg: Message = CommandArg()):
     args = []
     for seg in msg["at"]:
         args.append(seg.data["qq"])
@@ -171,18 +165,12 @@ def set_timeout(matcher: Matcher, cid: str, timeout: float = 600):
     if timer:
         timer.cancel()
     loop = asyncio.get_running_loop()
-    timer = loop.call_later(
-        timeout, lambda: asyncio.ensure_future(stop_game(matcher, cid))
-    )
+    timer = loop.call_later(timeout, lambda: asyncio.ensure_future(stop_game(matcher, cid)))
     timers[cid] = timer
 
 
-async def handle_minesweeper(
-    matcher: Matcher, bot: Bot, event: MessageEvent, argv: List[str]
-):
-    async def send(
-        message: Optional[str] = None, image: Optional[BytesIO] = None
-    ) -> NoReturn:
+async def handle_minesweeper(matcher: Matcher, bot: Bot, event: MessageEvent, argv: list[str]):
+    async def send(message: str | None = None, image: BytesIO | None = None) -> NoReturn:
         if not (message or image):
             await matcher.finish()
         msg = Message()
@@ -253,7 +241,7 @@ async def handle_minesweeper(
     if not (open_positions or mark_positions):
         await send(help_msg)
 
-    def check_position(position: str) -> Optional[Tuple[int, int]]:
+    def check_position(position: str) -> tuple[int, int] | None:
         match_obj = re.match(r"^([a-z])(\d+)$", position, re.IGNORECASE)
         if match_obj:
             x = (ord(match_obj.group(1).lower()) - ord("a")) % 32
@@ -280,15 +268,10 @@ async def handle_minesweeper(
                         c_all += c
                     for p, c in game.players.items():
                         p = int(p)  # 可下标对象不可await
-                        name = await bot.get_group_member_info(
-                            group_id=event.group_id, user_id=p
-                        )
+                        name = await bot.get_group_member_info(group_id=event.group_id, user_id=p)
                         name = name["nickname"]
                         await add_gold(p, gold_all * c // c_all)
-                        msg = (
-                            msg
-                            + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
-                        )
+                        msg = msg + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
                 else:
                     msg = "恭喜你获得游戏胜利！"
             elif game.state == GameState.FAIL:
@@ -316,15 +299,10 @@ async def handle_minesweeper(
                     c_all += c
                 for p, c in game.players.items():
                     p = int(p)  # 可下标对象不可await
-                    name = await bot.get_group_member_info(
-                        group_id=event.group_id, user_id=p
-                    )
+                    name = await bot.get_group_member_info(group_id=event.group_id, user_id=p)
                     name = name["nickname"]
                     await add_gold(p, gold_all * c // c_all)
-                    msg = (
-                        msg
-                        + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
-                    )
+                    msg = msg + f"{name}完成操作数{c},占{c / c_all * 100}%！奖励{int(gold_all * c / c_all)}金币！\n"
             else:
                 msg = "恭喜你获得游戏胜利！"
             games.pop(cid)

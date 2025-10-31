@@ -1,9 +1,8 @@
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union, Tuple
 
-from PIL import Image
 from nonebot.adapters.onebot.v11 import MessageSegment
+from PIL import Image
 
 from ...plugin_utils.http_utils import AsyncHttpx
 
@@ -19,8 +18,7 @@ def draw_right_text(draw, text: str, width: int, height: int, fill: str, font):
     :param font: 字体
     """
     text_length = draw.textlength(text, font=font)
-    draw.text((width - text_length, height), text, fill=fill,
-              font=font)
+    draw.text((width - text_length, height), text, fill=fill, font=font)
 
 
 def draw_center_text(draw, text: str, left_width: int, right_width: int, height: int, fill: str, font):
@@ -35,17 +33,23 @@ def draw_center_text(draw, text: str, left_width: int, right_width: int, height:
     :param font: 字体
     """
     text_length = draw.textlength(text, font=font)
-    draw.text((left_width + (right_width - left_width - text_length) / 2, height), text, fill=fill,
-              font=font)
+    draw.text(
+        (left_width + (right_width - left_width - text_length) / 2, height),
+        text,
+        fill=fill,
+        font=font,
+    )
 
 
-async def get_img(url: str,
-                  *,
-                  save_path: Optional[Union[str, Path]] = None,
-                  size: Optional[Union[Tuple[int, int], float]] = None,
-                  mode: Optional[str] = None,
-                  crop: Optional[Tuple[int, int, int, int]] = None,
-                  **kwargs) -> Union[str, Image.Image]:
+async def get_img(
+    url: str,
+    *,
+    save_path: str | Path | None = None,
+    size: tuple[int, int] | float | None = None,
+    mode: str | None = None,
+    crop: tuple[int, int, int, int] | None = None,
+    **kwargs,
+) -> str | Image.Image:
     if save_path and Path(save_path).exists():
         img = Image.open(save_path)
     else:
@@ -63,9 +67,10 @@ async def get_img(url: str,
         if isinstance(size, float):
             img = img.resize(
                 (int(img.size[0] * size), int(img.size[1] * size)),
-                Image.ANTIALIAS)
+                Image.Resampling.LANCZOS,
+            )
         elif isinstance(size, tuple):
-            img = img.resize(size, Image.ANTIALIAS)
+            img = img.resize(size, Image.Resampling.LANCZOS)
     if mode:
         img = img.convert(mode)
     if crop:
@@ -78,11 +83,11 @@ async def get_img(url: str,
 
 
 def load_image(
-        path: Union[Path, str],
-        *,
-        size: Optional[Union[Tuple[int, int], float]] = None,
-        crop: Optional[Tuple[int, int, int, int]] = None,
-        mode: Optional[str] = None,
+    path: Path | str,
+    *,
+    size: tuple[int, int] | float | None = None,
+    crop: tuple[int, int, int, int] | None = None,
+    mode: str | None = None,
 ):
     """
     说明：
@@ -99,9 +104,10 @@ def load_image(
         if isinstance(size, float):
             img = img.resize(
                 (int(img.size[0] * size), int(img.size[1] * size)),
-                Image.ANTIALIAS)
+                Image.Resampling.LANCZOS,
+            )
         elif isinstance(size, tuple):
-            img = img.resize(size, Image.ANTIALIAS)
+            img = img.resize(size, Image.Resampling.LANCZOS)
     if crop:
         img = img.crop(crop)
     if mode:
@@ -109,12 +115,14 @@ def load_image(
     return img
 
 
-def image_build(img: Union[Image.Image, Path, str],
-                *,
-                size: Optional[Union[Tuple[int, int], float]] = None,
-                crop: Optional[Tuple[int, int, int, int]] = None,
-                quality: Optional[int] = 100,
-                mode: Optional[str] = None) -> MessageSegment:
+def image_build(
+    img: Image.Image | Path | str,
+    *,
+    size: tuple[int, int] | float | None = None,
+    crop: tuple[int, int, int, int] | None = None,
+    quality: int | None = 100,
+    mode: str | None = None,
+) -> MessageSegment:
     """
     说明：
         图片预处理并构造成MessageSegment
@@ -132,15 +140,14 @@ def image_build(img: Union[Image.Image, Path, str],
             if isinstance(size, float):
                 img = img.resize(
                     (int(img.size[0] * size), int(img.size[1] * size)),
-                    Image.ANTIALIAS)
+                    Image.Resampling.LANCZOS,
+                )
             elif isinstance(size, tuple):
-                img = img.resize(size, Image.ANTIALIAS)
+                img = img.resize(size, Image.Resampling.LANCZOS)
         if crop:
             img = img.crop(crop)
         if mode:
             img = img.convert(mode)
     bio = BytesIO()
-    img.save(bio,
-             format='JPEG' if img.mode == 'RGB' else 'PNG',
-             quality=quality)
+    img.save(bio, format="JPEG" if img.mode == "RGB" else "PNG", quality=quality)
     return MessageSegment.image(bio)
