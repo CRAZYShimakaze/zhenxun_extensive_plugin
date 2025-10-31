@@ -1,13 +1,14 @@
 import random
 from io import BytesIO
-from utils.http_utils import AsyncHttpx
-from configs.path_config import TEXT_PATH, FONT_PATH
 from typing import List, Tuple
-from pypinyin import pinyin, Style
+
 from PIL import ImageFont
 from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
-from services.log import logger
+from pypinyin import Style, pinyin
+from zhenxun.configs.path_config import FONT_PATH, TEXT_PATH
+from zhenxun.services.log import logger
+from zhenxun.utils.http_utils import AsyncHttpx
 
 handle_txt_path = TEXT_PATH / "handle"
 idiom_path = handle_txt_path / "idioms.txt"
@@ -74,11 +75,9 @@ async def load_font(name: str, fontsize: int) -> FreeTypeFont:
     tff_path = FONT_PATH / name
     if not tff_path.exists():
         try:
-            url = "https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{}".format(
-                name)
+            url = f"https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{name}"
             await AsyncHttpx.download_file(url, tff_path)
         except:
-            url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{}".format(
-                name)
+            url = f"https://mirror.ghproxy.com/https://raw.githubusercontent.com/noneplugin/nonebot-plugin-handle/main/nonebot_plugin_handle/resources/fonts/{name}"
             await AsyncHttpx.download_file(url, tff_path)
     return ImageFont.truetype(str(tff_path), fontsize, encoding="utf-8")

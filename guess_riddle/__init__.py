@@ -4,28 +4,32 @@ import shlex
 from asyncio import TimerHandle
 from dataclasses import dataclass
 from io import BytesIO
-from typing import Dict, List, Optional, NoReturn
+from typing import Dict, List, NoReturn, Optional
 
-from nonebot import on_command, on_shell_command, on_message
+from nonebot import on_command, on_message, on_shell_command
 from nonebot.adapters.onebot.v11 import (
-    MessageEvent,
     GroupMessageEvent,
     Message,
+    MessageEvent,
     MessageSegment,
 )
 from nonebot.exception import ParserExit
 from nonebot.matcher import Matcher
-from nonebot.params import ShellCommandArgv, CommandArg, EventPlainText
-from nonebot.rule import Rule, ArgumentParser
+from nonebot.params import CommandArg, EventPlainText, ShellCommandArgv
+from nonebot.plugin import PluginMetadata
+from nonebot.rule import ArgumentParser, Rule
 from nonebot.typing import T_State
+from zhenxun.configs.utils import PluginExtraData
+from zhenxun.utils.enum import PluginType
 
-from models.bag_user import BagUser
-from .data_source import Handle, GuessResult
-from .utils import random_idiom, load_font
+from ..plugin_utils.auth_utils import add_gold, get_gold, spend_gold
+from .data_source import GuessResult, Handle
+from .utils import load_font, random_idiom
 
-__zx_plugin_name__ = "猜成语"
-__plugin_usage__ = """
-usage：
+__plugin_meta__ = PluginMetadata(
+    name="猜成语",
+    description="猜成语",
+    usage="""
     汉字 猜成语
     你有十次的机会猜一个四字词语；
     每次猜测后，汉字与拼音的颜色将会标识其与正确答案的区别；
@@ -35,23 +39,14 @@ usage：
     指令：
         猜成语：开始游戏；
         可发送“结束猜成语”结束游戏；可发送“提示”查看提示。
-""".strip()
-__plugin_des__ = "猜成语"
-__plugin_type__ = ("群内小游戏",)
-__plugin_cmd__ = ["猜成语", "提示", "结束猜成语"]
-__plugin_version__ = 0.1
-__plugin_author__ = "yajiwa"
+    """.strip(),
+    extra=PluginExtraData(
+        author="CRAZYSHIMAKAZE",
+        version="0.3",
+        plugin_type=PluginType.NORMAL,
+    ).to_dict(),
+)
 
-__plugin_settings__ = {
-    "level": 5,
-    "default_status": True,
-    "limit_superuser": False,
-    "cmd": __plugin_cmd__,
-}
-__plugin_cd_limit__ = {
-    "cd": 5,
-    "rst": "猜的这么快，想钱想疯了吧.",
-}
 
 parser = ArgumentParser("handle", description="猜成语")
 parser.add_argument("--hint", action="store_true", help="提示")
@@ -66,8 +61,8 @@ class Options:
     idiom: str = ""
 
 
-games: Dict[str, Handle] = {}
-timers: Dict[str, TimerHandle] = {}
+games: dict[str, Handle] = {}
+timers: dict[str, TimerHandle] = {}
 
 handle = on_shell_command("handle", parser=parser, block=True, priority=6)
 bounce_coin = [10, 10, 10, 10, 10, 10, 9, 8, 7, 2, 1]
@@ -75,15 +70,12 @@ hint_cost = [9, 8, 7, 6, 5, 4, 3, 2, 0, 0]
 
 
 @handle.handle()
-async def _(matcher: Matcher,
-            event: MessageEvent,
-            argv: List[str] = ShellCommandArgv()):
+async def _(matcher: Matcher, event: MessageEvent, argv: list[str] = ShellCommandArgv()):
     await handle_handle(matcher, event, argv)
 
 
 def get_cid(event: MessageEvent):
-    return (f"group_{event.group_id}" if isinstance(event, GroupMessageEvent)
-            else f"private_{event.user_id}")
+    return f"group_{event.group_id}" if isinstance(event, GroupMessageEvent) else f"private_{event.user_id}"
 
 
 def game_running(event: MessageEvent) -> bool:
@@ -95,21 +87,18 @@ def match_idiom(msg: str) -> bool:
     return bool(re.fullmatch(r"[\u4e00-\u9fa5]{4}", msg))
 
 
-def get_idiom_input(state: T_State,
-                    msg: str = EventPlainText()) -> bool:
+def get_idiom_input(state: T_State, msg: str = EventPlainText()) -> bool:
     if match_idiom(msg):
         state["idiom"] = msg
         return True
     return False
 
 
-def shortcut(cmd: str, argv: List[str] = [], **kwargs):
+def shortcut(cmd: str, argv: list[str] = [], **kwargs):
     command = on_command(cmd, **kwargs, block=True, priority=5)
 
     @command.handle()
-    async def _(matcher: Matcher,
-                event: MessageEvent,
-                msg: Message = CommandArg()):
+    async def _(matcher: Matcher, event: MessageEvent, msg: Message = CommandArg()):
         try:
             args = shlex.split(msg.extract_plain_text().strip())
         except:
@@ -121,9 +110,7 @@ shortcut("猜成语")
 shortcut("提示", ["--hint"], aliases={"给个提示"}, rule=game_running)
 shortcut("结束猜成语", ["--stop"], rule=game_running)
 
-idiom_matcher = on_message(Rule(game_running) & get_idiom_input,
-                           block=True,
-                           priority=7)
+idiom_matcher = on_message(Rule(game_running) & get_idiom_input, block=True, priority=7)
 
 
 @idiom_matcher.handle()
@@ -147,15 +134,12 @@ def set_timeout(matcher: Matcher, cid: str, timeout: float = 300):
     if timer:
         timer.cancel()
     loop = asyncio.get_running_loop()
-    timer = loop.call_later(
-        timeout, lambda: asyncio.ensure_future(stop_game(matcher, cid)))
+    timer = loop.call_later(timeout, lambda: asyncio.ensure_future(stop_game(matcher, cid)))
     timers[cid] = timer
 
 
-async def handle_handle(matcher: Matcher, event: MessageEvent,
-                        argv: List[str]):
-    async def send(message: Optional[str] = None,
-                   image: Optional[BytesIO] = None) -> NoReturn:
+async def handle_handle(matcher: Matcher, event: MessageEvent, argv: list[str]):
+    async def send(message: str | None = None, image: BytesIO | None = None) -> NoReturn:
         if not (message or image):
             await matcher.finish()
         msg = Message()
@@ -200,13 +184,12 @@ async def handle_handle(matcher: Matcher, event: MessageEvent,
         image = game.draw_hint()
         if isinstance(event, GroupMessageEvent):
             cost_coin = hint_cost[len(game.guessed_idiom)]
-            have_gold = await BagUser.get_gold(event.user_id, event.group_id)
+            have_gold = await get_gold(event.user_id)
             if have_gold < cost_coin:
                 await send(f"当前提示需要{cost_coin}金币,你的金币不够!")
                 return
             else:
-                await BagUser.spend_gold(event.user_id, event.group_id,
-                                         cost_coin)
+                await spend_gold(event.user_id, cost_coin)
                 await send(f"扣除{cost_coin}金币获取提示...", image)
         else:
             await send(image)
@@ -223,11 +206,9 @@ async def handle_handle(matcher: Matcher, event: MessageEvent,
         #     game.draw(),
         # )
         if result == GuessResult.WIN:
-            await BagUser.add_gold(event.user_id, event.group_id,
-                                   bounce_coin[len(game.guessed_idiom)])
+            await add_gold(event.user_id, bounce_coin[len(game.guessed_idiom)])
         await send(
-            (f"恭喜你猜出了成语！奖励你{bounce_coin[len(game.guessed_idiom)]}金币!" if result
-                                                                                      == GuessResult.WIN else "很遗憾，没有人猜出来呢") + f"\n{game.result}",
+            (f"恭喜你猜出了成语！奖励你{bounce_coin[len(game.guessed_idiom)]}金币!" if result == GuessResult.WIN else "很遗憾，没有人猜出来呢") + f"\n{game.result}",
             game.draw(),
         )
     elif result == GuessResult.DUPLICATE:

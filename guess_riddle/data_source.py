@@ -1,9 +1,10 @@
-import random
+from collections.abc import Iterable
 from enum import Enum
 from io import BytesIO
+
 from PIL import Image, ImageDraw
 from PIL.Image import Image as IMG
-from typing import Iterable, Tuple, List, Optional
+
 from .utils import get_pinyin, load_font, save_jpg
 
 
@@ -17,11 +18,11 @@ class Handle:
     def __init__(self, idiom: str):
         self.idiom: str = idiom  # 成语
         self.result = f"答案为：{idiom}"
-        self.pinyin: List[Tuple[str, str, str]] = get_pinyin(idiom)  # 拼音
+        self.pinyin: list[tuple[str, str, str]] = get_pinyin(idiom)  # 拼音
         self.length = 4
         self.times: int = 10  # 可猜次数
-        self.guessed_idiom: List[str] = []  # 记录已猜成语
-        self.guessed_pinyin: List[List[Tuple[str, str, str]]] = []  # 记录已猜成语的拼音
+        self.guessed_idiom: list[str] = []  # 记录已猜成语
+        self.guessed_pinyin: list[list[tuple[str, str, str]]] = []  # 记录已猜成语的拼音
 
         self.block_size = (160, 160)  # 文字块尺寸
         self.block_padding = (20, 20)  # 文字块之间间距
@@ -43,7 +44,7 @@ class Handle:
         self.font_pinyin = await load_font("Consolas.ttf", font_size_pinyin)
         self.font_tone = await load_font("Consolas.ttf", font_size_tone)
 
-    def guess(self, idiom: str) -> Optional[GuessResult]:
+    def guess(self, idiom: str) -> GuessResult | None:
         if idiom in self.guessed_idiom:
             return GuessResult.DUPLICATE
         self.guessed_idiom.append(idiom)
@@ -54,16 +55,16 @@ class Handle:
             return GuessResult.LOSS
 
     def draw_block(
-            self,
-            color: str,
-            char: str = "",
-            char_color: str = "",
-            initial: str = "",
-            initial_color: str = "",
-            final: str = "",
-            final_color: str = "",
-            tone: str = "",
-            tone_color: str = "",
+        self,
+        color: str,
+        char: str = "",
+        char_color: str = "",
+        initial: str = "",
+        initial_color: str = "",
+        final: str = "",
+        final_color: str = "",
+        tone: str = "",
+        tone_color: str = "",
     ) -> IMG:
         block = Image.new("RGB", self.block_size, self.border_color)
         inner_w = self.block_size[0] - self.border_width * 2
@@ -75,19 +76,28 @@ class Handle:
         if not char:
             return block
 
-        char_size = self.font_char.getsize(char)
+        # char_size = self.font_char.getsize(char)
+        bbox = self.font_char.getbbox(char)
+        char_size = (bbox[2] - bbox[0], bbox[3] - bbox[1])
         x = (self.block_size[0] - char_size[0]) / 2
         y = (self.block_size[1] - char_size[1]) / 5 * 3
         draw.text((x, y), char, font=self.font_char, fill=char_color)
 
-        py_size = self.font_pinyin.getsize(initial + final)
+        # py_size = self.font_pinyin.getsize(initial + final)
+        bbox = self.font_pinyin.getbbox(initial + final)
+        py_size = (bbox[2] - bbox[0], bbox[3] - bbox[1])
         x = (self.block_size[0] - py_size[0]) / 2
         y = self.block_size[0] / 6
         draw.text((x, y), initial, font=self.font_pinyin, fill=initial_color)
-        x += self.font_pinyin.getsize(initial)[0]
+        # x += self.font_pinyin.getsize(initial)[0]
+        bbox = self.font_pinyin.getbbox(initial)
+        py_sizex = (bbox[2] - bbox[0], bbox[3] - bbox[1])
+        x += py_sizex[0]
         draw.text((x, y), final, font=self.font_pinyin, fill=final_color)
 
-        tone_size = self.font_tone.getsize(tone)
+        # tone_size = self.font_tone.getsize(tone)
+        bbox = self.font_tone.getbbox(tone)
+        tone_size = (bbox[2] - bbox[0], bbox[3] - bbox[1])
         x = (self.block_size[0] + py_size[0]) / 2 + tone_size[0] / 3
         y -= tone_size[1] / 3
         draw.text((x, y), tone, font=self.font_tone, fill=tone_color)
@@ -130,9 +140,7 @@ class Handle:
                         initial_c = get_color(i1, i2, [p[0] for p in self.pinyin])
                         final_c = get_color(f1, f2, [p[1] for p in self.pinyin])
                         tone_c = get_color(t1, t2, [p[2] for p in self.pinyin])
-                    block = self.draw_block(
-                        color, char, char_c, i2, initial_c, f2, final_c, t2, tone_c
-                    )
+                    block = self.draw_block(color, char, char_c, i2, initial_c, f2, final_c, t2, tone_c)
                 x = self.padding[0] + (self.block_size[0] + self.block_padding[0]) * j
                 y = self.padding[1] + (self.block_size[1] + self.block_padding[1]) * i
                 board.paste(block, (x, y))
@@ -173,9 +181,7 @@ class Handle:
             if ht not in guessed_tone:
                 ht = "?"
                 tone_c = self.wrong_color
-            block = self.draw_block(
-                color, char, char_c, hi, initial_c, hf, final_c, ht, tone_c
-            )
+            block = self.draw_block(color, char, char_c, hi, initial_c, hf, final_c, ht, tone_c)
             x = self.padding[0] + (self.block_size[0] + self.block_padding[0]) * i
             y = self.padding[1]
             board.paste(block, (x, y))

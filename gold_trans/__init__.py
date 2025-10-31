@@ -1,26 +1,30 @@
 from typing import Tuple
 
 from nonebot import on_regex
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GROUP
+from nonebot.adapters.onebot.v11 import GROUP, Bot, GroupMessageEvent
 from nonebot.params import RegexGroup
+from nonebot.plugin import PluginMetadata
+from zhenxun.configs.utils import PluginExtraData, RegisterConfig
+from zhenxun.models.user_console import UserConsole
+from zhenxun.utils.enum import GoldHandle, PluginType
 
-from models.bag_user import BagUser
-from utils.utils import get_message_at
+from ..genshin_role_info.utils.json_utils import get_message_at
 
-__zx_plugin_name__ = "金币转账"
-__plugin_usage__ = """
-usage：
-转账 [金币数] @CRAZYSHIMAKAZE
-""".strip()
+__plugin_meta__ = PluginMetadata(
+    name="金币转账",
+    description="金币转账",
+    usage="""
+    转账 [金币数] @CRAZYSHIMAKAZE
+    """.strip(),
+    extra=PluginExtraData(
+        author="CRAZYSHIMAKAZE",
+        version="0.2",
+        plugin_type=PluginType.NORMAL,
+    ).to_dict(),
+)
 
-__plugin_des__ = "金币转账"
-__plugin_type__ = ("一些工具",)
-__plugin_version__ = 0.1
-__plugin_author__ = "CRAZYSHIMAKAZE"
 
-__plugin_settings__ = {"level": 5, "default_status": True, "limit_superuser": False, "cmd": ["转账"], }
-
-trans = on_regex(r'转账(\d+)', permission=GROUP, priority=5, block=True)
+trans = on_regex(r"转账\s*(\d+)", permission=GROUP, priority=5, block=True)
 
 
 @trans.handle()
@@ -29,10 +33,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Tuple[str, ...] = RegexGro
     tar_user = get_message_at(event.json())[0]
     coin = int(args[0].strip())
     print(args[0], args)
-    user_coin = await BagUser.get_gold(event.user_id, event.group_id)
+    user = await UserConsole.get_user(src_user)
+    user_coin = user.gold
     if user_coin <= coin:
-        await trans.send(f'你拥有{user_coin}金币,不足转账数目！', at_sender=True)
+        await trans.send(f"你拥有{user_coin}金币,不足转账数目！", at_sender=True)
     else:
-        await BagUser.spend_gold(src_user, event.group_id, coin)
-        await BagUser.add_gold(tar_user, event.group_id, coin)
-        await trans.send(f'转账成功！', at_sender=True)
+        await UserConsole.reduce_gold(src_user, coin, GoldHandle.BUY, "gold_trans")
+        await UserConsole.add_gold(tar_user, coin, GoldHandle.BUY, "gold_trans")
+        await trans.send("转账成功！", at_sender=True)
