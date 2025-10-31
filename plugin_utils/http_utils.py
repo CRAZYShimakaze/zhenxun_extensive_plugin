@@ -68,7 +68,57 @@ class AsyncHttpx:
         proxy_ = proxy if proxy else cls.proxy if use_proxy else None
         async with httpx.AsyncClient(proxies=proxy_, verify=verify) as client:
             return await client.get(url, params=params, headers=headers, cookies=cookies, timeout=timeout, **kwargs, )
-
+            
+    @classmethod
+    async def post(
+        cls,
+        url: str,
+        *,
+        data: Optional[Dict[str, str]] = None,
+        content: Any = None,
+        files: Any = None,
+        verify: bool = True,
+        use_proxy: bool = True,
+        proxy: Optional[Dict[str, str]] = None,
+        json: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, str]] = None,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Dict[str, str]] = None,
+        timeout: Optional[int] = 30,
+        **kwargs,
+    ) -> Response:
+        """
+        说明:
+            Post
+        参数:
+            :param url: url
+            :param data: data
+            :param content: content
+            :param files: files
+            :param use_proxy: 是否默认代理
+            :param proxy: 指定代理
+            :param json: json
+            :param params: params
+            :param headers: 请求头
+            :param cookies: cookies
+            :param timeout: 超时时间
+        """
+        if not headers:
+            headers = get_user_agent()
+        proxy_ = proxy if proxy else cls.proxy if use_proxy else None
+        async with httpx.AsyncClient(proxies=proxy_, verify=verify) as client:
+            return await client.post(
+                url,
+                content=content,
+                data=data,
+                files=files,
+                json=json,
+                params=params,
+                headers=headers,
+                cookies=cookies,
+                timeout=timeout,
+                **kwargs,
+            )
     @classmethod
     async def download_file(cls, url: str, path: Union[str, Path], *, params: Optional[Dict[str, str]] = None, verify: bool = True, use_proxy: bool = True,
                             proxy: Optional[Dict[str, str]] = None, headers: Optional[Dict[str, str]] = None, cookies: Optional[Dict[str, str]] = None,

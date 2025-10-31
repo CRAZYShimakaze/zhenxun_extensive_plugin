@@ -1,8 +1,7 @@
+from random import randint, shuffle
+
+from ..plugin_utils.auth_utils import add_gold, get_gold, spend_gold
 from .card import Card
-from random import shuffle, randint, random
-import sqlite3
-from nonebot.adapters.onebot.v11 import Bot
-from models.bag_user import BagUser
 
 
 def generate_cards():
@@ -13,8 +12,7 @@ def generate_cards():
 
 
 class Deck:
-    def __init__(self, deck_id: int, group: int, player1: int, point: int,
-                 player1_name: str):
+    def __init__(self, deck_id: int, group: int, player1: int, point: int, player1_name: str):
         self.deck_id = deck_id
         self.group = group
         self.player1 = player1
@@ -78,8 +76,7 @@ game_ls = []
 async def add_game(group: int, uid: int, point: int, player1_name: str) -> int:
     if game_ls:
         latest_deck_id = game_ls[-1].deck_id
-        game_ls.append(
-            Deck(latest_deck_id + 1, group, uid, point, player1_name))
+        game_ls.append(Deck(latest_deck_id + 1, group, uid, point, player1_name))
         return latest_deck_id + 1
     else:
         game = Deck(1, group, uid, point, player1_name)
@@ -96,14 +93,12 @@ async def check_game_point(group: int, uid: int, player1_name: str) -> int:
     return points
 
 
-async def start_game(deck_id: int, player2: int, player2_name: str,
-                     group_id: int, user_point: int) -> str:
+async def start_game(deck_id: int, player2: int, player2_name: str, group_id: int, user_point: int) -> str:
     if not game_ls:
-        return '目前还没有开始任何游戏！'
+        return "目前还没有开始任何游戏！"
     for index, game in enumerate(game_ls):
         game: Deck
-        if deck_id == game.deck_id and game.player2 is None and game.player1 != player2 and game.group == group_id \
-                and user_point >= game.point:
+        if deck_id == game.deck_id and game.player2 is None and game.player1 != player2 and game.group == group_id and user_point >= game.point:
             game.player2 = player2
             game.player2_name = player2_name
             game.init_game()
@@ -121,19 +116,19 @@ async def start_game(deck_id: int, player2: int, player2_name: str,
                 words += f"\n牌点为{player2_point}"
                 return words
         elif deck_id == game.deck_id and game.player2 is not None:
-            return '该游戏已开始！'
+            return "该游戏已开始！"
         elif deck_id == game.deck_id and game.player1 == player2:
-            return '不能和自己玩！'
+            return "不能和自己玩！"
         elif deck_id == game.deck_id and game.group != group_id:
-            return '不能和群外的玩！'
+            return "不能和群外的玩！"
         elif deck_id == game.deck_id and user_point < game.point:
-            return '你的点数不足以游玩该游戏！'
-    return '未找到游戏！'
+            return "你的点数不足以游玩该游戏！"
+    return "未找到游戏！"
 
 
 async def call_card(deck_id: int, player: int) -> str:
     if not game_ls:
-        return '目前还没有开始任何游戏！'
+        return "目前还没有开始任何游戏！"
     for index, game in enumerate(game_ls):
         game: Deck
         if deck_id == game.deck_id and game.player2 == player:
@@ -152,14 +147,13 @@ async def call_card(deck_id: int, player: int) -> str:
                 words += f"\n牌点为{player2_point}\n"
                 while game.player1_point < game.player2_point and game.player1_point <= 21:
                     game.get_one_card(1)
-                words += f"对手的牌为"
+                words += "对手的牌为"
                 for card in game.player1_cards:
                     words += str(card)
                 words += f"\n牌点为{game.player1_point}\n"
                 if game.player1_point > 21:
                     result = await count_score(game, 2)
                 else:
-
                     result = await count_score(game, 0)
                 words += result
                 del game_ls[index]
@@ -168,13 +162,13 @@ async def call_card(deck_id: int, player: int) -> str:
                 words += f"\n牌点为{player2_point}"
                 return words
         elif deck_id == game.deck_id and game.player2 != player:
-            return '该游戏已开始！'
-    return '未找到游戏！'
+            return "该游戏已开始！"
+    return "未找到游戏！"
 
 
 async def stop_card(deck_id: int, player: int) -> str:
     if not game_ls:
-        return '目前还没有开始任何游戏！'
+        return "目前还没有开始任何游戏！"
     for index, game in enumerate(game_ls):
         game: Deck
         if deck_id == game.deck_id and game.player2 == player:
@@ -196,13 +190,13 @@ async def stop_card(deck_id: int, player: int) -> str:
             del game_ls[index]
             return words
         elif deck_id == game.deck_id and game.player2 != player:
-            return '该游戏已开始！'
-    return '未找到游戏！'
+            return "该游戏已开始！"
+    return "未找到游戏！"
 
 
 async def count_score(game: Deck, player_win: int):
-    player1_point = await BagUser.get_gold(game.player1, game.group)
-    player2_point = await BagUser.get_gold(game.player2, game.group)
+    player1_point = await get_gold(game.player1)
+    player2_point = await get_gold(game.player2)
     if player_win == 1:
         winner_point = player1_point
         loser_point = player2_point
@@ -227,11 +221,10 @@ async def count_score(game: Deck, player_win: int):
 
     winner_point += winner_dif_point
     loser_point += loser_dif_point
-    await BagUser.spend_gold(loser, game.group, -loser_dif_point)
-    await BagUser.add_gold(winner, game.group, winner_dif_point)
+    await spend_gold(loser, -loser_dif_point)
+    await add_gold(winner, winner_dif_point)
 
-    words = f"{winner_name}获胜\n{winner_name}获得{game.point}金币！并且获得{winner_bonus}金币奖励\n" \
-            f"{loser_name}失败"
+    words = f"{winner_name}获胜\n{winner_name}获得{game.point}金币！并且获得{winner_bonus}金币奖励\n{loser_name}失败"
     if loser_bonus > 0:
         words += f" 但获得{loser_bonus}金币"
     elif loser_bonus < 0:
@@ -247,7 +240,7 @@ async def get_game_ls(group: int):
             if game.player2 is not None:
                 s += f"{game.player2_name}正在游戏中\n"
             else:
-                s += f"等待玩家二中\n"
+                s += "等待玩家二中\n"
     if not s:
         return "当前没有进行中的游戏！"
     return s[:-1]

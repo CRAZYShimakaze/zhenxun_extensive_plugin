@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 from PIL.Image import Image as IMG
 
-from .utils import save_jpg, load_font
+from .utils import load_font, save_jpg
 
 
 class Draw_Handle:
@@ -24,10 +24,7 @@ class Draw_Handle:
         font_size_char = 90  # 汉字字体大小
         self.font_char = await load_font("consola.ttf", font_size_char)
 
-    def draw_block(self,
-                   color: str,
-                   char: str = "",
-                   char_color: str = "") -> IMG:
+    def draw_block(self, color: str, char: str = "", char_color: str = "") -> IMG:
         block = Image.new("RGB", self.block_size, self.border_color)
         inner_w = self.block_size[0] - self.border_width * 2
         inner_h = self.block_size[1] - self.border_width * 2
@@ -38,7 +35,9 @@ class Draw_Handle:
         if not char:
             return block
 
-        char_size = self.font_char.getsize(char)
+        # char_size = self.font_char.getsize(char)
+        bbox = self.font_char.getbbox(char)
+        char_size = (bbox[2] - bbox[0], bbox[3] - bbox[1])
         x = (self.block_size[0] - char_size[0]) / 2
         y = (self.block_size[1] - char_size[1]) / 2
         draw.text((x, y), char, font=self.font_char, fill=char_color)
@@ -47,8 +46,7 @@ class Draw_Handle:
     def draw(self) -> BytesIO:
         rows = 1
         board_w = self.length * self.block_size[0]
-        board_w += (self.length -
-                    1) * self.block_padding[0] + 2 * self.padding[0]
+        board_w += (self.length - 1) * self.block_padding[0] + 2 * self.padding[0]
         board_h = rows * self.block_size[1]
         board_h += (rows - 1) * self.block_padding[1] + 2 * self.padding[1]
         board_size = (board_w, board_h)
@@ -56,8 +54,7 @@ class Draw_Handle:
         for i in range(self.length):
             char = self.question[i]
             block = self.draw_block(self.bg_color, char, self.font_color)
-            x = self.padding[0] + (self.block_size[0] +
-                                   self.block_padding[0]) * i
+            x = self.padding[0] + (self.block_size[0] + self.block_padding[0]) * i
             y = self.padding[1]
             board.paste(block, (x, y))
         return save_jpg(board)
