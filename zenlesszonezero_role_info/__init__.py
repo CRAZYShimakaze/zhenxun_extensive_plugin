@@ -53,18 +53,15 @@ __plugin_meta__ = PluginMetadata(
     指令：
         绝区零绑定UID/uidXXX
         绝区零解绑
-        角色面板 (例:刻晴面板、刻晴面板@XXX、刻晴面板+uid)
-        更新绝区零面板 (uid)
-        驱动盘导入
-        XX(花羽沙杯冠)适配
-        XX(花羽沙杯冠)推荐
-        XX(乐团/魔女/...)套推荐
-        XX(乐团/魔女/...)独立套推荐
+        XX面板 (例:星见雅面板、星见雅面板@CRAZYShimakaze、星见雅面板104442596)
+        更新/刷新绝区零面板 (uid)
         绝区零角色排行
-        最强XX (例:最强甘雨)
+        最强XX (例:最强星见雅)
         最菜XX
         驱动盘榜单
         群驱动盘榜单
+        重置最强XX (仅超级用户可用)
+        检查绝区零面板更新 (仅超级用户可用)
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
@@ -790,6 +787,22 @@ async def _check_update():
 
 @driver.on_startup
 async def _():
+    for item in (
+        avatar_url,
+        equipments_url,
+        locs_url,
+        medals_url,
+        namecards_url,
+        pfps_url,
+        property_url,
+        titles_url,
+        weapons_url,
+        equipmentleveltemplatetb_url,
+        weaponleveltemplatetb_url,
+        weaponstartemplatetb_url,
+    ):
+        if not os.path.exists(f"{json_path}/{item.split('/')[-1]}"):
+            await AsyncHttpx.download_file(item, path=f"{json_path}/{item.split('/')[-1]}", follow_redirects=True)
     scheduler.add_job(
         _check_update,
         "cron",
