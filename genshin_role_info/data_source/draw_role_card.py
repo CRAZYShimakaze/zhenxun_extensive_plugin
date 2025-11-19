@@ -116,6 +116,12 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         if os.path.exists(f"{regoin_path}/{role_info_json[data['名称']]['区域']}.png"):
             region_icon = load_image(path=f"{regoin_path}/{role_info_json[data['名称']]['区域']}.png", size=(130, 130))
             bg.alpha_composite(region_icon, (0, 4))
+        
+        element_icon = load_image(f"{regoin_path}/{data['元素']}.png")
+        # element_icon = await get_img(url=resource_url.format(data["元素"]), save_path=element_icon, mode='RGBA')
+        element_icon = element_icon.resize((130, 130), Image.Resampling.LANCZOS)
+        bg.alpha_composite(element_icon, (1080 - 130, 4))
+        
         bg_draw = ImageDraw.Draw(bg)
         if not title:
             bg_draw.text((131, 100), f"UID{uid}", fill="white", font=get_font(48, "number.ttf"))
@@ -161,7 +167,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         max_element = max(prop["伤害加成"])
         text = round(max_element * 100, 1)
 
-        bg_draw.text((89, 669), f"{element_type[prop['伤害加成'].index(max_element)]}伤害加成", fill="white", font=get_font(34, "hywh.ttf"))
+        #bg_draw.text((89, 669), f"{element_type[prop['伤害加成'].index(max_element)]}伤害加成", fill="white", font=get_font(34, "hywh.ttf"))
+        bg_draw.text((89, 669), f"{data['元素']}元素伤害加成", fill="white", font=get_font(34, "hywh.ttf"))
         draw_right_text(bg_draw, f"{text}%", 480, 671, "white", get_font(34, "number.ttf"))
 
         # 天赋
@@ -373,8 +380,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
 
         effect = {}
         for item in effective:
-            if item not in ["元素伤害加成", "物理伤害加成"]:
-                name = item.replace("百分比", "").replace("元素充能效率", "充能").replace("暴击率", "暴击").replace("暴击伤害", "爆伤").replace("元素精通", "精通").replace("治疗加成", "治疗")
+            if 1:#item not in ["元素伤害加成", "物理伤害加成"]:
+                name = item.replace("百分比", "").replace("元素充能效率", "充能").replace("暴击率", "暴击").replace("暴击伤害", "爆伤").replace("元素精通", "精通").replace("加成", "")
                 if name not in effect:
                     effect[name] = effective.get(item)
         effect = str(effect).replace("'", "").replace(" ", "").strip("{}")

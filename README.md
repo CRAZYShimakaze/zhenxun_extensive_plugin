@@ -25,7 +25,7 @@
 
 1.下载仓库内plugin_utils文件夹和你想要的插件文件夹
 
-2.将两个文件夹放入`my_plugins`等对应扩展插件目录中
+2.将两个文件夹放入`plugins`等对应扩展插件目录中
 
 3.重启机器人即可使用。
 
@@ -52,6 +52,7 @@
 - [扫雷赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/minesweeper)
 - [猜成语赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/guess_riddle)
 - [发涩图](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/setu)
+- [绝区零角色面板](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/zenlesszonezero_role_info)
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/CRAZYShimakaze/zhenxun_extensive_plugin.svg?variant=adaptive)](https://starchart.cc/CRAZYShimakaze/zhenxun_extensive_plugin)

@@ -26,7 +26,7 @@ talent_path = data_res_path + "talent"
 weapon_path = data_res_path + "weapon"
 reli_path = data_res_path + "reli"
 font_path = card_res_path + "fonts"
-weapon = load_json(path=f"{json_path}/weapon.json")
+# weapon = load_json(path=f"{json_path}/weapon.json")
 weapon_loc = load_json(path=f"{json_path}/weapon_loc.json")
 prop_list = {
     "FIGHT_PROP_BASE_ATTACK": "基础攻击力",
@@ -248,7 +248,7 @@ class PlayerInfo:
             weapon_data = data["equipList"][-1]
             weapon_info["名称"] = weapon_loc["zh-cn"][weapon_data["flat"]["nameTextMapHash"]]
             weapon_info["图标"] = weapon_data["flat"]["icon"]
-            weapon_info["类型"] = weapon["Type"][weapon_info["名称"]]
+            # weapon_info["类型"] = weapon["Type"][weapon_info["名称"]]
             weapon_info["等级"] = weapon_data["weapon"]["level"]
             weapon_info["星级"] = weapon_data["flat"]["rankLevel"]
             if "promoteLevel" in weapon_data["weapon"]:

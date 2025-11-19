@@ -3,7 +3,7 @@ zhenxun_bot 图片打分插件
 
 图片打分,需要登陆https://cloud.baidu.com/product/imagecensoring
 
-获取API_KEY和SECRET_KEY进行配置后才可使用
+获取API_KEY和SECRET_KEY进行在_init__.py内配置后才可使用
 
 (在审核平台端创建自定义审核策略，并将所有条目的橙色滑块拖到最左边以获得最佳效果)
 
@@ -12,6 +12,11 @@ zhenxun_bot 图片打分插件
 - 打分 
 
 ### 更新
+
+**2025/11/19**[v0.4]
+
+1. 适配新版真寻
+
 **2022/10/26**[v0.3]
 
 1. 扩充回复语句

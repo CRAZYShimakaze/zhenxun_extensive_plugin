@@ -15,29 +15,6 @@ zhenxun_bot 星铁攻略
 - 更新星铁推荐 (仅超级用户可用)
 - 检查星铁插件更新 (仅超级用户可用)
 
-### 配置说明
-
-<details>
-<summary>CHECK_UPDATE</summary>
-
-- 定期自动检查更新
-- 默认值：True
-</details>
-<details>
-<summary>GITHUB_RAW</summary>
-
-- github raw的镜像站
-- 默认值：https://ghproxy.com/https://raw.githubusercontent.com
-- 其他代理站：
-1. https://raw.githubusercontent.com
-2. https://ghproxy.com/https://raw.githubusercontent.com
-3. https://raw.fastgit.org
-4. https://raw.fgit.ml
-5. https://raw.gitmirror.com
-6. https://raw.kgithub.com
-7. 其他未列出的代理站
-
-</details>
 
 ### 更新
 

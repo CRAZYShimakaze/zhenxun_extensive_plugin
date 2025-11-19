@@ -4,9 +4,6 @@ import random
 from ..utils.card_utils import get_artifact_suit, json_path
 from ..utils.json_utils import load_json
 
-upheaval_value = load_json(path=f"{json_path}/upheaval.json")
-role_data = load_json(path=f"{json_path}/roles_data.json")
-
 
 def get_role_dmg(data: dict):
     dm = get_damage_multipiler(deepcopy(data))

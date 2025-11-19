@@ -14,10 +14,6 @@ from .draw_role_card import weapon_url
 
 role_url = "https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/{}.png"
 
-role_data = load_json(f"{json_path}/roles_data.json")
-role_name = load_json(f"{json_path}/roles_name.json")
-
-
 async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
     """
     绘制更新图片

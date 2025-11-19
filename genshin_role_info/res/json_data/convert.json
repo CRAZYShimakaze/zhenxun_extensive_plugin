@@ -37,7 +37,9 @@
     "ScrollOfTheHeroOfCinderCity": "烬城勇者绘卷",
     "ObsidianCodex": "黑曜秘典",
     "LongNightsOath": "深廊终曲",
-    "FinaleOfTheDeepGalleries": "长夜之誓"
+    "FinaleOfTheDeepGalleries": "长夜之誓",
+    "RealmMirrorNight": "穹境示现之夜",
+    "SpinMoonSerenade": "纺月的夜歌"
   },
   "位置": {
     "flower": 0,
@@ -511,7 +513,20 @@
       "深廊的湮落之刻",
       "深廊的饫赐之宴",
       "深廊的遂失之冕"
+    ],
+    "穹境示现之夜": [
+      "渴真之花",
+      "深罪之羽",
+      "谕告之钟",
+      "满溢之壶",
+      "永劫之冕"
+    ],
+    "纺月的夜歌": [
+      "流离者的晶泪",
+      "受福者的白羽",
+      "祭霜者的迷狂",
+      "至纯者的欢荣",
+      "司信者的圣冕"
     ]
   }
 }
-

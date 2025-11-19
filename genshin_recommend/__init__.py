@@ -13,7 +13,7 @@ from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_apscheduler import scheduler
 
-from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.auth_utils import gold_cost
 from ..plugin_utils.http_utils import AsyncHttpx
 from ..plugin_utils.image_utils import image
 
@@ -167,6 +167,7 @@ async def _(event: MessageEvent):
 
 
 @role_guide.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     role = get_role_name(role)
@@ -174,11 +175,11 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         return
     save_path = f"{ROLE_GUIDE_PATH}/{role}.png"
     await get_img(genshin_role_guide, role, save_path, ignore_exist=False)
-    await check_gold(event, coin=10, percent=1)
     await role_guide.send(image(Path(save_path)))
 
 
 @genshin_info.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     name = args[0].strip()
     role = get_role_name(name)
@@ -189,16 +190,15 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         else:
             save_path = f"{WEAPON_INFO_PATH}/{weapon}.png"
             await get_img(genshin_weapon_info, weapon, save_path, ignore_exist=False)
-            await check_gold(event, coin=10, percent=1)
             await genshin_info.send(image(Path(save_path)))
     else:
         save_path = f"{ROLE_INFO_PATH}/{role}.png"
         await get_img(genshin_role_info, role, save_path, ignore_exist=False)
-        await check_gold(event, coin=10, percent=1)
         await genshin_info.send(image(Path(save_path)))
 
 
 @break_material.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     role = get_role_name(role)
@@ -206,7 +206,6 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         return
     save_path = f"{ROLE_BREAK_PATH}/{role}.jpg"
     await get_img(genshin_role_break, role, save_path, ignore_exist=False)
-    await check_gold(event, coin=10, percent=1)
     await break_material.send(image(Path(save_path)))
 
 

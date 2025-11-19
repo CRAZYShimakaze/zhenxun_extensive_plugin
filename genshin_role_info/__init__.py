@@ -27,7 +27,7 @@ from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
 from zhenxun.utils.http_utils import AsyncHttpx
 
-from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.auth_utils import gold_cost
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_recommend_card import (
     gen_artifact_adapt,
@@ -72,7 +72,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.0",
+        version="4.2.1",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -145,11 +145,7 @@ async def get_msg_uid(event):
     # uid = genshin_user.uid if genshin_user else None
     if not uid:
         await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
-            "请绑定uid后再查询！"
-        )
-    if not check_uid(uid):
-        await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
-            f"绑定的uid{uid}不合法，请重新绑定!"
+            "请发送'绑定原神uidxxxx'后再查询！"
         )
     print(f"UID={uid}")
     return uid
@@ -284,6 +280,10 @@ async def _(event: MessageEvent, arg: tuple[str, ...] = RegexGroup()):
             f"您已绑定过uid：{uid}，如果希望更换uid，请先发送原神解绑"
         )
     else:
+        if not check_uid(msg):
+            await bind.finish(  # MessageSegment.reply(event.message_id) +
+                f"绑定的uid{msg}不合法，请重新绑定!"
+            )
         bind_uid(event.user_id, msg)
         await bind.finish(  # MessageSegment.reply(event.message_id) +
             f"已成功添加原神uid：{msg}"
@@ -413,11 +413,12 @@ async def import_artifact(bot: Bot, event):
 
 
 @artifact_adapt.handle()
-async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
+@gold_cost(coin=1, percent=1)
+async def test(bot: Bot, event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     msg = args[0].strip(), args[1].strip()
     uid = await get_msg_uid(event)
     if msg[1] not in ["花", "羽", "沙", "杯", "冠"]:
-        return await artifact_adapt.send("请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True)
+        return await artifact_adapt.finish("请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True)
     role = msg[0]
     pos = ["花", "羽", "沙", "杯", "冠"].index(msg[1])
     role_name = get_role_name(role)
@@ -426,7 +427,6 @@ async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
-    await check_gold(event, coin=10, percent=1)
     role_data = player_info.get_roles_info(role_name)
     pos_list = 0
     for index, item in enumerate(role_data["圣遗物"]):
@@ -434,7 +434,7 @@ async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
             pos_list = index
             break
     else:
-        await artifact_adapt.send(  # MessageSegment.reply(event.message_id) +
+        await artifact_adapt.finish(  # MessageSegment.reply(event.message_id) +
             f"{role_name}{pos}号位没有圣遗物！", at_sender=False
         )
     img, _ = await gen_artifact_adapt(  # MessageSegment.reply(event.message_id) +
@@ -445,11 +445,12 @@ async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         pos,
         __plugin_version__,
     )
-    await artifact_adapt.finish(img)
+    await artifact_adapt.send(img)
 
 
 @artifact_recommend.handle()
-async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
+@gold_cost(coin=1, percent=1)
+async def test(bot: Bot, event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     msg = args[0].strip(), args[1].strip()
     uid = await get_msg_uid(event)
     main_prop = [
@@ -497,12 +498,11 @@ async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     if not role_name:
         return
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
-    await check_gold(event, coin=10, percent=1)
     artifact_pos_list = []
     if not is_suit:
         artifact_pos_list = player_info.get_artifact_list(pos)
         if not artifact_list:
-            return await artifact_recommend.send(  # MessageSegment.reply(event.message_id) +
+            return await artifact_recommend.finish(  # MessageSegment.reply(event.message_id) +
                 f"{pos}号位没有圣遗物缓存！请先执行'更新面板'指令！", at_sender=False
             )
     roles_list = player_info.get_roles_list()
@@ -535,20 +535,20 @@ async def test(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         await artifact_recommend.finish(  # MessageSegment.reply(event.message_id) +
             "未找到符合条件的圣遗物推荐!"
         )
-    await artifact_recommend.finish(  # MessageSegment.reply(event.message_id) +
+    await artifact_recommend.send(  # MessageSegment.reply(event.message_id) +
         img + "注:仅根据当前缓存圣遗物进行推荐,发送'圣遗物导入'可导入背包内所有圣遗物."
     )
 
 
 @group_artifact_list.handle()
-async def _(event: GroupMessageEvent):
+@gold_cost(coin=1, percent=1)
+async def _(bot: Bot, event: MessageEvent):
     group_id = event.group_id
     if not os.path.exists(f"{group_info_path}/{group_id}.json"):
         return await group_artifact_list.finish(  # MessageSegment.reply(event.message_id) +
             "未收录任何圣遗物信息,请先进行查询!"
         )
     else:
-        await check_gold(event, coin=1, percent=1)
         group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
         img, _ = await draw_artifact_card(
             "群圣遗物榜单",
@@ -560,13 +560,14 @@ async def _(event: GroupMessageEvent):
             __plugin_version__,
             1,
         )
-        await group_artifact_list.finish(  # MessageSegment.reply(event.message_id) +
+        await group_artifact_list.send(  # MessageSegment.reply(event.message_id) +
             img
         )
 
 
 @artifact_list.handle()
-async def _(event: MessageEvent):
+@gold_cost(coin=1, percent=1)
+async def _(bot: Bot, event: MessageEvent):
     uid = await get_msg_uid(event)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         return await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
@@ -575,11 +576,10 @@ async def _(event: MessageEvent):
     else:
         player_info = PlayerInfo(uid)
         if not player_info.data["圣遗物榜单"]:
-            return await artifact_list.send(  # MessageSegment.reply(event.message_id) +
+            return await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
                 "未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=False
             )
         roles_list = player_info.get_roles_list()
-        await check_gold(event, coin=1, percent=1)
         img, text = await draw_artifact_card(
             "圣遗物榜单",
             None,
@@ -589,7 +589,7 @@ async def _(event: MessageEvent):
             player_info.data["小毕业圣遗物"],
             __plugin_version__,
         )
-        await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
+        await artifact_list.send(  # MessageSegment.reply(event.message_id) +
             img + text, at_sender=False
         )  # + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
 
@@ -636,7 +636,7 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         bot = nonebot.get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
         qq_name = qq_name["nickname"]
-        await group_best.finish(  # MessageSegment.reply(event.message_id) +
+        await group_best.send(  # MessageSegment.reply(event.message_id) +
             f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
 
@@ -660,7 +660,7 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         bot = nonebot.get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
         qq_name = qq_name["nickname"]
-        await group_worst.finish(  # MessageSegment.reply(event.message_id) +
+        await group_worst.send(  # MessageSegment.reply(event.message_id) +
             f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
 
@@ -723,26 +723,27 @@ async def get_char(uid, event):
             at_sender=False,
         )
     else:
-        await card_list.finish(  # MessageSegment.reply(event.message_id) +
+        await card_list.send(  # MessageSegment.reply(event.message_id) +
             await draw_role_pic(uid, roles_list, player_info), at_sender=False
         )
 
 
+@gold_cost(coin=1, percent=1)
 async def gen(event: MessageEvent, uid, role_name, at_user):
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
-    await check_gold(event, coin=10, percent=1)
     role_data = player_info.get_roles_info(role_name)
     img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
     msg = "" if at_user else check_role(role_name, event, img, score)
     img = image_build(img=img, quality=100, mode="RGB")
-    await get_card.finish(  # MessageSegment.reply(event.message_id) +
+    await get_card.sendh(  # MessageSegment.reply(event.message_id) +
         msg + img, at_sender=False
     )
 
 
-async def update(event, uid, group_save):
+@gold_cost(coin=1, percent=1)
+async def update(event: MessageEvent, uid, group_save):
     if os.path.exists(f"{player_info_path}/{uid}.json"):
         data = load_json(f"{player_info_path}/{uid}.json")
         if "玩家信息" in data.keys():
@@ -761,9 +762,8 @@ async def update(event, uid, group_save):
                     f"{60 - cd_time}秒后可再次更新!", at_sender=False
                 )
     player_info, update_role_list = await get_enka_info(uid, update_info=True, event=event)
-    await check_gold(event, coin=1, percent=1)
     await check_artifact(event, player_info, update_role_list, uid, group_save)
-    await get_card.finish(  # MessageSegment.reply(event.message_id) +
+    await get_card.send(  # MessageSegment.reply(event.message_id) +
         await draw_role_pic(uid, update_role_list, player_info)
     )
 

@@ -217,11 +217,12 @@ async def count_score(game: Deck, player_win: int):
     winner_bonus = randint(0, top_bonus)
     loser_bonus = randint(-top_bonus, top_bonus)
     winner_dif_point = game.point + winner_bonus
-    loser_dif_point = -game.point + loser_bonus
+    loser_dif_point = game.point - loser_bonus
 
-    winner_point += winner_dif_point
-    loser_point += loser_dif_point
-    await spend_gold(loser, -loser_dif_point)
+    loser_dif_point = max(0, loser_dif_point)
+    winner_dif_point = max(0, winner_dif_point)
+
+    await spend_gold(loser, loser_dif_point)
     await add_gold(winner, winner_dif_point)
 
     words = f"{winner_name}获胜\n{winner_name}获得{game.point}金币！并且获得{winner_bonus}金币奖励\n{loser_name}失败"

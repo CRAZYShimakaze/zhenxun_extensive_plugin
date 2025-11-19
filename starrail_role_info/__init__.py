@@ -25,9 +25,9 @@ from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
+from zhenxun.utils.http_utils import AsyncHttpx
 
-from ..plugin_utils.auth_utils import check_gold
-from ..plugin_utils.http_utils import AsyncHttpx
+from ..plugin_utils.auth_utils import gold_cost
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_recommend_card import gen_artifact_recommend
 from .data_source.draw_role_card import draw_role_card
@@ -65,7 +65,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="1.3.3",
+        version="1.3.4",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -73,6 +73,7 @@ __zx_plugin_name__ = __plugin_meta__.name
 __plugin_version__ = __plugin_meta__.extra.get("version")
 
 starrail_url = "https://api.mihomo.me/sr_info/{}"
+starrail_url = "https://enka.network/api/hsr/uid/{}"
 
 my_card = on_command("我的星铁角色", aliases={"我的崩铁角色"}, priority=4, block=True)
 his_card = on_command("他的星铁角色", aliases={"他的崩铁角色"}, priority=4, block=True)
@@ -135,11 +136,7 @@ async def get_msg_uid(event):
     uid = get_uid(user_qq)
     if not uid:
         await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
-            "请绑定星铁uid后再查询！"
-        )
-    if not check_uid(uid):
-        await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
-            f"绑定的uid{uid}不合法，请重新绑定!"
+            "请发送'绑定星铁uidxxxx'后再查询！"
         )
     return uid
 
@@ -234,6 +231,10 @@ async def _(event: MessageEvent, arg: tuple[str, ...] = RegexGroup()):
             f"您已绑定过uid：{uid}，如果希望更换uid，请先发送星铁解绑"
         )
     else:
+        if not check_uid(msg):
+            await bind.finish(  # MessageSegment.reply(event.message_id) +
+                f"绑定的uid{msg}不合法，请重新绑定!"
+            )
         bind_uid(event.user_id, msg)
         await bind.finish(  # MessageSegment.reply(event.message_id) +
             f"已成功添加星铁uid：{msg}"
@@ -250,11 +251,12 @@ async def _(event: MessageEvent):
 
 
 @artifact_recommend.handle()
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     msg = args[0].strip(), args[1].strip()
     uid = await get_msg_uid(event)
     if len(msg) != 2:
-        return await artifact_recommend.send("请输入正确角色名和遗器位置序号(头手身脚球绳)...", at_sender=True)
+        return await artifact_recommend.finish("请输入正确角色名和遗器位置序号(头手身脚球绳)...", at_sender=True)
     role = msg[0]
     pos = ["头", "手", "身", "脚", "球", "绳"].index(msg[1])
     role_name = get_role_name(role)
@@ -262,11 +264,10 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         return
     url = starrail_url.format(uid)
     player_info, _ = await get_starrail_info(url, uid, update_info=False, event=event)
-    await check_gold(event, coin=10, percent=1)
     artifact_list = player_info.get_artifact_list(pos)
 
     if not artifact_list:
-        return await artifact_recommend.send(  # MessageSegment.reply(event.message_id) +
+        return await artifact_recommend.finish(  # MessageSegment.reply(event.message_id) +
             f"{pos}号位没有遗器缓存！", at_sender=False
         )
     roles_list = player_info.get_roles_list()
@@ -281,10 +282,11 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         pos,
         __plugin_version__,
     )
-    await artifact_recommend.finish(img)
+    await artifact_recommend.send(img)
 
 
 @group_artifact_list.handle()
+@gold_cost(coin=1, percent=1)
 async def _(event: GroupMessageEvent):
     group_id = event.group_id
     if not os.path.exists(f"{group_info_path}/{group_id}.json"):
@@ -292,7 +294,6 @@ async def _(event: GroupMessageEvent):
             "未收录任何遗器信息,请先进行查询!"
         )
     else:
-        await check_gold(event, coin=1, percent=1)
         group_artifact_info = load_json(f"{group_info_path}/{group_id}.json")
         img, _ = await draw_artifact_card(
             "群遗器榜单",
@@ -303,12 +304,13 @@ async def _(event: GroupMessageEvent):
             __plugin_version__,
             1,
         )
-        await group_artifact_list.finish(  # MessageSegment.reply(event.message_id) +
+        await group_artifact_list.send(  # MessageSegment.reply(event.message_id) +
             img
         )
 
 
 @artifact_list.handle()
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent):
     uid = await get_msg_uid(event)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
@@ -318,11 +320,10 @@ async def _(event: MessageEvent):
     else:
         player_info = PlayerInfo(uid)
         if not player_info.data["遗器榜单"]:
-            return await artifact_list.send(  # MessageSegment.reply(event.message_id) +
+            return await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
                 "未收录任何遗器信息,请先输入'更新面板'命令!", at_sender=False
             )
         roles_list = player_info.get_roles_list()
-        await check_gold(event, coin=1, percent=1)
         img, text = await draw_artifact_card(
             "遗器榜单",
             uid,
@@ -331,7 +332,7 @@ async def _(event: MessageEvent):
             player_info.data["小毕业遗器"],
             __plugin_version__,
         )
-        await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
+        return await artifact_list.send(  # MessageSegment.reply(event.message_id) +
             img + text, at_sender=False
         )  # + f"\n数据来源:{','.join(roles_list)}", at_sender=True)
 
@@ -381,7 +382,7 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         bot = nonebot.get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
         qq_name = qq_name["nickname"]
-        await group_best.finish(  # MessageSegment.reply(event.message_id) +
+        return await group_best.send(  # MessageSegment.reply(event.message_id) +
             f"本群最强{role}!仅根据遗器评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
 
@@ -405,7 +406,7 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         bot = nonebot.get_bot()
         qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
         qq_name = qq_name["nickname"]
-        await group_worst.finish(  # MessageSegment.reply(event.message_id) +
+        return await group_worst.send(  # MessageSegment.reply(event.message_id) +
             f"本群最菜{role}!仅根据遗器评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
 
@@ -483,21 +484,22 @@ async def _(event: MessageEvent):
     await get_char(uid, event)
 
 
+@gold_cost(coin=1, percent=1)
 async def gen(event: MessageEvent, uid, role_name, at_user):
     url = starrail_url.format(uid)
     player_info, _ = await get_starrail_info(url, uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
-    await check_gold(event, coin=1, percent=1)
     role_data = player_info.get_roles_info(role_name)
     img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
     msg = "" if at_user else check_role(role_name, event, img, score)
     img = image_build(img=img, quality=100, mode="RGB")
-    await get_card.finish(  # MessageSegment.reply(event.message_id) +
+    return await get_card.send(  # MessageSegment.reply(event.message_id) +
         msg + img, at_sender=False
     )
 
 
+@gold_cost(coin=1, percent=1)
 async def update(event, uid, group_save):
     url = starrail_url.format(uid)
     if os.path.exists(f"{player_info_path}/{uid}.json"):
@@ -518,9 +520,8 @@ async def update(event, uid, group_save):
                     f"{60 - cd_time}秒后可再次更新!", at_sender=False
                 )
     player_info, update_role_list = await get_starrail_info(url, uid, update_info=True, event=event)
-    await check_gold(event, coin=1, percent=1)
     await check_artifact(event, player_info, update_role_list, uid, group_save)
-    await get_card.finish(  # MessageSegment.reply(event.message_id) +
+    return await get_card.send(  # MessageSegment.reply(event.message_id) +
         await draw_role_pic(uid, update_role_list, player_info)
     )
 

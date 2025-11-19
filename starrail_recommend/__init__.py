@@ -13,7 +13,7 @@ from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_apscheduler import scheduler
 
-from ..plugin_utils.auth_utils import check_gold
+from ..plugin_utils.auth_utils import gold_cost, spend_gold
 from ..plugin_utils.http_utils import AsyncHttpx
 from ..plugin_utils.image_utils import image
 
@@ -86,6 +86,7 @@ async def get_img(url, arg, save_path, ignore_exist):
 
 
 @role_guide.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for key, value in role_list.items():
@@ -96,11 +97,11 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         return
     save_path = f"{ROLE_GUIDE_PATH}/{role}.png"
     await get_img(starrail_role_guide, role, save_path, ignore_exist=False)
-    await check_gold(event, coin=10, percent=1)
     await role_guide.send(image(Path(save_path)))
 
 
 @common_weapon_grade.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent):
     arg = "光锥推荐"
     save_path = [
@@ -108,33 +109,33 @@ async def _(event: MessageEvent):
         f"{COMMON_GUIDE_PATH}/{arg}2.jpg",
         f"{COMMON_GUIDE_PATH}/{arg}3.jpg",
     ]
-    await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split("/")[-1].strip(".jpg"), item, ignore_exist=False)
         await common_weapon_grade.send(image(Path(item)))
 
 
 @common_artifact_guide.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent):
     arg = "遗器推荐"
     save_path = [f"{COMMON_GUIDE_PATH}/{arg}1.jpg", f"{COMMON_GUIDE_PATH}/{arg}2.jpg"]
-    await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split("/")[-1].strip(".jpg"), item, ignore_exist=False)
         await common_artifact_guide.send(image(Path(item)))
 
 
 @common_abyss.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent):
     arg = "角色配队"
     save_path = [f"{COMMON_GUIDE_PATH}/{arg}1.jpg", f"{COMMON_GUIDE_PATH}/{arg}2.jpg"]
-    await check_gold(event, coin=10, percent=1)
     for item in save_path:
         await get_img(common_guide, item.split("/")[-1].strip(".jpg"), item, ignore_exist=False)
         await common_abyss.send(image(Path(item)))
 
 
 @starrail_info.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for key, value in role_list.items():
@@ -154,11 +155,11 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
         return
     save_path = f"{ROLE_INFO_PATH}/{role}.png"
     await get_img(starrail_role_info, role, save_path, ignore_exist=False)
-    await check_gold(event, coin=10, percent=1)
     await starrail_info.send(image(Path(save_path)))
 
 
 @break_material.handle()
+@gold_cost(coin=10, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for key, value in role_list.items():
