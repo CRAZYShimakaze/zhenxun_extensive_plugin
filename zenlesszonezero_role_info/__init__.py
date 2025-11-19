@@ -23,9 +23,9 @@ from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
+from zhenxun.utils.http_utils import AsyncHttpx
 
 from ..plugin_utils.auth_utils import gold_cost
-from ..plugin_utils.http_utils import AsyncHttpx
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_recommend_card import (
     gen_artifact_recommend,
@@ -73,18 +73,6 @@ __zx_plugin_name__ = __plugin_meta__.name
 __plugin_version__ = __plugin_meta__.extra.get("version")
 
 enka_url = "https://enka.network/api/zzz/uid/{}"
-avatar_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/avatars.json"
-equipments_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/equipments.json"
-locs_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/locs.json"
-medals_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/medals.json"
-namecards_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/namecards.json"
-pfps_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/pfps.json"
-property_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/property.json"
-titles_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/titles.json"
-weapons_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/weapons.json"
-equipmentleveltemplatetb_url = "https://git.mero.moe/dimbreath/ZenlessData/raw/branch/master/FileCfg/EquipmentLevelTemplateTb.json"
-weaponleveltemplatetb_url = "https://git.mero.moe/dimbreath/ZenlessData/raw/branch/master/FileCfg/WeaponLevelTemplateTb.json"
-weaponstartemplatetb_url = "https://git.mero.moe/dimbreath/ZenlessData/raw/branch/master/FileCfg/WeaponStarTemplateTb.json"
 api_url = [enka_url]
 bind = on_regex(r"(?:绝区零绑定|绑定绝区零).*?(\d+)", priority=5, block=True)
 unbind = on_command("绝区零解绑", priority=5, block=True)
@@ -743,21 +731,6 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update():
-    for item in (
-        avatar_url,
-        equipments_url,
-        locs_url,
-        medals_url,
-        namecards_url,
-        pfps_url,
-        property_url,
-        titles_url,
-        weapons_url,
-        equipmentleveltemplatetb_url,
-        weaponleveltemplatetb_url,
-        weaponstartemplatetb_url,
-    ):
-        await AsyncHttpx.download_file(item, path=f"{json_path}/{item.split('/')[-1]}", follow_redirects=True)
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/zenlesszonezero_role_info/__init__.py"
     bot = nonebot.get_bot()
     try:

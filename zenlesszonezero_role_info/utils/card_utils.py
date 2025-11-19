@@ -27,15 +27,26 @@ weapon_path = data_res_path + "weapon"
 reli_path = data_res_path + "reli"
 font_path = card_res_path + "fonts"
 
+avatar_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/avatars.json"
+equipments_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/equipments.json"
+locs_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/locs.json"
+medals_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/medals.json"
+namecards_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/namecards.json"
+pfps_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/pfps.json"
+property_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/property.json"
+titles_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/titles.json"
+weapons_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/zzz/weapons.json"
+equipmentleveltemplatetb_url = "https://git.mero.moe/dimbreath/ZenlessData/raw/branch/master/FileCfg/EquipmentLevelTemplateTb.json"
+weaponleveltemplatetb_url = "https://git.mero.moe/dimbreath/ZenlessData/raw/branch/master/FileCfg/WeaponLevelTemplateTb.json"
+weaponstartemplatetb_url = "https://git.mero.moe/dimbreath/ZenlessData/raw/branch/master/FileCfg/WeaponStarTemplateTb.json"
+
 score_json = load_json(path=f"{json_path}/score.json")
 avatars_json = load_json(path=f"{json_path}/avatars.json")
 locs = load_json(path=f"{json_path}/locs.json")
 locs = locs["zh-cn"]
 property_json = load_json(path=f"{json_path}/property.json")
 equipments_json = load_json(path=f"{json_path}/equipments.json")
-equipmentleveltemplatetb_json = load_json(
-    path=f"{json_path}/equipmentleveltemplatetb.json"
-)
+equipmentleveltemplatetb_json = load_json(path=f"{json_path}/equipmentleveltemplatetb.json")
 weaponleveltemplatetb_json = load_json(path=f"{json_path}/weaponleveltemplatetb.json")
 weaponstartemplatetb_json = load_json(path=f"{json_path}/weaponstartemplatetb.json")
 prop_list = {
@@ -97,14 +108,10 @@ class PlayerInfo:
         # self.player_info["世界等级"] = data.get("worldLevel", "unknown")
         # self.player_info["签名"] = data.get("signature", "unknown")
         # self.player_info["成就"] = data.get("finishAchievementNum", "unknown")
-        self.player_info["角色列表"] = dictlist_to_list(
-            data["ShowcaseDetail"].get("AvatarList", [])
-        )
+        self.player_info["角色列表"] = dictlist_to_list(data["ShowcaseDetail"].get("AvatarList", []))
         # self.player_info["名片列表"] = data.get("showNameCardIdList", "unknown")
         # self.player_info["头像"] = data["profilePicture"].get("avatarId", "unknown")
-        self.player_info["更新时间"] = datetime.datetime.strftime(
-            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"
-        )
+        self.player_info["更新时间"] = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
 
     def set_role(self, data: dict):
         role_info = {}
@@ -130,50 +137,29 @@ class PlayerInfo:
             artifacts = [{}] * 6
             for artifact in data.get("EquippedList", []):
                 artifact_info = {}
-                suitid = equipments_json["Items"][str(artifact["Equipment"]["Id"])][
-                    "SuitId"
-                ]
+                suitid = equipments_json["Items"][str(artifact["Equipment"]["Id"])]["SuitId"]
                 artifact_json = load_json(path=f"{json_path}/Suits/{suitid}.json")
                 artifact_info["名称"] = artifact_json["Name"]
                 artifact_info["图标"] = equipments_json["Suits"][str(suitid)]["Icon"]
                 artifact_info["部位"] = artifact["Slot"]
                 artifact_info["所属套装"] = suitid
                 artifact_info["等级"] = artifact["Equipment"]["Level"]
-                artifact_info["星级"] = equipments_json["Items"][
-                    str(artifact["Equipment"]["Id"])
-                ]["Rarity"]
+                artifact_info["星级"] = equipments_json["Items"][str(artifact["Equipment"]["Id"])]["Rarity"]
                 val = 0
                 for inffo in equipmentleveltemplatetb_json["MOFGFFKBLLC"]:
-                    if (
-                        inffo["DJEPJPBAFCE"] == artifact_info["等级"]
-                        and inffo["OANJJBHJLHD"] == artifact_info["星级"]
-                    ):
+                    if inffo["DJEPJPBAFCE"] == artifact_info["等级"] and inffo["OANJJBHJLHD"] == artifact_info["星级"]:
                         val = inffo["GMJIPPMIIIF"]
                         break
                 artifact_info["主属性"] = {
-                    "属性名": locs.get(
-                        property_json.get(
-                            str(
-                                artifact["Equipment"]["MainPropertyList"][0][
-                                    "PropertyId"
-                                ]
-                            )
-                        )["Name"]
-                    ),
-                    "属性值": artifact["Equipment"]["MainPropertyList"][0][
-                        "PropertyValue"
-                    ]
-                    * (1 + val / 10000),
+                    "属性名": locs.get(property_json.get(str(artifact["Equipment"]["MainPropertyList"][0]["PropertyId"]))["Name"]),
+                    "属性值": artifact["Equipment"]["MainPropertyList"][0]["PropertyValue"] * (1 + val / 10000),
                 }
                 artifact_info["词条"] = []
                 for reliquary in artifact["Equipment"].get("RandomPropertyList", []):
                     artifact_info["词条"].append(
                         {
-                            "属性名": locs.get(
-                                property_json.get(str(reliquary["PropertyId"]))["Name"]
-                            ),
-                            "属性值": reliquary["PropertyValue"]
-                            * reliquary["PropertyLevel"],
+                            "属性名": locs.get(property_json.get(str(reliquary["PropertyId"]))["Name"]),
+                            "属性值": reliquary["PropertyValue"] * reliquary["PropertyLevel"],
                             "提升次数": reliquary["PropertyLevel"] - 1,
                         }
                     )
@@ -183,28 +169,15 @@ class PlayerInfo:
             prop = {}
             prop_json = avatars_json[str(data["Id"])]
             for i in prop_list.items():
-                growth_value = (
-                    prop_json["GrowthProps"].get(i[1], 0) * (data["Level"] - 1)
-                ) / 10000
-                promotion_value = prop_json["PromotionProps"][
-                    data["PromotionLevel"] - 1
-                ].get(i[1], 0)
-                core_enhancement_value = prop_json["CoreEnhancementProps"][
-                    data["CoreSkillEnhancement"]
-                ].get(i[1], 0)
-                prop[f"基础{i[0]}"] = (
-                    prop_json["BaseProps"].get(i[1], 0)
-                    + growth_value
-                    + promotion_value
-                    + core_enhancement_value
-                )
+                growth_value = (prop_json["GrowthProps"].get(i[1], 0) * (data["Level"] - 1)) / 10000
+                promotion_value = prop_json["PromotionProps"][data["PromotionLevel"] - 1].get(i[1], 0)
+                core_enhancement_value = prop_json["CoreEnhancementProps"][data["CoreSkillEnhancement"]].get(i[1], 0)
+                prop[f"基础{i[0]}"] = prop_json["BaseProps"].get(i[1], 0) + growth_value + promotion_value + core_enhancement_value
 
             weapon_info = {}
             if data.get("Weapon") is not None:
                 weapon_data = data["Weapon"]
-                weapon_json = load_json(
-                    path=f"{json_path}/Weapons/{weapon_data['Id']}.json"
-                )
+                weapon_json = load_json(path=f"{json_path}/Weapons/{weapon_data['Id']}.json")
                 weapon_info["名称"] = weapon_json["ItemName"]
                 weapon_info["图标"] = weapon_json["ImagePath"]
                 weapon_info["类型"] = weapon_json["Profession"]["Name"]
@@ -213,31 +186,12 @@ class PlayerInfo:
                 weapon_info["突破等级"] = weapon_data["BreakLevel"]
                 weapon_info["精炼等级"] = weapon_data["UpgradeLevel"]
                 weapon_info["基础攻击"] = weapon_json["MainStat"]["PropertyValue"] * (
-                    1
-                    + weaponleveltemplatetb_json["MOFGFFKBLLC"][weapon_info["等级"]][
-                        "GMJIPPMIIIF"
-                    ]
-                    / 10000
-                    + weaponstartemplatetb_json["MOFGFFKBLLC"][weapon_info["突破等级"]][
-                        "IDDHKNJKBBK"
-                    ]
-                    / 10000
+                    1 + weaponleveltemplatetb_json["MOFGFFKBLLC"][weapon_info["等级"]]["GMJIPPMIIIF"] / 10000 + weaponstartemplatetb_json["MOFGFFKBLLC"][weapon_info["突破等级"]]["IDDHKNJKBBK"] / 10000
                 )
                 try:
                     weapon_info["副属性"] = {
-                        "属性名": locs.get(
-                            property_json.get(
-                                str(weapon_json["SecondaryStat"]["PropertyId"])
-                            )["Name"]
-                        ),
-                        "属性值": weapon_json["SecondaryStat"]["PropertyValue"]
-                        * (
-                            1
-                            + weaponstartemplatetb_json["MOFGFFKBLLC"][
-                                weapon_info["突破等级"]
-                            ]["POLGGADDPLI"]
-                            / 10000
-                        ),
+                        "属性名": locs.get(property_json.get(str(weapon_json["SecondaryStat"]["PropertyId"]))["Name"]),
+                        "属性值": weapon_json["SecondaryStat"]["PropertyValue"] * (1 + weaponstartemplatetb_json["MOFGFFKBLLC"][weapon_info["突破等级"]]["POLGGADDPLI"] / 10000),
                     }
                 except IndexError:
                     weapon_info["副属性"] = {"属性名": "无属性", "属性值": 0}
@@ -245,15 +199,10 @@ class PlayerInfo:
 
                 for i in prop_list.keys():
                     if weapon_info["副属性"]["属性名"] == i:
-                        prop[f"额外{i}"] = (
-                            prop.get(f"额外{i}", 0) + weapon_info["副属性"]["属性值"]
-                        )
+                        prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + weapon_info["副属性"]["属性值"]
                         break
                     elif weapon_info["副属性"]["属性名"] == f"{i}百分比":
-                        prop[f"额外{i}"] = (
-                            prop.get(f"额外{i}", 0)
-                            + prop[f"基础{i}"] * weapon_info["副属性"]["属性值"] / 10000
-                        )
+                        prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + prop[f"基础{i}"] * weapon_info["副属性"]["属性值"] / 10000
                         break
             role_info["武器"] = weapon_info
             for item in role_info["驱动盘"]:
@@ -261,40 +210,26 @@ class PlayerInfo:
                     continue
                 for i in prop_list.keys():
                     if item["主属性"]["属性名"] == i:
-                        prop[f"额外{i}"] = (
-                            prop.get(f"额外{i}", 0) + item["主属性"]["属性值"]
-                        )
+                        prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + item["主属性"]["属性值"]
                         break
                     elif item["主属性"]["属性名"] == f"{i}百分比":
-                        prop[f"额外{i}"] = (
-                            prop.get(f"额外{i}", 0)
-                            + prop[f"基础{i}"] * item["主属性"]["属性值"] / 10000
-                        )
+                        prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + prop[f"基础{i}"] * item["主属性"]["属性值"] / 10000
                         break
                 if "伤害加成" in item["主属性"]["属性名"]:
-                    prop["额外伤害加成"] = (
-                        prop.get("额外伤害加成", 0) + item["主属性"]["属性值"]
-                    )
+                    prop["额外伤害加成"] = prop.get("额外伤害加成", 0) + item["主属性"]["属性值"]
                 for vice in item["词条"]:
                     for i in prop_list.keys():
                         if vice["属性名"] == i:
                             prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + vice["属性值"]
                             break
                         elif vice["属性名"] == f"{i}百分比":
-                            prop[f"额外{i}"] = (
-                                prop.get(f"额外{i}", 0)
-                                + prop[f"基础{i}"] * vice["属性值"] / 10000
-                            )
+                            prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + prop[f"基础{i}"] * vice["属性值"] / 10000
                             break
-            suit_4, suit_2 = get_artifact_suit(
-                [item.get("所属套装", "") for item in artifacts]
-            )
+            suit_4, suit_2 = get_artifact_suit([item.get("所属套装", "") for item in artifacts])
             relic_suit_prop = []
             if suit_2 + suit_4:
                 for suit in suit_2 + suit_4:
-                    for key, val in equipments_json["Suits"][str(suit)][
-                        "SetBonusProps"
-                    ].items():
+                    for key, val in equipments_json["Suits"][str(suit)]["SetBonusProps"].items():
                         suit_prop = {
                             "属性名": locs.get(property_json.get(str(key))["Name"]),
                             "属性值": val,
@@ -306,23 +241,16 @@ class PlayerInfo:
                         prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + vice["属性值"]
                         break
                     elif vice["属性名"] == f"{i}百分比":
-                        prop[f"额外{i}"] = (
-                            prop.get(f"额外{i}", 0)
-                            + prop[f"基础{i}"] * vice["属性值"] / 10000
-                        )
+                        prop[f"额外{i}"] = prop.get(f"额外{i}", 0) + prop[f"基础{i}"] * vice["属性值"] / 10000
                         break
                 if "伤害加成" in vice["属性名"]:
                     prop["额外伤害加成"] = prop.get("额外伤害加成", 0) + vice["属性值"]
 
             if role_info["特性"] == "命破":
-                prop["基础贯穿力"] = 0.3 * (
-                    prop["基础攻击力"] + prop.get("额外攻击力", 0)
-                ) + 0.1 * (prop["基础生命值"] + prop.get("额外生命值", 0))
+                prop["基础贯穿力"] = 0.3 * (prop["基础攻击力"] + prop.get("额外攻击力", 0)) + 0.1 * (prop["基础生命值"] + prop.get("额外生命值", 0))
             role_info["属性"] = prop
 
-            role_info["更新时间"] = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"
-            )
+            role_info["更新时间"] = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
             self.roles[role_info["名称"]] = role_info
 
     def get_player_info(self):

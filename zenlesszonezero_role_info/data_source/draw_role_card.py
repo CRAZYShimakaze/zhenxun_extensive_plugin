@@ -13,6 +13,7 @@ from ..utils.artifact_utils import (
 from ..utils.card_utils import (
     bg_path,
     char_pic_path,
+    get_artifact_suit,
     get_font,
     other_path,
     outline_path,
@@ -20,7 +21,6 @@ from ..utils.card_utils import (
     skill_path,
     type_path,
     weapon_path,
-    get_artifact_suit,
 )
 from ..utils.image_utils import draw_center_text, draw_right_text, get_img, load_image
 from .damage_cal import get_role_dmg
@@ -113,12 +113,8 @@ def draw_dmg_pic(dmg: dict[str, tuple | list]):
     bg_draw.line((599, 0, 599, 60), (255, 255, 255, 75), 2)
     bg_draw.line((0, 60, 948, 60), (255, 255, 255, 75), 2)
     draw_center_text(bg_draw, "伤害计算", 0, 250, 11, "white", get_font(30, "hywh.ttf"))
-    draw_center_text(
-        bg_draw, "期望伤害", 250, 599, 11, "white", get_font(30, "hywh.ttf")
-    )
-    draw_center_text(
-        bg_draw, "暴击伤害", 599, 948, 11, "white", get_font(30, "hywh.ttf")
-    )
+    draw_center_text(bg_draw, "期望伤害", 250, 599, 11, "white", get_font(30, "hywh.ttf"))
+    draw_center_text(bg_draw, "暴击伤害", 599, 948, 11, "white", get_font(30, "hywh.ttf"))
     i = 1
     for describe, dmg_list in dmg.items():
         bg_draw.line((0, 60 * i, 948, 60 * i), (255, 255, 255, 75), 2)
@@ -227,23 +223,17 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         if dmg_img:
             dmg_img = draw_dmg_pic(dmg_img)
             bg = Image.new("RGBA", (1080, 1920 + dmg_img.size[1] + 20), (0, 0, 0, 0))
-            bg_card_center = bg_card.crop((0, 730, 1080, 1377)).resize(
-                (1080, dmg_img.size[1] + 667)
-            )
+            bg_card_center = bg_card.crop((0, 730, 1080, 1377)).resize((1080, dmg_img.size[1] + 667))
             bg.alpha_composite(bg_card.crop((0, 0, 1080, 730)), (0, 0))
             bg.alpha_composite(bg_card_center, (0, 730))
-            bg.alpha_composite(
-                bg_card.crop((0, 1377, 1080, 1920)), (0, dmg_img.size[1] + 1397)
-            )
+            bg.alpha_composite(bg_card.crop((0, 1377, 1080, 1920)), (0, dmg_img.size[1] + 1397))
             bg.alpha_composite(dmg_img, (71, 1846))
         else:
             bg = Image.new("RGBA", (1080, 1920), (0, 0, 0, 0))  # pyright: ignore[reportArgumentType]
             bg.alpha_composite(bg_card, (0, 0))
         # 立绘
         role_pic = f"{char_pic_path}/{data['名称']}.png"
-        role_pic = await get_img(
-            url=resource_url.format(data["立绘"]), save_path=role_pic, mode="RGBA"
-        )
+        role_pic = await get_img(url=resource_url.format(data["立绘"]), save_path=role_pic, mode="RGBA")
         new_h = 650
         new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
         role_pic = role_pic.resize((new_w, new_h), Image.Resampling.LANCZOS)
@@ -262,12 +252,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         bg.alpha_composite(element_icon, (1080 - 130, 4))
 
         bg_draw = ImageDraw.Draw(bg)
-        bg_draw.text(
-            (131, 40), f"UID{uid}", fill="white", font=get_font(48, "number.ttf")
-        )
-        bg_draw.text(
-            (134, 90), data["名称"], fill="white", font=get_font(72, "优设标题黑.ttf")
-        )
+        bg_draw.text((131, 40), f"UID{uid}", fill="white", font=get_font(48, "number.ttf"))
+        bg_draw.text((134, 90), data["名称"], fill="white", font=get_font(72, "优设标题黑.ttf"))
 
         level_mask = load_image(path=f"{other_path}/等级遮罩.png")
         bg.alpha_composite(level_mask, (298 + 60 * (len(data["名称"]) - 2), 112))
@@ -283,9 +269,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         # 属性值
         prop = data["属性"]
         bg_draw.text((89, 202), "生命值", fill="white", font=get_font(34, "hywh.ttf"))
-        text_length = bg_draw.textlength(
-            f"+{int(prop.get('额外生命值', 0))}", font=get_font(34, "number.ttf")
-        )
+        text_length = bg_draw.textlength(f"+{int(prop.get('额外生命值', 0))}", font=get_font(34, "number.ttf"))
         draw_right_text(
             bg_draw,
             f"{int(prop['基础生命值'])}",
@@ -304,9 +288,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         )
 
         bg_draw.text((89, 259), "攻击力", fill="white", font=get_font(34, "hywh.ttf"))
-        text_length = bg_draw.textlength(
-            f"+{int(prop.get('额外攻击力', 0))}", font=get_font(34, "number.ttf")
-        )
+        text_length = bg_draw.textlength(f"+{int(prop.get('额外攻击力', 0))}", font=get_font(34, "number.ttf"))
         draw_right_text(
             bg_draw,
             f"{int(prop['基础攻击力'])}",
@@ -325,9 +307,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         )
 
         bg_draw.text((89, 317), "防御力", fill="white", font=get_font(34, "hywh.ttf"))
-        text_length = bg_draw.textlength(
-            f"+{int(prop.get('额外防御力', 0))}", font=get_font(34, "number.ttf")
-        )
+        text_length = bg_draw.textlength(f"+{int(prop.get('额外防御力', 0))}", font=get_font(34, "number.ttf"))
         draw_right_text(
             bg_draw,
             f"{int(prop['基础防御力'])}",
@@ -372,28 +352,18 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             if prop.get(f"额外{item}", 0) == 0:
                 continue
             if "能量" in item:
-                text = math.floor(
-                    prop.get(f"基础{item}", 0)
-                    * (10000 + prop.get(f"额外{item}", 0))
-                    / 10000
-                )
+                text = math.floor(prop.get(f"基础{item}", 0) * (10000 + prop.get(f"额外{item}", 0)) / 10000)
             else:
-                text = math.floor(
-                    prop.get(f"基础{item}", 0) + prop.get(f"额外{item}", 0)
-                )
+                text = math.floor(prop.get(f"基础{item}", 0) + prop.get(f"额外{item}", 0))
             if item not in integer_property:
                 text = text / 100
             if int(text) == 0:
                 continue
             bg_draw.text((89, y), item, fill="white", font=get_font(34, "hywh.ttf"))
             if item not in integer_property and "能量" not in item:
-                draw_right_text(
-                    bg_draw, f"{text}%", 480, b, "white", get_font(34, "number.ttf")
-                )
+                draw_right_text(bg_draw, f"{text}%", 480, b, "white", get_font(34, "number.ttf"))
             else:
-                draw_right_text(
-                    bg_draw, f"{text}", 480, b, "white", get_font(34, "number.ttf")
-                )
+                draw_right_text(bg_draw, f"{text}", 480, b, "white", get_font(34, "number.ttf"))
             y += 58
             b += 58
             if y >= 669:
@@ -426,9 +396,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         x_len = 150
         x_offset = 30
         for i in range(3):
-            bg.alpha_composite(
-                base_icon.resize((83, 90)), (x_offset + 565 + x_len * i, 253 + 495)
-            )
+            bg.alpha_composite(base_icon.resize((83, 90)), (x_offset + 565 + x_len * i, 253 + 495))
             draw_center_text(
                 bg_draw,
                 str(data["技能"][i]),
@@ -439,9 +407,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 get_font(34, "number.ttf"),
             )
             skill_icon = f"{skill_path}/{i}.png"
-            skill_icon = await get_img(
-                url=skill_list[i], size=(36, 36), save_path=skill_icon, mode="RGBA"
-            )
+            skill_icon = await get_img(url=skill_list[i], size=(36, 36), save_path=skill_icon, mode="RGBA")
             bg.alpha_composite(skill_icon, (x_offset + 589 + x_len * i, 776))
         x_offset = -420
         y_offset = 80
@@ -460,9 +426,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 get_font(34, "number.ttf"),
             )
             skill_icon = f"{skill_path}/{i}.png"
-            skill_icon = await get_img(
-                url=skill_list[i], size=(36, 36), save_path=skill_icon, mode="RGBA"
-            )
+            skill_icon = await get_img(url=skill_list[i], size=(36, 36), save_path=skill_icon, mode="RGBA")
             bg.alpha_composite(skill_icon, (x_offset + 589 + x_len * i, 776 + y_offset))
 
         # 命座
@@ -480,9 +444,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
 
         # 武器
         if data["武器"]:
-            weapon_bg = load_image(
-                f"{other_path}/star{data['武器']['星级'] + 1}.png", size=(150, 150)
-            )
+            weapon_bg = load_image(f"{other_path}/star{data['武器']['星级'] + 1}.png", size=(150, 150))
             bg.alpha_composite(weapon_bg, (91, 760))
             weapon_icon = f"{weapon_path}/{data['武器']['名称']}.png"
             weapon_icon = await get_img(
@@ -541,16 +503,8 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             continue
         artifact_score, grade = get_artifact_score(effective, artifact, data, i)
         # artifact_score = grade = mark = 0
-        player_info.data["大毕业驱动盘"] = (
-            player_info.data["大毕业驱动盘"] + 1
-            if artifact_score == "ACE"
-            else player_info.data["大毕业驱动盘"]
-        )
-        player_info.data["小毕业驱动盘"] = (
-            player_info.data["小毕业驱动盘"] + 1
-            if artifact_score == "SSS"
-            else player_info.data["小毕业驱动盘"]
-        )
+        player_info.data["大毕业驱动盘"] = player_info.data["大毕业驱动盘"] + 1 if artifact_score == "ACE" else player_info.data["大毕业驱动盘"]
+        player_info.data["小毕业驱动盘"] = player_info.data["小毕业驱动盘"] + 1 if artifact_score == "SSS" else player_info.data["小毕业驱动盘"]
 
         artifact_pk_info["星级"] = artifact["星级"]
         artifact_pk_info["图标"] = artifact["图标"]
@@ -591,9 +545,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 font=get_font(28, "number.ttf"),
             )
             level_mask = load_image(path=f"{other_path}/等级遮罩.png")
-            bg.alpha_composite(
-                level_mask.resize((98, 30)), (95 + 317 * offset_x, 1032 + offset_y)
-            )
+            bg.alpha_composite(level_mask.resize((98, 30)), (95 + 317 * offset_x, 1032 + offset_y))
             if artifact["等级"] != 15 or not artifact_score:
                 no_list = "*"
             draw_center_text(
@@ -629,32 +581,18 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             text = artifact["词条"][j]["属性名"].replace("百分比", "")
             up_num = ""
             if (up := artifact["词条"][j]["提升次数"]) > 0:
-                up_num = (
-                    "¹"
-                    if up == 1
-                    else "²"
-                    if up == 2
-                    else "³"
-                    if up == 3
-                    else "⁴"
-                    if up == 4
-                    else "⁵"
-                )
+                up_num = "¹" if up == 1 else "²" if up == 2 else "³" if up == 3 else "⁴" if up == 4 else "⁵"
                 x_offset = 25 * len(text)
                 bg_draw.text(
                     (94 + 317 * offset_x + x_offset, 1163 + offset_y + 50 * j - 5),
                     up_num,
-                    fill="white"
-                    if check_effective(artifact["词条"][j]["属性名"], effective)
-                    else "#afafaf",
+                    fill="white" if check_effective(artifact["词条"][j]["属性名"], effective) else "#afafaf",
                     font=get_font(25, "tahomabd.ttf"),
                 )
             bg_draw.text(
                 (94 + 317 * offset_x, 1163 + offset_y + 50 * j),
                 text,
-                fill="white"
-                if check_effective(artifact["词条"][j]["属性名"], effective)
-                else "#afafaf",
+                fill="white" if check_effective(artifact["词条"][j]["属性名"], effective) else "#afafaf",
                 font=get_font(25),
             )
             if artifact["词条"][j]["属性名"] not in integer_property:
@@ -666,9 +604,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                     "属性名": text,
                     "属性值": artifact["词条"][j]["属性值"],
                     "强化次数": up_num,
-                    "颜色": "white"
-                    if check_effective(artifact["词条"][j]["属性名"], effective)
-                    else "#afafaf",
+                    "颜色": "white" if check_effective(artifact["词条"][j]["属性名"], effective) else "#afafaf",
                 }
             )
             draw_right_text(
@@ -676,9 +612,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
                 num,
                 362 + 317 * offset_x,
                 1163 + offset_y + 50 * j,
-                fill="white"
-                if check_effective(artifact["词条"][j]["属性名"], effective)
-                else "#afafaf",
+                fill="white" if check_effective(artifact["词条"][j]["属性名"], effective) else "#afafaf",
                 font=get_font(25, "number.ttf"),
             )
         if artifact_pk_info not in artifact_pk:
@@ -686,9 +620,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         if artifact not in artifact_all[i] and artifact["等级"] == 15:
             artifact_all[i].append(copy.deepcopy(artifact))
 
-    player_info.data["驱动盘榜单"] = sorted(
-        player_info.data["驱动盘榜单"], key=lambda x: float(x["评分"]), reverse=True
-    )[:20]
+    player_info.data["驱动盘榜单"] = sorted(player_info.data["驱动盘榜单"], key=lambda x: float(x["评分"]), reverse=True)[:20]
     data["评分"] = total_all
     if total_cnt != 6:
         no_list = "*"
@@ -757,17 +689,11 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         score_y_offset = -193 - 110 + 3 - 33
 
         if total_rank in ["ACE", "ACE*"]:
-            rank_icon = load_image(
-                f"{other_path}/ACE-A.png", mode="RGBA", size=(55, 73)
-            )
+            rank_icon = load_image(f"{other_path}/ACE-A.png", mode="RGBA", size=(55, 73))
             bg.alpha_composite(rank_icon, (95 + x_offset, 967 + y_offset))
-            rank_icon = load_image(
-                f"{other_path}/ACE-C.png", mode="RGBA", size=(55, 73)
-            )
+            rank_icon = load_image(f"{other_path}/ACE-C.png", mode="RGBA", size=(55, 73))
             bg.alpha_composite(rank_icon, (145 + x_offset, 967 + y_offset))
-            rank_icon = load_image(
-                f"{other_path}/ACE-E.png", mode="RGBA", size=(55, 73)
-            )
+            rank_icon = load_image(f"{other_path}/ACE-E.png", mode="RGBA", size=(55, 73))
             bg.alpha_composite(rank_icon, (195 + x_offset, 967 + y_offset))
             bg_draw.text(
                 (250 + score_x_offset, 974 + score_y_offset),
@@ -804,9 +730,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
             )
 
         # 驱动盘套装
-        suit_4, suit_2 = get_artifact_suit(
-            [item.get("所属套装", "") for item in data["驱动盘"]]
-        )
+        suit_4, suit_2 = get_artifact_suit([item.get("所属套装", "") for item in data["驱动盘"]])
         if len(suit_4) != 1 and (len(suit_2) != 3 and len(suit_2) != 1):
             no_list = "*"
         """
@@ -873,15 +797,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         """
     effect = {}
     for item in effective:
-        name = (
-            item.replace("百分比", "%")
-            .replace("暴击率", "暴击")
-            .replace("暴击伤害", "爆伤")
-            .replace("异常", "")
-            .replace("能量回复", "回能")
-            .replace("力", "")
-            .replace("值", "")
-        )
+        name = item.replace("百分比", "%").replace("暴击率", "暴击").replace("暴击伤害", "爆伤").replace("异常", "").replace("能量回复", "回能").replace("力", "").replace("值", "")
         if name not in effect:
             effect[name] = effective.get(item)
     effect = dict(sorted(effect.items(), key=lambda x: x[1], reverse=True))
