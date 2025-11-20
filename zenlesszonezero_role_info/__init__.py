@@ -760,22 +760,6 @@ async def _check_update():
 
 @driver.on_startup
 async def _():
-    for item in (
-        avatar_url,
-        equipments_url,
-        locs_url,
-        medals_url,
-        namecards_url,
-        pfps_url,
-        property_url,
-        titles_url,
-        weapons_url,
-        equipmentleveltemplatetb_url,
-        weaponleveltemplatetb_url,
-        weaponstartemplatetb_url,
-    ):
-        if not os.path.exists(f"{json_path}/{item.split('/')[-1]}"):
-            await AsyncHttpx.download_file(item, path=f"{json_path}/{item.split('/')[-1]}", follow_redirects=True)
     scheduler.add_job(
         _check_update,
         "cron",

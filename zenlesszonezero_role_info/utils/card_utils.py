@@ -46,9 +46,9 @@ locs = load_json(path=f"{json_path}/locs.json")
 locs = locs["zh-cn"]
 property_json = load_json(path=f"{json_path}/property.json")
 equipments_json = load_json(path=f"{json_path}/equipments.json")
-equipmentleveltemplatetb_json = load_json(path=f"{json_path}/equipmentleveltemplatetb.json")
-weaponleveltemplatetb_json = load_json(path=f"{json_path}/weaponleveltemplatetb.json")
-weaponstartemplatetb_json = load_json(path=f"{json_path}/weaponstartemplatetb.json")
+equipmentleveltemplatetb_json = load_json(path=f"{json_path}/EquipmentLevelTemplateTb.json")
+weaponleveltemplatetb_json = load_json(path=f"{json_path}/WeaponLevelTemplateTb.json")
+weaponstartemplatetb_json = load_json(path=f"{json_path}/WeaponStarTemplateTb.json")
 prop_list = {
     "生命值": "11101",
     "攻击力": "12101",
