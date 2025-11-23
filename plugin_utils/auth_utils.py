@@ -35,6 +35,7 @@ async def spend_gold(user_id: str, coin: int, percent: int = 0):
     if percent:
         coin = coin if user_coin * percent // 100 < coin else user_coin * percent // 100
     await UserConsole.reduce_gold(user_id, coin, GoldHandle.BUY, "auth_utils")
+    return coin
 
 
 async def add_gold(user_id: str, coin: int):
@@ -89,19 +90,23 @@ def gold_cost(coin: int = 10, percent: int = 1):
                 return
 
             # 扣金币
+            s_coin = await spend_gold(uid, cost, percent)
             try:
                 await func(*args, **kwargs)
             except FinishedException:
+                await add_gold(uid, s_coin)
                 return
 
             except Exception as e:
+                await add_gold(uid, s_coin)
                 import traceback
 
                 tb = traceback.extract_tb(e.__traceback__)[-1]
                 filename = tb.filename
                 lineno = tb.lineno
-                return await logger.error(f"执行出错！{e}\n文件: {filename}\n行号: {lineno}")
-            return await spend_gold(uid, cost, percent)
+                return logger.error(f"执行出错！{e}\n文件: {filename}\n行号: {lineno}")
+            return
+            #return await spend_gold(uid, cost, percent)
 
         return wrapper
 

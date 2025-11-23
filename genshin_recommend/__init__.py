@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 import random
 import re
-from typing import Tuple
 
 import nonebot
 from nonebot import Driver, on_command, on_regex
@@ -13,8 +12,9 @@ from nonebot.params import RegexGroup
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_apscheduler import scheduler
 
+from zhenxun.utils.http_utils import AsyncHttpx
+
 from ..plugin_utils.auth_utils import gold_cost
-from ..plugin_utils.http_utils import AsyncHttpx
 from ..plugin_utils.image_utils import image
 
 driver: Driver = nonebot.get_driver()
@@ -204,7 +204,7 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = get_role_name(role)
     if not role:
         return
-    save_path = f"{ROLE_BREAK_PATH}/{role}.jpg"
+    save_path = f"{ROLE_BREAK_PATH}/{role}.png"
     await get_img(genshin_role_break, role, save_path, ignore_exist=False)
     await break_material.send(image(Path(save_path)))
 
@@ -249,7 +249,7 @@ async def _update_info(is_cron=False):
         if await check_md5(save_path, item, common_guide, common_guide_md5):
             update_list.add(item)
     for role in role_break_md5.keys():
-        save_path = Path(f"{ROLE_BREAK_PATH}/{role}.jpg")
+        save_path = Path(f"{ROLE_BREAK_PATH}/{role}.png")
         if await check_md5(save_path, role, genshin_role_break, role_break_md5):
             update_list.add(role)
     for role in role_guide_md5.keys():

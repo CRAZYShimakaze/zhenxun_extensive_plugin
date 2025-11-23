@@ -4,7 +4,7 @@ from pathlib import Path
 from nonebot.adapters.onebot.v11 import MessageSegment
 from PIL import Image
 
-from ...plugin_utils.http_utils import AsyncHttpx
+from zhenxun.utils.http_utils import AsyncHttpx
 
 
 def draw_right_text(draw, text: str, width: int, height: int, fill: str, font):

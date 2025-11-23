@@ -737,7 +737,7 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
     img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
     msg = "" if at_user else check_role(role_name, event, img, score)
     img = image_build(img=img, quality=100, mode="RGB")
-    await get_card.sendh(  # MessageSegment.reply(event.message_id) +
+    await get_card.send(  # MessageSegment.reply(event.message_id) +
         msg + img, at_sender=False
     )
 
