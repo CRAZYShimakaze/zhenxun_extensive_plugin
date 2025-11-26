@@ -74,6 +74,7 @@ __plugin_version__ = __plugin_meta__.extra.get("version")
 
 starrail_url = "https://api.mihomo.me/sr_info/{}"
 starrail_url = "https://enka.network/api/hsr/uid/{}"
+headers = {"User-Agent": "Miao-Plugin/3.0"}
 
 my_card = on_command("我的星铁角色", aliases={"我的崩铁角色"}, priority=4, block=True)
 his_card = on_command("他的星铁角色", aliases={"他的崩铁角色"}, priority=4, block=True)
@@ -148,6 +149,7 @@ async def get_starrail_info(url, uid, update_info, event):
             try:
                 req = await AsyncHttpx.get(
                     url=url,
+                    headers=headers,
                     follow_redirects=True,
                 )
             except Exception:

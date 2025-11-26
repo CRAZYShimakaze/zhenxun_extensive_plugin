@@ -73,6 +73,7 @@ __zx_plugin_name__ = __plugin_meta__.name
 __plugin_version__ = __plugin_meta__.extra.get("version")
 
 enka_url = "https://enka.network/api/zzz/uid/{}"
+headers = {"User-Agent": "Miao-Plugin/3.0"}
 api_url = [enka_url]
 bind = on_regex(r"(?:绝区零绑定|绑定绝区零).*?(\d+)", priority=5, block=True)
 unbind = on_command("绝区零解绑", priority=5, block=True)
@@ -148,7 +149,7 @@ async def get_enka_info(uid, update_info, event):
         for i in range(2):
             try:
                 print(f"请求{api_url[0].format(uid)}...")
-                req = await AsyncHttpx.get(url=api_url[0].format(uid), follow_redirects=True)
+                req = await AsyncHttpx.get(url=api_url[0].format(uid), headers=headers, follow_redirects=True)
             except Exception as e:
                 print(e)
                 continue
@@ -467,7 +468,6 @@ async def _(event: MessageEvent):
         roles_list = player_info.get_roles_list()
         img, text = await draw_artifact_card(
             "驱动盘榜单",
-            None,
             uid,
             player_info.data["驱动盘榜单"],
             player_info.data["大毕业驱动盘"],

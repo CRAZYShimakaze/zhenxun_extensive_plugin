@@ -123,6 +123,7 @@ class PlayerInfo:
             role_info["特性"] = role_json["Specialty"]["Name"]
             role_info["技能"] = [0] * 6
             role_info["立绘"] = avatars_json[str(data["Id"])]["Image"]
+            role_info["头像"] = avatars_json[str(data["Id"])]["CircleIcon"]
             index_conver = [0, 3, 1, 4, -1, 5, 2]
             for item in data["SkillLevelList"]:
                 # if item["Index"] == 5:
@@ -141,6 +142,7 @@ class PlayerInfo:
                 artifact_json = load_json(path=f"{json_path}/Suits/{suitid}.json")
                 artifact_info["名称"] = artifact_json["Name"]
                 artifact_info["图标"] = equipments_json["Suits"][str(suitid)]["Icon"]
+                artifact_info["头像"] = role_info["头像"]
                 artifact_info["部位"] = artifact["Slot"]
                 artifact_info["所属套装"] = suitid
                 artifact_info["等级"] = artifact["Equipment"]["Level"]

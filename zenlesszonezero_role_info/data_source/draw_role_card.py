@@ -508,6 +508,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
 
         artifact_pk_info["星级"] = artifact["星级"]
         artifact_pk_info["图标"] = artifact["图标"]
+        artifact_pk_info["头像"] = artifact["头像"]
         artifact_pk_info["名称"] = artifact["名称"]
         artifact_pk_info["评分"] = grade
         artifact_pk_info["评级"] = artifact_score

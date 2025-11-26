@@ -66,7 +66,7 @@ alias_url = src_url + "alias.json"
 
 common_guide = src_url + "common_guide/{}.jpg"
 genshin_role_guide = src_url + "role_guide/{}.png"
-genshin_role_break = src_url + "role_break/{}.jpg"
+genshin_role_break = src_url + "role_break/{}.png"
 genshin_role_info = src_url + "role_info/{}.png"
 genshin_weapon_info = src_url + "weapon_info/{}.png"
 

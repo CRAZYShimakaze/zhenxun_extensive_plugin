@@ -81,6 +81,8 @@ __plugin_version__ = __plugin_meta__.extra.get("version")
 
 enka_url = "https://enka.network/api/uid/{}"
 microgg_url = "https://profile.microgg.cn/api/uid/{}"
+headers = {"User-Agent": "Miao-Plugin/3.0"}
+
 weapon_loc_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/loc.json"
 api_url = [microgg_url, enka_url]
 bind = on_regex(r"(?:原神绑定|绑定原神).*?(\d+)", priority=5, block=True)
@@ -158,7 +160,7 @@ async def get_enka_info(uid, update_info, event):
         for i in range(2):
             try:
                 print(f"请求{api_url[i].format(uid)}...")
-                req = await AsyncHttpx.get(url=api_url[i].format(uid), follow_redirects=True)
+                req = await AsyncHttpx.get(url=api_url[i].format(uid), headers=headers, follow_redirects=True)
             except Exception as e:
                 print(e)
                 continue

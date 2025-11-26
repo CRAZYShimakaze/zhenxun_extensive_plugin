@@ -74,10 +74,8 @@ async def draw_artifact_card(title, uid, artifact_info, ace2_num, ace_num, plugi
         if "角色" in artifact and artifact.get("角色", ""):
             if artifact.get("角色", ""):  # in role_name.get(item)["name"]:
                 avatar_icon = f"{char_pic_path}/{artifact.get('角色', '')}_circle.png"
-                # avatar_icon = await get_img(url=resource_url.format(data["立绘"]), save_path=avatar_icon, mode="RGBA")
-                # avatar_icon = f"{avatar_path}/{item}.png"
-                # avatar_icon = await get_img(url=resource_url.format(item), size=(80, 80), save_path=avatar_icon, mode="RGBA")
-                # bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 50, slice_offset_y + 67 + 50))
+                avatar_icon = await get_img(url=resource_url.format(artifact["头像"]), size=(80, 80), save_path=avatar_icon, mode="RGBA")
+                bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 50, slice_offset_y + 67 + 50))
         bg_draw.text((slice_offset_x + 24, slice_offset_y + 16), artifact["名称"], fill="white", font=get_font(30))
         bg_draw.text((slice_offset_x + 24, slice_offset_y + 63), f"{artifact_score}-{round(grade, 1)}", fill="#ffde6b", font=get_font(28, "number.ttf"))
         level_mask = load_image(path=f"{other_path}/等级遮罩.png")
