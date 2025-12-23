@@ -1,6 +1,11 @@
 import copy
 
-from ..utils.artifact_utils import check_effective, get_artifact_score, get_effective, get_miao_score
+from ..utils.artifact_utils import (
+    check_effective,
+    get_artifact_score,
+    get_effective,
+    get_miao_score,
+)
 from ..utils.card_utils import json_path, role_score
 from ..utils.image_utils import image_build
 from ..utils.json_utils import load_json
@@ -75,8 +80,12 @@ def sort_recommend(artifact, position):
         role_name = role_name_full.split("-")[0]
         if "主" in role_name or "旅行者" in role_name:
             role_name = "空"
-        affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]["属性"])
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], position)
+        affix_weight, point_mark, max_mark = get_miao_score(
+            effective, role_info_json[role_name]["属性"]
+        )
+        artifact_score, grade, mark = get_artifact_score(
+            point_mark, max_mark, artifact, role_info_json[role_name]["元素"], position
+        )
 
         artifact_pk_info = {"角色": role_name}
         artifact_pk_info["星级"] = artifact["星级"]
@@ -85,30 +94,69 @@ def sort_recommend(artifact, position):
         artifact_pk_info["评分"] = grade
         artifact_pk_info["评级"] = artifact_score
         artifact_pk_info["等级"] = artifact["等级"]
-        artifact_pk_info["主属性"] = {"属性名": artifact["主属性"]["属性名"], "属性值": artifact["主属性"]["属性值"]}
+        artifact_pk_info["主属性"] = {
+            "属性名": artifact["主属性"]["属性名"],
+            "属性值": artifact["主属性"]["属性值"],
+        }
         artifact_pk_info["副属性"] = []
         for j in range(len(artifact["词条"])):
             text = artifact["词条"][j]["属性名"].replace("百分比", "")
             up_num = ""
             if mark[j] != 0:
-                up_num = "¹" if mark[j] == 1 else "²" if mark[j] == 2 else "³" if mark[j] == 3 else "⁴" if mark[j] == 4 else "⁵"
-            if artifact["词条"][j]["属性名"] not in ["攻击力", "防御力", "生命值", "元素精通"]:
+                up_num = (
+                    "¹"
+                    if mark[j] == 1
+                    else "²"
+                    if mark[j] == 2
+                    else "³"
+                    if mark[j] == 3
+                    else "⁴"
+                    if mark[j] == 4
+                    else "⁵"
+                )
+            if artifact["词条"][j]["属性名"] not in [
+                "攻击力",
+                "防御力",
+                "生命值",
+                "元素精通",
+            ]:
                 num = "+" + str(artifact["词条"][j]["属性值"]) + "%"
             else:
                 num = "+" + str(artifact["词条"][j]["属性值"])
-            artifact_pk_info["副属性"].append({"属性名": text, "属性值": num, "强化次数": up_num, "颜色": "white" if check_effective(artifact["词条"][j]["属性名"], effective) else "#afafaf"})
+            artifact_pk_info["副属性"].append(
+                {
+                    "属性名": text,
+                    "属性值": num,
+                    "强化次数": up_num,
+                    "颜色": "white"
+                    if check_effective(artifact["词条"][j]["属性名"], effective)
+                    else "#afafaf",
+                }
+            )
         artifact_recommend.append(copy.deepcopy(artifact_pk_info))
         if len(artifact_recommend) > 20:
-            artifact_recommend = sorted(artifact_recommend, key=lambda x: float(x["评分"]), reverse=True)[:20]
+            artifact_recommend = sorted(
+                artifact_recommend, key=lambda x: float(x["评分"]), reverse=True
+            )[:20]
     return artifact_recommend
 
 
 async def gen_artifact_adapt(title, artifact, uid, role, pos, plugin_version):
     artifact_info = sort_recommend(artifact, pos)
-    return await draw_artifact_card(title, role, uid, artifact_info, ace2_num=0, ace_num=0, plugin_version=plugin_version)
+    return await draw_artifact_card(
+        title,
+        role,
+        uid,
+        artifact_info,
+        ace2_num=0,
+        ace_num=0,
+        plugin_version=plugin_version,
+    )
 
 
-async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos, element, suit, plugin_version):
+async def gen_artifact_recommend(
+    title, data, artifact_list, uid, role_name, pos, element, suit, plugin_version
+):
     artifact_all = []
 
     ori_artifact = data["圣遗物"][pos]
@@ -125,35 +173,78 @@ async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos
             artifact_pk_info["角色"] = artifact["角色"]
         data["圣遗物"][pos] = artifact
         effective, _ = get_effective(data)
-        affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]["属性"])
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos)
+        affix_weight, point_mark, max_mark = get_miao_score(
+            effective, role_info_json[role_name]["属性"]
+        )
+        artifact_score, grade, mark = get_artifact_score(
+            point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos
+        )
         artifact_pk_info["星级"] = artifact["星级"]
         artifact_pk_info["图标"] = artifact["图标"]
         artifact_pk_info["名称"] = artifact["名称"]
         artifact_pk_info["评分"] = grade
         artifact_pk_info["评级"] = artifact_score
         artifact_pk_info["等级"] = artifact["等级"]
-        artifact_pk_info["主属性"] = {"属性名": artifact["主属性"]["属性名"], "属性值": artifact["主属性"]["属性值"]}
+        artifact_pk_info["主属性"] = {
+            "属性名": artifact["主属性"]["属性名"],
+            "属性值": artifact["主属性"]["属性值"],
+        }
         artifact_pk_info["副属性"] = []
         for j in range(len(artifact["词条"])):
             text = artifact["词条"][j]["属性名"].replace("百分比", "")
             up_num = ""
             if mark[j] != 0:
-                up_num = "¹" if mark[j] == 1 else "²" if mark[j] == 2 else "³" if mark[j] == 3 else "⁴" if mark[j] == 4 else "⁵"
-            if artifact["词条"][j]["属性名"] not in ["攻击力", "防御力", "生命值", "元素精通"]:
+                up_num = (
+                    "¹"
+                    if mark[j] == 1
+                    else "²"
+                    if mark[j] == 2
+                    else "³"
+                    if mark[j] == 3
+                    else "⁴"
+                    if mark[j] == 4
+                    else "⁵"
+                )
+            if artifact["词条"][j]["属性名"] not in [
+                "攻击力",
+                "防御力",
+                "生命值",
+                "元素精通",
+            ]:
                 num = "+" + str(artifact["词条"][j]["属性值"]) + "%"
             else:
                 num = "+" + str(artifact["词条"][j]["属性值"])
-            artifact_pk_info["副属性"].append({"属性名": text, "属性值": num, "强化次数": up_num, "颜色": "white" if check_effective(artifact["词条"][j]["属性名"], effective) else "#afafaf"})
+            artifact_pk_info["副属性"].append(
+                {
+                    "属性名": text,
+                    "属性值": num,
+                    "强化次数": up_num,
+                    "颜色": "white"
+                    if check_effective(artifact["词条"][j]["属性名"], effective)
+                    else "#afafaf",
+                }
+            )
         if artifact_pk_info not in artifact_all:
             artifact_all.append(copy.deepcopy(artifact_pk_info))
-        artifact_all = sorted(artifact_all, key=lambda x: float(x["评分"]), reverse=True)[: 20 if len(artifact_all) > 20 else len(artifact_all)]
+        artifact_all = sorted(
+            artifact_all, key=lambda x: float(x["评分"]), reverse=True
+        )[: 20 if len(artifact_all) > 20 else len(artifact_all)]
     if not artifact_all:
         return None, None
-    return await draw_artifact_card(title, role_name, uid, artifact_all, ace2_num=0, ace_num=0, plugin_version=plugin_version)
+    return await draw_artifact_card(
+        title,
+        role_name,
+        uid,
+        artifact_all,
+        ace2_num=0,
+        ace_num=0,
+        plugin_version=plugin_version,
+    )
 
 
-async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occupy, plugin_version):
+async def gen_suit_recommend(
+    title, data, player_info, uid, role_name, suit, occupy, plugin_version
+):
     artifact_list = player_info.data["圣遗物列表"]
     artifact_best_same = [0, 0, 0, 0, 0]
     artifact_best = [0, 0, 0, 0, 0]
@@ -179,9 +270,13 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
     element_after = ""
     for pos in range(5):
         if data["圣遗物"][pos]["主属性"]["属性名"] in prop_diff:
-            prop_diff[data["圣遗物"][pos]["主属性"]["属性名"]] -= data["圣遗物"][pos]["主属性"]["属性值"]
+            prop_diff[data["圣遗物"][pos]["主属性"]["属性名"]] -= data["圣遗物"][pos][
+                "主属性"
+            ]["属性值"]
         else:
-            element_before = data["圣遗物"][pos]["主属性"]["属性名"].replace("元素伤害加成", "")
+            element_before = data["圣遗物"][pos]["主属性"]["属性名"].replace(
+                "元素伤害加成", ""
+            )
             prop_diff["元素伤害加成"] -= data["圣遗物"][pos]["主属性"]["属性值"]
         for affix in data["圣遗物"][pos]["词条"]:
             prop_diff[affix["属性名"]] -= affix["属性值"]
@@ -196,8 +291,12 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
             artifact_pk_info = {}
             data["圣遗物"][pos] = artifact
             # effective, _ = get_effective(data)
-            affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]["属性"])
-            artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos)
+            affix_weight, point_mark, max_mark = get_miao_score(
+                effective, role_info_json[role_name]["属性"]
+            )
+            artifact_score, grade, mark = get_artifact_score(
+                point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos
+            )
             if grade >= best_grade_score or grade >= best_grade_same_score:
                 if grade >= best_grade_same_score and suit in artifact["所属套装"]:
                     best_grade_same_score = grade
@@ -216,16 +315,24 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
                 artifact_best_score[pos] = grade
     score_list = [0, 0, 0, 0, 0]
     for i in range(5):
-        score_list[i] = sum(artifact_best_same_score) - artifact_best_same_score[i] + artifact_best_score[i]
+        score_list[i] = (
+            sum(artifact_best_same_score)
+            - artifact_best_same_score[i]
+            + artifact_best_score[i]
+        )
     best_idx = score_list.index(max(score_list))
     for i in range(5):
         data["圣遗物"][i] = artifact_best_same[i] if i != best_idx else artifact_best[i]
         if not data["圣遗物"][i]:
             return 0
         if data["圣遗物"][i]["主属性"]["属性名"] in prop_diff:
-            prop_diff[data["圣遗物"][i]["主属性"]["属性名"]] += data["圣遗物"][i]["主属性"]["属性值"]
+            prop_diff[data["圣遗物"][i]["主属性"]["属性名"]] += data["圣遗物"][i][
+                "主属性"
+            ]["属性值"]
         else:
-            element_after = data["圣遗物"][i]["主属性"]["属性名"].replace("元素伤害加成", "")
+            element_after = data["圣遗物"][i]["主属性"]["属性名"].replace(
+                "元素伤害加成", ""
+            )
             prop_diff["元素伤害加成"] += data["圣遗物"][i]["主属性"]["属性值"]
         for affix in data["圣遗物"][i]["词条"]:
             prop_diff[affix["属性名"]] += affix["属性值"]
@@ -238,11 +345,17 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
         "岩",
         "冰",
     ]
-    data["属性"]["额外生命"] += prop_diff["生命值"] + data["属性"]["基础生命"] * prop_diff["百分比生命值"] / 100
+    data["属性"]["额外生命"] += (
+        prop_diff["生命值"] + data["属性"]["基础生命"] * prop_diff["百分比生命值"] / 100
+    )
     data["属性"]["额外生命"] = round(data["属性"]["额外生命"])
-    data["属性"]["额外攻击"] += prop_diff["攻击力"] + data["属性"]["基础攻击"] * prop_diff["百分比攻击力"] / 100
+    data["属性"]["额外攻击"] += (
+        prop_diff["攻击力"] + data["属性"]["基础攻击"] * prop_diff["百分比攻击力"] / 100
+    )
     data["属性"]["额外攻击"] = round(data["属性"]["额外攻击"])
-    data["属性"]["额外防御"] += prop_diff["防御力"] + data["属性"]["基础防御"] * prop_diff["百分比防御力"] / 100
+    data["属性"]["额外防御"] += (
+        prop_diff["防御力"] + data["属性"]["基础防御"] * prop_diff["百分比防御力"] / 100
+    )
     data["属性"]["额外防御"] = round(data["属性"]["额外防御"])
     data["属性"]["暴击率"] += prop_diff["暴击率"] / 100
     data["属性"]["暴击伤害"] += prop_diff["暴击伤害"] / 100
@@ -256,6 +369,8 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
     data["属性"]["元素充能效率"] = max(0, data["属性"]["元素充能效率"])
     data["属性"]["治疗加成"] = max(0, data["属性"]["治疗加成"])
     if any([element_before, element_after]):
-        data["属性"]["伤害加成"][ele_list.index(element_before or element_after)] = prop_diff["元素伤害加成"] / 100
+        data["属性"]["伤害加成"][ele_list.index(element_before or element_after)] = (
+            prop_diff["元素伤害加成"] / 100
+        )
     img, _ = await draw_role_card(uid, data, player_info, plugin_version, False, title)
     return image_build(img=img, quality=100, mode="RGB")

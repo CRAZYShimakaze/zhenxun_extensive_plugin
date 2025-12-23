@@ -110,7 +110,9 @@ class PlayerInfo:
         self.player_info["角色列表"] = dictlist_to_list(data.get("showAvatarInfoList"))
         self.player_info["名片列表"] = data.get("showNameCardIdList", "unknown")
         self.player_info["头像"] = data["profilePicture"].get("avatarId", "unknown")
-        self.player_info["更新时间"] = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
+        self.player_info["更新时间"] = datetime.datetime.strftime(
+            datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"
+        )
 
     def set_role(self, data: dict):
         role_info = {}
@@ -119,7 +121,9 @@ class PlayerInfo:
             role_info["名称"] = role_name
             role_info["等级"] = int(data["propMap"]["4001"]["val"])
             if role_name in ["荧", "空"]:
-                traveler_skill = role_skill["Name"][list(data["skillLevelMap"].keys())[-2]]
+                traveler_skill = role_skill["Name"][
+                    list(data["skillLevelMap"].keys())[-2]
+                ]
                 find_element = re.search(r"([风雷岩草水火冰])", traveler_skill).group(1)
                 role_info["元素"] = find_element
                 role_name = find_element + "主"
@@ -128,9 +132,17 @@ class PlayerInfo:
 
             if "talentIdList" in data:
                 if len(data["talentIdList"]) >= 3:
-                    data["skillLevelMap"][list(data["skillLevelMap"].keys())[role_info_json[role_name]["命座转换"][0]]] += 3
+                    data["skillLevelMap"][
+                        list(data["skillLevelMap"].keys())[
+                            role_info_json[role_name]["命座转换"][0]
+                        ]
+                    ] += 3
                 if len(data["talentIdList"]) >= 5:
-                    data["skillLevelMap"][list(data["skillLevelMap"].keys())[role_info_json[role_name]["命座转换"][1]]] += 3
+                    data["skillLevelMap"][
+                        list(data["skillLevelMap"].keys())[
+                            role_info_json[role_name]["命座转换"][1]
+                        ]
+                    ] += 3
 
             role_info["天赋"] = []
             for skill in data["skillLevelMap"]:
@@ -246,7 +258,9 @@ class PlayerInfo:
 
             weapon_info = {}
             weapon_data = data["equipList"][-1]
-            weapon_info["名称"] = weapon_loc["zh-cn"][weapon_data["flat"]["nameTextMapHash"]]
+            weapon_info["名称"] = weapon_loc["zh-cn"][
+                weapon_data["flat"]["nameTextMapHash"]
+            ]
             weapon_info["图标"] = weapon_data["flat"]["icon"]
             # weapon_info["类型"] = weapon["Type"][weapon_info["名称"]]
             weapon_info["等级"] = weapon_data["weapon"]["level"]
@@ -256,13 +270,17 @@ class PlayerInfo:
             else:
                 weapon_info["突破等级"] = 0
             if "affixMap" in weapon_data["weapon"]:
-                weapon_info["精炼等级"] = list(weapon_data["weapon"]["affixMap"].values())[0] + 1
+                weapon_info["精炼等级"] = (
+                    list(weapon_data["weapon"]["affixMap"].values())[0] + 1
+                )
             else:
                 weapon_info["精炼等级"] = 1
             weapon_info["基础攻击"] = weapon_data["flat"]["weaponStats"][0]["statValue"]
             try:
                 weapon_info["副属性"] = {
-                    "属性名": prop_list[weapon_data["flat"]["weaponStats"][1]["appendPropId"]],
+                    "属性名": prop_list[
+                        weapon_data["flat"]["weaponStats"][1]["appendPropId"]
+                    ],
                     "属性值": weapon_data["flat"]["weaponStats"][1]["statValue"],
                 }
             except IndexError:
@@ -275,12 +293,18 @@ class PlayerInfo:
                 artifact_info = {}
                 artifact_info["名称"] = artifact_list["Name"][artifact["flat"]["icon"]]
                 artifact_info["图标"] = artifact["flat"]["icon"]
-                artifact_info["部位"] = artifact_list["Piece"][artifact["flat"]["icon"].split("_")[-1]][1]
-                artifact_info["所属套装"] = artifact_list["Mapping"][artifact_info["名称"]]
+                artifact_info["部位"] = artifact_list["Piece"][
+                    artifact["flat"]["icon"].split("_")[-1]
+                ][1]
+                artifact_info["所属套装"] = artifact_list["Mapping"][
+                    artifact_info["名称"]
+                ]
                 artifact_info["等级"] = artifact["reliquary"]["level"] - 1
                 artifact_info["星级"] = artifact["flat"]["rankLevel"]
                 artifact_info["主属性"] = {
-                    "属性名": prop_list[artifact["flat"]["reliquaryMainstat"]["mainPropId"]],
+                    "属性名": prop_list[
+                        artifact["flat"]["reliquaryMainstat"]["mainPropId"]
+                    ],
                     "属性值": artifact["flat"]["reliquaryMainstat"]["statValue"],
                 }
                 artifact_info["词条"] = []
@@ -293,7 +317,9 @@ class PlayerInfo:
                     )
                 artifacts.append(artifact_info)
             role_info["圣遗物"] = artifacts
-            role_info["更新时间"] = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
+            role_info["更新时间"] = datetime.datetime.strftime(
+                datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"
+            )
             self.roles[role_info["名称"]] = role_info
 
     def get_player_info(self):

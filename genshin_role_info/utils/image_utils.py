@@ -21,7 +21,9 @@ def draw_right_text(draw, text: str, width: int, height: int, fill: str, font):
     draw.text((width - text_length, height), text, fill=fill, font=font)
 
 
-def draw_center_text(draw, text: str, left_width: int, right_width: int, height: int, fill: str, font):
+def draw_center_text(
+    draw, text: str, left_width: int, right_width: int, height: int, fill: str, font
+):
     """
     绘制居中文字
     :param draw: ImageDraw对象

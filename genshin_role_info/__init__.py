@@ -1,12 +1,12 @@
 import base64
 import copy
-from datetime import datetime
 import os
-from pathlib import Path
 import random
 import re
 import shutil
 import time
+from datetime import datetime
+from pathlib import Path
 
 import nonebot
 from nonebot import Driver, on_command, on_message, on_regex
@@ -97,9 +97,13 @@ group_worst = on_regex(r"^(最菜|群最菜)(.*)", priority=4)
 artifact_adapt = on_regex("(.*?)([花羽沙杯冠])适配", priority=4)
 artifact_recommend = on_regex("(.*?)([花羽沙杯冠套])推荐", priority=4)
 artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
-group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
+group_artifact_list = on_command(
+    "群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True
+)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=False)
-check_update = on_command("检查原神面板更新", permission=SUPERUSER, priority=3, block=True)
+check_update = on_command(
+    "检查原神面板更新", permission=SUPERUSER, priority=3, block=True
+)
 artifact_info = load_json(f"{json_path}/artifact.json")
 role_info_json = load_json(f"{json_path}/role_info.json")
 import_artifact = on_message(permission=PRIVATE, priority=1, block=False)
@@ -160,7 +164,9 @@ async def get_enka_info(uid, update_info, event):
         for i in range(2):
             try:
                 print(f"请求{api_url[i].format(uid)}...")
-                req = await AsyncHttpx.get(url=api_url[i].format(uid), headers=headers, follow_redirects=True)
+                req = await AsyncHttpx.get(
+                    url=api_url[i].format(uid), headers=headers, follow_redirects=True
+                )
             except Exception as e:
                 print(e)
                 continue
@@ -173,8 +179,10 @@ async def get_enka_info(uid, update_info, event):
             try:
                 status_code = req.status_code
             except:
-                return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                    hint
+                return (
+                    await get_card.finish(  # MessageSegment.reply(event.message_id) +
+                        hint
+                    )
                 )
             if status_code == 400:
                 hint = "UID 格式错误..."
@@ -228,7 +236,9 @@ async def check_artifact(event, player_info, roles_list, uid, group_save):
             if "圣遗物" not in role_data:
                 continue
             for j in range(len(role_data["圣遗物"])):
-                artifact_list[pos_name.index(role_data["圣遗物"][j]["部位"])] = role_data["圣遗物"][j]
+                artifact_list[pos_name.index(role_data["圣遗物"][j]["部位"])] = (
+                    role_data["圣遗物"][j]
+                )
             artifact_copy = copy.deepcopy(artifact_list[i])
             if artifact_copy.get("等级", 0) >= 10:
                 for name_all in list(role_info_json.keys()) + [""]:
@@ -245,7 +255,9 @@ async def check_artifact(event, player_info, roles_list, uid, group_save):
     for role_name in roles_list:
         role_data = player_info.get_roles_info(role_name)
         try:
-            _, _ = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=True)
+            _, _ = await draw_role_card(
+                uid, role_data, player_info, __plugin_version__, only_cal=True
+            )
         except:
             pass
     player_info.save()
@@ -347,7 +359,9 @@ async def import_artifact(bot: Bot, event):
         file.write(decoded_data)
     arti = load_json(path=f"{player_info_path}/{uid}_artifact.json")
     if "artifacts" in arti:
-        await bot.send_private_msg(user_id=event.user_id, message="检测到圣遗物缓存文件,正在导入...")
+        await bot.send_private_msg(
+            user_id=event.user_id, message="检测到圣遗物缓存文件,正在导入..."
+        )
         same = 0
         diff = 0
         player_info.data["圣遗物列表"] = [[], [], [], [], []]
@@ -386,24 +400,34 @@ async def import_artifact(bot: Bot, event):
                     "词条": [
                         {
                             "属性名": sub.get(substats[0].get("key", "")),
-                            "属性值": int(substats[0].get("value", 0)) if substats[0].get("value", 0) % 1 == 0 else round(substats[0].get("value", 0), 1),
+                            "属性值": int(substats[0].get("value", 0))
+                            if substats[0].get("value", 0) % 1 == 0
+                            else round(substats[0].get("value", 0), 1),
                         },
                         {
                             "属性名": sub.get(substats[1].get("key", "")),
-                            "属性值": int(substats[1].get("value", 0)) if substats[1].get("value", 0) % 1 == 0 else round(substats[1].get("value", 0), 1),
+                            "属性值": int(substats[1].get("value", 0))
+                            if substats[1].get("value", 0) % 1 == 0
+                            else round(substats[1].get("value", 0), 1),
                         },
                         {
                             "属性名": sub.get(substats[2].get("key", "")),
-                            "属性值": int(substats[2].get("value", 0)) if substats[2].get("value", 0) % 1 == 0 else round(substats[2].get("value", 0), 1),
+                            "属性值": int(substats[2].get("value", 0))
+                            if substats[2].get("value", 0) % 1 == 0
+                            else round(substats[2].get("value", 0), 1),
                         },
                         {
                             "属性名": sub.get(substats[3].get("key", "")),
-                            "属性值": int(substats[3].get("value", 0)) if substats[3].get("value", 0) % 1 == 0 else round(substats[3].get("value", 0), 1),
+                            "属性值": int(substats[3].get("value", 0))
+                            if substats[3].get("value", 0) % 1 == 0
+                            else round(substats[3].get("value", 0), 1),
                         },
                     ],
                 }
                 if artifact_single not in player_info.data["圣遗物列表"][pos_id]:
-                    player_info.data["圣遗物列表"][pos_id].append(copy.deepcopy(artifact_single))
+                    player_info.data["圣遗物列表"][pos_id].append(
+                        copy.deepcopy(artifact_single)
+                    )
                     diff += 1
                 else:
                     same += 1
@@ -420,7 +444,9 @@ async def test(bot: Bot, event: MessageEvent, args: tuple[str, ...] = RegexGroup
     msg = args[0].strip(), args[1].strip()
     uid = await get_msg_uid(event)
     if msg[1] not in ["花", "羽", "沙", "杯", "冠"]:
-        return await artifact_adapt.finish("请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True)
+        return await artifact_adapt.finish(
+            "请输入正确角色名和圣遗物名称(花羽沙杯冠)...", at_sender=True
+        )
     role = msg[0]
     pos = ["花", "羽", "沙", "杯", "冠"].index(msg[1])
     role_name = get_role_name(role)
@@ -578,8 +604,10 @@ async def _(bot: Bot, event: MessageEvent):
     else:
         player_info = PlayerInfo(uid)
         if not player_info.data["圣遗物榜单"]:
-            return await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
-                "未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=False
+            return (
+                await artifact_list.finish(  # MessageSegment.reply(event.message_id) +
+                    "未收录任何圣遗物信息,请先输入'更新面板'命令!", at_sender=False
+                )
             )
         roles_list = player_info.get_roles_list()
         img, text = await draw_artifact_card(
@@ -636,7 +664,9 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
+        qq_name = await bot.get_stranger_info(
+            user_id=int(role_info.split("-")[-1].rstrip(".png"))
+        )
         qq_name = qq_name["nickname"]
         await group_best.send(  # MessageSegment.reply(event.message_id) +
             f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
@@ -660,7 +690,9 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
+        qq_name = await bot.get_stranger_info(
+            user_id=int(role_info.split("-")[-1].rstrip(".png"))
+        )
         qq_name = qq_name["nickname"]
         await group_worst.send(  # MessageSegment.reply(event.message_id) +
             f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
@@ -736,7 +768,9 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     role_data = player_info.get_roles_info(role_name)
-    img, score = await draw_role_card(uid, role_data, player_info, __plugin_version__, only_cal=False)
+    img, score = await draw_role_card(
+        uid, role_data, player_info, __plugin_version__, only_cal=False
+    )
     msg = "" if at_user else check_role(role_name, event, img, score)
     img = image_build(img=img, quality=100, mode="RGB")
     await get_card.send(  # MessageSegment.reply(event.message_id) +
@@ -763,7 +797,9 @@ async def update(event: MessageEvent, uid, group_save):
                 await get_card.finish(  # MessageSegment.reply(event.message_id) +
                     f"{60 - cd_time}秒后可再次更新!", at_sender=False
                 )
-    player_info, update_role_list = await get_enka_info(uid, update_info=True, event=event)
+    player_info, update_role_list = await get_enka_info(
+        uid, update_info=True, event=event
+    )
     await check_artifact(event, player_info, update_role_list, uid, group_save)
     await get_card.send(  # MessageSegment.reply(event.message_id) +
         await draw_role_pic(uid, update_role_list, player_info)
@@ -779,14 +815,18 @@ def check_role(role_name, event, img, score):
             img.save(role_path)
             return f"恭喜成为本群最强{role_name}!\n"
         else:
-            data = sorted(os.listdir(role_path.parent), key=lambda x: float(x.split("-")[0]))
+            data = sorted(
+                os.listdir(role_path.parent), key=lambda x: float(x.split("-")[0])
+            )
             role_info_best = data[-1].split("-")
             if len(os.listdir(role_path.parent)) == 1:
                 img.save(role_path)
                 if float(role_info_best[0]) <= score:
                     old_best = int(role_info_best[1].rstrip(".png"))
                     if old_best != event.user_id:
-                        return Message(f"恭喜你击败{MessageSegment.at(old_best)}成为本群最强{role_name}!\n")
+                        return Message(
+                            f"恭喜你击败{MessageSegment.at(old_best)}成为本群最强{role_name}!\n"
+                        )
                     else:
                         return f"你仍然是本群最强{role_name}!\n"
                 else:
@@ -797,7 +837,9 @@ def check_role(role_name, event, img, score):
                     img.save(role_path)
                     old_best = int(role_info_best[1].rstrip(".png"))
                     if old_best != event.user_id:
-                        return Message(f"恭喜你击败{MessageSegment.at(old_best)}成为本群最强{role_name}!\n")
+                        return Message(
+                            f"恭喜你击败{MessageSegment.at(old_best)}成为本群最强{role_name}!\n"
+                        )
                     else:
                         return f"你仍然是本群最强{role_name}!\n"
                 else:
@@ -807,7 +849,9 @@ def check_role(role_name, event, img, score):
                         img.save(role_path)
                         old_worst = int(role_info_worst[1].rstrip(".png"))
                         if old_worst != event.user_id:
-                            return Message(f"恭喜你帮助{MessageSegment.at(old_worst)}摆脱最菜{role_name}的头衔!\n")
+                            return Message(
+                                f"恭喜你帮助{MessageSegment.at(old_worst)}摆脱最菜{role_name}的头衔!\n"
+                            )
                         else:
                             return f"你仍然是本群最菜{role_name}!\n距本群最强{role_name}还有{round(float(role_info_best[0]) - score, 2)}分差距!\n"
                     else:
@@ -825,7 +869,9 @@ def check_group_artifact(event, player_info):
         item["QQ"] = event.user_id
         if item not in group_artifact_info:
             group_artifact_info.append(item)
-    group_artifact_info_20 = sorted(group_artifact_info, key=lambda x: float(x["评分"]), reverse=True)[:20]
+    group_artifact_info_20 = sorted(
+        group_artifact_info, key=lambda x: float(x["评分"]), reverse=True
+    )[:20]
     save_json(group_artifact_info_20, f"{group_info_path}/{event.group_id}.json")
 
 
@@ -839,26 +885,34 @@ async def get_update_info():
         version = await AsyncHttpx.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
-        print(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
+        print(
+            f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}"
+        )
         return ""
     return version.group(1).strip()
 
 
 @check_update.handle()
 async def _check_update():
-    await AsyncHttpx.download_file(weapon_loc_url, path=f"{json_path}/weapon_loc.json", follow_redirects=True)
+    await AsyncHttpx.download_file(
+        weapon_loc_url, path=f"{json_path}/weapon_loc.json", follow_redirects=True
+    )
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r'__plugin_version__ = "(\d+\.\d+\.\d+)"', str(version.text))
+        version = re.search(
+            r'__plugin_version__ = "(\d+\.\d+\.\d+)"', str(version.text)
+        )
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return
     if version.group(1) > __plugin_version__:
         update_info = await get_update_info()
         try:
-            await check_update.send(f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
+            await check_update.send(
+                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
+            )
         except Exception:
             for admin in bot.config.superusers:
                 await bot.send_private_msg(
@@ -869,7 +923,9 @@ async def _check_update():
     else:
         update_info = await get_update_info()
         try:
-            await check_update.send(f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{update_info}")
+            await check_update.send(
+                f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{update_info}"
+            )
         except Exception:
             pass
 

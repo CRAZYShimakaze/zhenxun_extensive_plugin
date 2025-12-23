@@ -42,7 +42,16 @@ grow_min_value = {  # 词条成长值
 def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
     # 主词条得分（与副词条计算规则一致，但只取 25%），角色元素属性与伤害属性不同时不得分，不影响物理伤害得分
     main_name = artifact["主属性"]["属性名"].replace(element, "")
-    calc_main = 0.0 if pos_idx < 2 else point_mark.get(main_name, 0) * artifact["主属性"]["属性值"] * 46.6 / 6 / 100 / 4
+    calc_main = (
+        0.0
+        if pos_idx < 2
+        else point_mark.get(main_name, 0)
+        * artifact["主属性"]["属性值"]
+        * 46.6
+        / 6
+        / 100
+        / 4
+    )
     # 副词条得分
     calc_subs = [  # [词条名, 词条数值, 词条得分]
         [
@@ -53,7 +62,22 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
         for s in artifact["词条"]
     ]
     # 主词条收益系数（百分数），沙杯头位置主词条不正常时对圣遗物总分进行惩罚，最多扣除 50% 总分
-    calc_main_pct = 100 if pos_idx < 2 else (100 - 50 * (1 - point_mark.get(main_name, 0) * artifact["主属性"]["属性值"] / max_mark[str(pos_idx)]["main"] / 2 / 4))
+    calc_main_pct = (
+        100
+        if pos_idx < 2
+        else (
+            100
+            - 50
+            * (
+                1
+                - point_mark.get(main_name, 0)
+                * artifact["主属性"]["属性值"]
+                / max_mark[str(pos_idx)]["main"]
+                / 2
+                / 4
+            )
+        )
+    )
     # 总分对齐系数（百分数），按满分 66 对齐各位置圣遗物的总分
     calc_total_pct = 66 / (max_mark[str(pos_idx)]["total"] * 46.6 / 6 / 100) * 100
     # 最终圣遗物总分
@@ -67,10 +91,17 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
             artifact["等级"] // 4,
             math.floor(round(s["属性值"] / grow_min_value.get(s["属性名"]) * 1, 1)),
         )
-        min_num = max(1, math.ceil(round(s["属性值"] / grow_max_value.get(s["属性名"]) * 1, 1)))
+        min_num = max(
+            1, math.ceil(round(s["属性值"] / grow_max_value.get(s["属性名"]) * 1, 1))
+        )
         avg_num = max(
             1,
-            round(s["属性值"] * 2 / (grow_min_value.get(s["属性名"]) + grow_max_value.get(s["属性名"])) * 1),
+            round(
+                s["属性值"]
+                * 2
+                / (grow_min_value.get(s["属性名"]) + grow_max_value.get(s["属性名"]))
+                * 1
+            ),
         )
         if max_num != min_num:
             diff.append(index)
@@ -126,21 +157,50 @@ def get_miao_score(affix_weight, base_info):
         "防御力": 23.15,
     }
     main_affixs = {  # 可能的主词条
-        "2": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素充能效率".split(","),  # EQUIP_SHOES
-        "3": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素伤害加成,物理伤害加成".split(","),  # EQUIP_RING
-        "4": "百分比攻击力,百分比防御力,百分比生命值,元素精通,治疗加成,暴击率,暴击伤害".split(","),  # EQUIP_DRESS
+        "2": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素充能效率".split(
+            ","
+        ),  # EQUIP_SHOES
+        "3": "百分比攻击力,百分比防御力,百分比生命值,元素精通,元素伤害加成,物理伤害加成".split(
+            ","
+        ),  # EQUIP_RING
+        "4": "百分比攻击力,百分比防御力,百分比生命值,元素精通,治疗加成,暴击率,暴击伤害".split(
+            ","
+        ),  # EQUIP_DRESS
     }
-    sub_affixs = "攻击力,百分比攻击力,防御力,百分比防御力,生命值,百分比生命值,元素精通,元素充能效率,暴击率,暴击伤害".split(",")
+    sub_affixs = "攻击力,百分比攻击力,防御力,百分比防御力,生命值,百分比生命值,元素精通,元素充能效率,暴击率,暴击伤害".split(
+        ","
+    )
     pointmark = {k: v / grow_value[k] for k, v in affix_weight.items()}
     if pointmark.get("百分比攻击力"):
-        pointmark["攻击力"] = pointmark["百分比攻击力"] / (float(base_info["攻击力"]) + 520) * 100
-        affix_weight["攻击力"] = pointmark["百分比攻击力"] * grow_value["攻击力"] / (float(base_info["攻击力"]) + 520) * 100
+        pointmark["攻击力"] = (
+            pointmark["百分比攻击力"] / (float(base_info["攻击力"]) + 520) * 100
+        )
+        affix_weight["攻击力"] = (
+            pointmark["百分比攻击力"]
+            * grow_value["攻击力"]
+            / (float(base_info["攻击力"]) + 520)
+            * 100
+        )
     if pointmark.get("百分比防御力"):
-        pointmark["防御力"] = pointmark["百分比防御力"] / float(base_info["防御力"]) * 100
-        affix_weight["防御力"] = pointmark["百分比防御力"] * grow_value["防御力"] / (float(base_info["防御力"])) * 100
+        pointmark["防御力"] = (
+            pointmark["百分比防御力"] / float(base_info["防御力"]) * 100
+        )
+        affix_weight["防御力"] = (
+            pointmark["百分比防御力"]
+            * grow_value["防御力"]
+            / (float(base_info["防御力"]))
+            * 100
+        )
     if pointmark.get("百分比生命值"):
-        pointmark["生命值"] = pointmark["百分比生命值"] / float(base_info["生命值"]) * 100
-        affix_weight["生命值"] = pointmark["百分比生命值"] * grow_value["生命值"] / (float(base_info["生命值"])) * 100
+        pointmark["生命值"] = (
+            pointmark["百分比生命值"] / float(base_info["生命值"]) * 100
+        )
+        affix_weight["生命值"] = (
+            pointmark["百分比生命值"]
+            * grow_value["生命值"]
+            / (float(base_info["生命值"]))
+            * 100
+        )
     affix_weight = dict(  # 排序影响最优主词条选择，通过特定排序使同等权重时非百分比的生命攻击防御词条优先级最低
         sorted(
             affix_weight.items(),
@@ -163,14 +223,23 @@ def get_miao_score(affix_weight, base_info):
             max_mark[str(posIdx)]["total"] = 0
         else:
             # 沙杯头计算该位置评分权重最高的词条得分
-            aval_main_affix = {k: v for k, v in affix_weight.items() if k in main_affixs[str(posIdx)]}
+            aval_main_affix = {
+                k: v for k, v in affix_weight.items() if k in main_affixs[str(posIdx)]
+            }
             main_affix = list(aval_main_affix)[0]
             max_mark[str(posIdx)]["main"] = affix_weight[main_affix]
             max_mark[str(posIdx)]["total"] = affix_weight[main_affix] * 2
 
-        max_sub_affixs = {k: v for k, v in affix_weight.items() if k in sub_affixs and k != main_affix and affix_weight.get(k)}
+        max_sub_affixs = {
+            k: v
+            for k, v in affix_weight.items()
+            if k in sub_affixs and k != main_affix and affix_weight.get(k)
+        }
         # 副词条中评分权重最高的词条得分大幅提升
-        max_mark[str(posIdx)]["total"] += sum(affix_weight[k] * (1 if kIdx else 6) for kIdx, k in enumerate(list(max_sub_affixs)[0:4]))
+        max_mark[str(posIdx)]["total"] += sum(
+            affix_weight[k] * (1 if kIdx else 6)
+            for kIdx, k in enumerate(list(max_sub_affixs)[0:4])
+        )
     return affix_weight, pointmark, max_mark
 
 
@@ -185,7 +254,9 @@ def check(weight, affix, key, max_value=75, max_plus=75, is_weapon=True):
     return False
 
 
-def weapon_check(weight, affix, key, max_affix_attr=20, min_affix_attr=10, max_value=100):
+def weapon_check(
+    weight, affix, key, max_affix_attr=20, min_affix_attr=10, max_value=100
+):
     original = weight.get(key, 0)
 
     if original == max_value:
@@ -236,7 +307,10 @@ def get_effective(data):
                 }
                 suffix += "战斗"
         elif role_name == "芭芭拉":
-            if artifacts[3]["主属性"]["属性名"] == "水元素伤害加成" and data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] >= 1.8:
+            if (
+                artifacts[3]["主属性"]["属性名"] == "水元素伤害加成"
+                and data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] >= 1.8
+            ):
                 weight = {
                     "hp": 50,
                     "atk": 75,
@@ -293,10 +367,16 @@ def get_effective(data):
                 }
                 suffix += "充能"
         elif role_name == "宵宫":
-            if data["属性"]["元素精通"] < 50 and data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 3.2:
+            if (
+                data["属性"]["元素精通"] < 50
+                and data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 3.2
+            ):
                 weight = {"atk": 85, "cpct": 100, "cdmg": 100, "dmg": 100}
                 suffix += "纯火"
-            if data["属性"]["元素精通"] > 200 and artifacts[2]["主属性"]["属性名"] == "元素精通":
+            if (
+                data["属性"]["元素精通"] > 200
+                and artifacts[2]["主属性"]["属性名"] == "元素精通"
+            ):
                 weight = {
                     "atk": 75,
                     "cpct": 100,
@@ -320,7 +400,8 @@ def get_effective(data):
             if (
                 data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 1.8
                 and artifacts[3]["主属性"]["属性名"] == "岩元素伤害加成"
-                and artifacts[4]["主属性"]["属性名"] in ["暴击率", "暴击伤害", "百分比防御力", "百分比攻击力"]
+                and artifacts[4]["主属性"]["属性名"]
+                in ["暴击率", "暴击伤害", "百分比防御力", "百分比攻击力"]
             ):
                 weight = {
                     "atk": 75,
@@ -374,7 +455,10 @@ def get_effective(data):
                 }
                 suffix += "精通"
         elif role_name == "可莉":
-            if data["属性"]["元素精通"] < 50 and data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 3.2:
+            if (
+                data["属性"]["元素精通"] < 50
+                and data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 3.2
+            ):
                 weight = {
                     "atk": 85,
                     "cpct": 100,
@@ -567,7 +651,9 @@ def get_effective(data):
         weight = role_score
         if suffix:
             return weight, f"{role_name}-{suffix}"
-        if weight.get("百分比攻击力", 0) > 0 and (weapon_weight := weapon_cfg.get(data["武器"]["名称"], "")):
+        if weight.get("百分比攻击力", 0) > 0 and (
+            weapon_weight := weapon_cfg.get(data["武器"]["名称"], "")
+        ):
             if weapon_check(
                 weight,
                 data["武器"]["精炼等级"],

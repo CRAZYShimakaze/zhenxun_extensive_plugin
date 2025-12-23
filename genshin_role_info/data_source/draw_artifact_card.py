@@ -1,8 +1,22 @@
 import numpy as np
 from PIL import Image, ImageDraw
 
-from ..utils.card_utils import avatar_path, bg_path, get_font, json_path, other_path, qq_logo_path, reli_path
-from ..utils.image_utils import draw_center_text, draw_right_text, get_img, image_build, load_image
+from ..utils.card_utils import (
+    avatar_path,
+    bg_path,
+    get_font,
+    json_path,
+    other_path,
+    qq_logo_path,
+    reli_path,
+)
+from ..utils.image_utils import (
+    draw_center_text,
+    draw_right_text,
+    get_img,
+    image_build,
+    load_image,
+)
 from ..utils.json_utils import load_json
 from .draw_role_card import artifact_url
 
@@ -12,7 +26,12 @@ role_info_json = load_json(f"{json_path}/role_info.json")
 
 
 async def draw_qq_logo_mask(artifact, mask_bottom):
-    qq_logo_pic = await get_img(url=qq_logo_url.format(artifact["QQ"]), size=(640, 640), save_path=qq_logo_path + str(artifact["QQ"]), mode="RGB")
+    qq_logo_pic = await get_img(
+        url=qq_logo_url.format(artifact["QQ"]),
+        size=(640, 640),
+        save_path=qq_logo_path + str(artifact["QQ"]),
+        mode="RGB",
+    )
     # 获取遮罩的alpha通道
     mask_array = np.array(mask_bottom)[:, :, 3]
     max_val = np.max(mask_array)
@@ -20,12 +39,20 @@ async def draw_qq_logo_mask(artifact, mask_bottom):
     mask_alpha = Image.fromarray(mask_array)
 
     qq_logo_icon = qq_logo_pic
-    qq_logo_icon = qq_logo_icon.convert("RGB").resize((mask_bottom.size[1], mask_bottom.size[1]))
+    qq_logo_icon = qq_logo_icon.convert("RGB").resize(
+        (mask_bottom.size[1], mask_bottom.size[1])
+    )
 
     qq_logo_alpha = Image.new("L", qq_logo_icon.size, 0)
     qq_logo_icon = np.array(qq_logo_icon)
 
-    qq_logo_alpha.paste(mask_alpha, ((qq_logo_icon.shape[1] - mask_array.shape[1]) // 2, (qq_logo_icon.shape[0] - mask_array.shape[0]) // 2))
+    qq_logo_alpha.paste(
+        mask_alpha,
+        (
+            (qq_logo_icon.shape[1] - mask_array.shape[1]) // 2,
+            (qq_logo_icon.shape[0] - mask_array.shape[0]) // 2,
+        ),
+    )
     qq_logo_alpha = np.array(qq_logo_alpha)
     npimage = np.dstack((qq_logo_icon, qq_logo_alpha))
     img = Image.fromarray(npimage)
@@ -40,20 +67,38 @@ async def draw_qq_logo_mask(artifact, mask_bottom):
     return img
 
 
-async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num, plugin_version, is_group=0):
+async def draw_artifact_card(
+    title, name, uid, artifact_info, ace2_num, ace_num, plugin_version, is_group=0
+):
     bounder_offset = (70, 130)
     interval = (0, 15)
     # w317,h434
-    mask_bottom = load_image(path=f"{other_path}/底遮罩.png", crop=(707, 936, 1024, 1370))
+    mask_bottom = load_image(
+        path=f"{other_path}/底遮罩.png", crop=(707, 936, 1024, 1370)
+    )
     mask_w, mask_h = mask_bottom.size
     artifact_pk = artifact_info
     h = (len(artifact_pk) + 3) // 4
     wid = bounder_offset[0] + (mask_w * 4 + interval[0] * 3) + bounder_offset[0]
-    hei = bounder_offset[1] + (mask_h * h + interval[1] * (h - 1)) + bounder_offset[1] + 50 - 100
+    hei = (
+        bounder_offset[1]
+        + (mask_h * h + interval[1] * (h - 1))
+        + bounder_offset[1]
+        + 50
+        - 100
+    )
     if artifact_info[0].get("角色", "") != "":
-        bg = load_image(f"{bg_path}/背景_{role_info_json[artifact_info[0]['角色']]['元素']}.png", size=(wid, hei), mode="RGBA")
+        bg = load_image(
+            f"{bg_path}/背景_{role_info_json[artifact_info[0]['角色']]['元素']}.png",
+            size=(wid, hei),
+            mode="RGBA",
+        )
     else:
-        bg = load_image(f"{bg_path}/背景_{role_info_json[name]['元素']}.png", size=(wid, hei), mode="RGBA")
+        bg = load_image(
+            f"{bg_path}/背景_{role_info_json[name]['元素']}.png",
+            size=(wid, hei),
+            mode="RGBA",
+        )
     bg_draw = ImageDraw.Draw(bg)
 
     # artifact_pk = sorted(artifact_info, key=lambda x: float(x['评分']), reverse=True)
@@ -69,36 +114,114 @@ async def draw_artifact_card(title, name, uid, artifact_info, ace2_num, ace_num,
         if is_group:
             qq_logo_img = await draw_qq_logo_mask(artifact, mask_bottom)
             bg.alpha_composite(qq_logo_img, (slice_offset_x, slice_offset_y))
-        artifact_bg = load_image(f"{other_path}/star{artifact['星级']}.png", size=(100, 100))
+        artifact_bg = load_image(
+            f"{other_path}/star{artifact['星级']}.png", size=(100, 100)
+        )
         bg.alpha_composite(artifact_bg, (slice_offset_x + 200, slice_offset_y + 67))
         reli_icon = f"{reli_path}/{artifact['图标']}.png"
-        reli_icon = await get_img(url=artifact_url.format(artifact["图标"]), size=(100, 100), save_path=reli_icon, mode="RGBA")
+        reli_icon = await get_img(
+            url=artifact_url.format(artifact["图标"]),
+            size=(100, 100),
+            save_path=reli_icon,
+            mode="RGBA",
+        )
         bg.alpha_composite(reli_icon, (slice_offset_x + 200, slice_offset_y + 67))
         if "角色" in artifact and artifact.get("角色", ""):
-            avatar_name = "UI_AvatarIcon_Side_" + role_info_json[artifact["角色"]]["英文名"]
+            avatar_name = (
+                "UI_AvatarIcon_Side_" + role_info_json[artifact["角色"]]["英文名"]
+            )
             avatar_icon = f"{avatar_path}/{avatar_name}.png"
-            avatar_icon = await get_img(url=artifact_url.format(avatar_name), size=(100, 100), save_path=avatar_icon, mode="RGBA")
-            bg.alpha_composite(avatar_icon, (slice_offset_x + 200 + 30, slice_offset_y + 67 + 30))
-        bg_draw.text((slice_offset_x + 24, slice_offset_y + 16), artifact["名称"], fill="white", font=get_font(40))
-        bg_draw.text((slice_offset_x + 24, slice_offset_y + 63), f"{artifact_score}-{round(grade, 1)}", fill="#ffde6b", font=get_font(28, "number.ttf"))
+            avatar_icon = await get_img(
+                url=artifact_url.format(avatar_name),
+                size=(100, 100),
+                save_path=avatar_icon,
+                mode="RGBA",
+            )
+            bg.alpha_composite(
+                avatar_icon, (slice_offset_x + 200 + 30, slice_offset_y + 67 + 30)
+            )
+        bg_draw.text(
+            (slice_offset_x + 24, slice_offset_y + 16),
+            artifact["名称"],
+            fill="white",
+            font=get_font(40),
+        )
+        bg_draw.text(
+            (slice_offset_x + 24, slice_offset_y + 63),
+            f"{artifact_score}-{round(grade, 1)}",
+            fill="#ffde6b",
+            font=get_font(28, "number.ttf"),
+        )
         level_mask = load_image(path=f"{other_path}/等级遮罩.png")
-        bg.alpha_composite(level_mask.resize((98, 30)), (slice_offset_x + 24, slice_offset_y + 97))
-        draw_center_text(bg_draw, f"LV{artifact['等级']}", slice_offset_x + 24, slice_offset_x + 24 + 98, slice_offset_y + 98, "black", get_font(27, "number.ttf"))
-        bg_draw.text((slice_offset_x + 23, slice_offset_y + 134), artifact["主属性"]["属性名"], fill="white", font=get_font(25))
+        bg.alpha_composite(
+            level_mask.resize((98, 30)), (slice_offset_x + 24, slice_offset_y + 97)
+        )
+        draw_center_text(
+            bg_draw,
+            f"LV{artifact['等级']}",
+            slice_offset_x + 24,
+            slice_offset_x + 24 + 98,
+            slice_offset_y + 98,
+            "black",
+            get_font(27, "number.ttf"),
+        )
+        bg_draw.text(
+            (slice_offset_x + 23, slice_offset_y + 134),
+            artifact["主属性"]["属性名"],
+            fill="white",
+            font=get_font(25),
+        )
         if artifact["主属性"]["属性名"] not in ["生命值", "攻击力", "元素精通"]:
-            bg_draw.text((slice_offset_x + 20, slice_offset_y + 165), f"+{artifact['主属性']['属性值']}%", fill="white", font=get_font(48, "number.ttf"))
+            bg_draw.text(
+                (slice_offset_x + 20, slice_offset_y + 165),
+                f"+{artifact['主属性']['属性值']}%",
+                fill="white",
+                font=get_font(48, "number.ttf"),
+            )
         else:
-            bg_draw.text((slice_offset_x + 20, slice_offset_y + 165), f"+{artifact['主属性']['属性值']}", fill="white", font=get_font(48, "number.ttf"))
+            bg_draw.text(
+                (slice_offset_x + 20, slice_offset_y + 165),
+                f"+{artifact['主属性']['属性值']}",
+                fill="white",
+                font=get_font(48, "number.ttf"),
+            )
         for j in range(len(artifact["副属性"])):
             text = artifact["副属性"][j]["属性名"]
             up_num = artifact["副属性"][j]["强化次数"]
             x_offset = 25 * len(text)
-            bg_draw.text((slice_offset_x + 23 + x_offset, slice_offset_y + 228 + 50 * j - 5), up_num, fill=artifact["副属性"][j]["颜色"], font=get_font(25, "tahomabd.ttf"))
-            bg_draw.text((slice_offset_x + 23, slice_offset_y + 228 + 50 * j), text, fill=artifact["副属性"][j]["颜色"], font=get_font(25))
+            bg_draw.text(
+                (slice_offset_x + 23 + x_offset, slice_offset_y + 228 + 50 * j - 5),
+                up_num,
+                fill=artifact["副属性"][j]["颜色"],
+                font=get_font(25, "tahomabd.ttf"),
+            )
+            bg_draw.text(
+                (slice_offset_x + 23, slice_offset_y + 228 + 50 * j),
+                text,
+                fill=artifact["副属性"][j]["颜色"],
+                font=get_font(25),
+            )
             num = artifact["副属性"][j]["属性值"]
-            draw_right_text(bg_draw, num, slice_offset_x + 291, slice_offset_y + 228 + 50 * j, fill=artifact["副属性"][j]["颜色"], font=get_font(25, "number.ttf"))
-    draw_center_text(bg_draw, f"{title}", 0, wid, 5, "#ffffff", get_font(96, "优设标题黑.ttf"))
-    draw_center_text(bg_draw, f"{'group' if is_group else 'uid'}:{uid} | v{plugin_version}", 0, wid, bg.size[1] - 70, "#ffffff", get_font(46, "优设标题黑.ttf"))
+            draw_right_text(
+                bg_draw,
+                num,
+                slice_offset_x + 291,
+                slice_offset_y + 228 + 50 * j,
+                fill=artifact["副属性"][j]["颜色"],
+                font=get_font(25, "number.ttf"),
+            )
+    draw_center_text(
+        bg_draw, f"{title}", 0, wid, 5, "#ffffff", get_font(96, "优设标题黑.ttf")
+    )
+    draw_center_text(
+        bg_draw,
+        f"{'group' if is_group else 'uid'}:{uid} | v{plugin_version}",
+        0,
+        wid,
+        bg.size[1] - 70,
+        "#ffffff",
+        get_font(46, "优设标题黑.ttf"),
+    )
     if is_group:
         text_info = ""
     else:
