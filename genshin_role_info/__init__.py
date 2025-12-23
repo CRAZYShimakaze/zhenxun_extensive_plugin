@@ -72,7 +72,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.1",
+        version="4.2.2",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
