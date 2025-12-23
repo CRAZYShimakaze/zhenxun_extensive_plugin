@@ -74,7 +74,7 @@ def get_full_times(effective, artifact, pos_idx):
             if not main_find:
                 if bak_find:
                     main_name = bak_name
-        #print(main_name)
+        # print(main_name)
         # 再确定副词条
         for i, (key, value) in enumerate(sorted_items):
             if key == main_name:
@@ -92,7 +92,7 @@ def get_full_times(effective, artifact, pos_idx):
                     times.append(value)
             if len(times) == 5:
                 break
-        #print(times)
+        # print(times)
     return sum(times) / 100
 
 
@@ -124,7 +124,7 @@ def get_artifact_score(effective, artifact, role_info, pos_idx):
         grow_value.update(item_prop)
     mark = []
     for index, s in enumerate(artifact["词条"]):
-        #print(s["属性值"], s["属性名"])
+        # print(s["属性值"], s["属性名"])
         va = s["属性值"]
         # mark.append(s["属性值"] / grow_value[s["属性名"]] - 1)
         mark.append(max(0, va / sub_grow_max_value[s["属性名"]] - 1))

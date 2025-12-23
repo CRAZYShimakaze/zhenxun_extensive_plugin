@@ -608,7 +608,7 @@ async def _check_update():
     bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r'__plugin_version__ = "(\d+\.\d+\.\d+)"', str(version.text))
+        version = re.search(r'version="(\d+\.\d+\.\d+)"', str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return

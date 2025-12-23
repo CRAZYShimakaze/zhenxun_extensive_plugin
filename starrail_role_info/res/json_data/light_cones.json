@@ -1409,6 +1409,16 @@
         "preview": "image/light_cone_preview/23049.png",
         "portrait": "image/light_cone_portrait/23049.png"
     },
+    "23050": {
+        "id": "23050",
+        "name": "勿忘她的火焰",
+        "rarity": 5,
+        "path": "Warlock",
+        "desc": "「来吧，来到我的身旁……」\n一缕鲜活的回忆被火焰引着，包裹她的躯体，她的心灵。\n往昔堕入坟茔，那是真实吗？\n「嘘，不要啜泣，不要拒绝……」\n她把自己烙印在他人心间，陌生的眼神逐渐亲切。\n「想起来了么？」\n旧忆的余烬悉数散去，脸庞牵惹一丝令人迷醉的花香——\n「我，就是你的回忆。」",
+        "icon": "icon/light_cone/23050.png",
+        "preview": "image/light_cone_preview/23050.png",
+        "portrait": "image/light_cone_portrait/23050.png"
+    },
     "23051": {
         "id": "23051",
         "name": "纵然山河万程",

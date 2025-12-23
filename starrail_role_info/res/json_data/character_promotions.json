@@ -6038,6 +6038,105 @@
             []
         ]
     },
+    "1321": {
+        "id": "1321",
+        "values": [
+            {
+                "hp": { "base": 147.84, "step": 7.392 },
+                "atk": { "base": 92.4, "step": 4.62 },
+                "def": { "base": 82.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            },
+            {
+                "hp": { "base": 206.976, "step": 7.392 },
+                "atk": { "base": 129.36, "step": 4.62 },
+                "def": { "base": 115.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            },
+            {
+                "hp": { "base": 266.112, "step": 7.392 },
+                "atk": { "base": 166.32, "step": 4.62 },
+                "def": { "base": 148.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            },
+            {
+                "hp": { "base": 325.248, "step": 7.392 },
+                "atk": { "base": 203.28, "step": 4.62 },
+                "def": { "base": 181.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            },
+            {
+                "hp": { "base": 384.384, "step": 7.392 },
+                "atk": { "base": 240.24, "step": 4.62 },
+                "def": { "base": 214.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            },
+            {
+                "hp": { "base": 443.52, "step": 7.392 },
+                "atk": { "base": 277.2, "step": 4.62 },
+                "def": { "base": 247.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            },
+            {
+                "hp": { "base": 502.656, "step": 7.392 },
+                "atk": { "base": 314.16, "step": 4.62 },
+                "def": { "base": 280.5, "step": 4.125 },
+                "spd": { "base": 96, "step": 0 },
+                "taunt": { "base": 100, "step": 0 },
+                "crit_rate": { "base": 0.05, "step": 0 },
+                "crit_dmg": { "base": 0.5, "step": 0 }
+            }
+        ],
+        "materials": [
+            [
+                { "id": "2", "num": 4000 },
+                { "id": "114011", "num": 5 }
+            ],
+            [
+                { "id": "2", "num": 8000 },
+                { "id": "114011", "num": 10 }
+            ],
+            [
+                { "id": "2", "num": 16000 },
+                { "id": "114012", "num": 6 },
+                { "id": "110432", "num": 3 }
+            ],
+            [
+                { "id": "2", "num": 40000 },
+                { "id": "114012", "num": 9 },
+                { "id": "110432", "num": 7 }
+            ],
+            [
+                { "id": "2", "num": 80000 },
+                { "id": "114013", "num": 6 },
+                { "id": "110432", "num": 20 }
+            ],
+            [
+                { "id": "2", "num": 160000 },
+                { "id": "114013", "num": 9 },
+                { "id": "110432", "num": 35 }
+            ],
+            []
+        ]
+    },
     "1401": {
         "id": "1401",
         "values": [

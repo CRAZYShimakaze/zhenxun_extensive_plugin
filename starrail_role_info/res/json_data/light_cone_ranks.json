@@ -3623,6 +3623,35 @@
             ]
         ]
     },
+    "23050": {
+        "id": "23050",
+        "skill": "焚身",
+        "desc": "使装备者的击破特攻提高#1[i]%。进入战斗时，使装备者和另一位开战的队友造成的击破伤害提高#2[i]%，若不存在开战的队友则对装备者和击破特攻最高的队友生效，同类效果无法叠加。装备者为敌方目标添加弱点时，恢复1个战技点，该效果最多触发1次，施放终结技时重置可触发次数。",
+        "params": [
+            [0.6, 0.32],
+            [0.75, 0.42],
+            [0.9, 0.52],
+            [1.05, 0.62],
+            [1.2, 0.72]
+        ],
+        "properties": [
+            [
+                { "type": "BreakDamageAddedRatioBase", "value": 0.6 }
+            ],
+            [
+                { "type": "BreakDamageAddedRatioBase", "value": 0.75 }
+            ],
+            [
+                { "type": "BreakDamageAddedRatioBase", "value": 0.9 }
+            ],
+            [
+                { "type": "BreakDamageAddedRatioBase", "value": 1.05 }
+            ],
+            [
+                { "type": "BreakDamageAddedRatioBase", "value": 1.2 }
+            ]
+        ]
+    },
     "23051": {
         "id": "23051",
         "skill": "新鳞",

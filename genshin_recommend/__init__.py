@@ -167,7 +167,7 @@ async def _(event: MessageEvent):
 
 
 @role_guide.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     role = get_role_name(role)
@@ -179,7 +179,7 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
 
 
 @genshin_info.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     name = args[0].strip()
     role = get_role_name(name)
@@ -198,7 +198,7 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
 
 
 @break_material.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     role = get_role_name(role)
@@ -315,7 +315,7 @@ async def _check_update(is_cron=False):
     bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r"__plugin_version__ = ([0-9.]{3})", str(version.text))
+        version = re.search(r'version="([0-9.]{3})"', str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return

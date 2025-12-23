@@ -79,7 +79,10 @@ def get_artifact_suit(artifacts: list):
     for item in artifacts_type:
         if item == "":
             continue
-        if artifacts.count(item) >= 4:
+        if artifacts.count(item) == 6:
+            suit_4.append(item)
+            suit_2.append(item)
+        elif artifacts.count(item) >= 4:
             suit_4.append(item)
         elif artifacts.count(item) >= 2:
             suit_2.append(item)

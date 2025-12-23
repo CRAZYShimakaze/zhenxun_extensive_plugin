@@ -27,7 +27,7 @@ weapon_path = data_res_path + "weapon"
 reli_path = data_res_path + "reli"
 font_path = card_res_path + "fonts"
 # weapon = load_json(path=f"{json_path}/weapon.json")
-weapon_loc = load_json(path=f"{json_path}/weapon_loc.json")
+weapon_loc = load_json(path=f"{json_path}/loc.json")
 prop_list = {
     "FIGHT_PROP_BASE_ATTACK": "基础攻击力",
     "FIGHT_PROP_BASE_DEFENSE": "基础防御力",

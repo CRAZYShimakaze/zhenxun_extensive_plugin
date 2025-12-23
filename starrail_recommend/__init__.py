@@ -87,7 +87,7 @@ async def get_img(url, arg, save_path, ignore_exist):
 
 
 @role_guide.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for key, value in role_list.items():
@@ -102,7 +102,7 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
 
 
 @common_weapon_grade.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent):
     arg = "光锥推荐"
     save_path = [
@@ -116,7 +116,7 @@ async def _(event: MessageEvent):
 
 
 @common_artifact_guide.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent):
     arg = "遗器推荐"
     save_path = [f"{COMMON_GUIDE_PATH}/{arg}1.jpg", f"{COMMON_GUIDE_PATH}/{arg}2.jpg"]
@@ -126,7 +126,7 @@ async def _(event: MessageEvent):
 
 
 @common_abyss.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent):
     arg = "角色配队"
     save_path = [f"{COMMON_GUIDE_PATH}/{arg}1.jpg", f"{COMMON_GUIDE_PATH}/{arg}2.jpg"]
@@ -136,7 +136,7 @@ async def _(event: MessageEvent):
 
 
 @starrail_info.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for key, value in role_list.items():
@@ -160,7 +160,7 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
 
 
 @break_material.handle()
-@gold_cost(coin=10, percent=1)
+@gold_cost(coin=1, percent=1)
 async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role = args[0].strip()
     for key, value in role_list.items():
@@ -270,7 +270,7 @@ async def _check_update(is_cron=False):
     bot = nonebot.get_bot()
     try:
         version = await AsyncHttpx.get(url, follow_redirects=True)
-        version = re.search(r"__plugin_version__ = ([0-9.]{3})", str(version.text))
+        version = re.search(r'version="([0-9.]{3})"', str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return

@@ -732,7 +732,11 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
 
         # 驱动盘套装
         suit_4, suit_2 = get_artifact_suit([item.get("所属套装", "") for item in data["驱动盘"]])
-        if len(suit_4) != 1 and (len(suit_2) != 3 and len(suit_2) != 1):
+        if len(suit_4) == 1 and len(suit_2) == 1:
+            pass
+        elif len(suit_2) == 3:
+            pass
+        else:
             no_list = "*"
         """
         if not suit:
