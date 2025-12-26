@@ -197,7 +197,7 @@
     "tag": "kafka",
     "rarity": 5,
     "path": "Warlock",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 120,
     "ranks": [
       "100501",
@@ -341,7 +341,7 @@
     "tag": "arlan",
     "rarity": 4,
     "path": "Warrior",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 110,
     "ranks": [
       "100801",
@@ -679,7 +679,7 @@
     "tag": "serval",
     "rarity": 4,
     "path": "Mage",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 100,
     "ranks": [
       "110301",
@@ -1210,7 +1210,7 @@
     "tag": "tingyun",
     "rarity": 4,
     "path": "Shaman",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 130,
     "ranks": [
       "120201",
@@ -1306,7 +1306,7 @@
     "tag": "jingyuan",
     "rarity": 5,
     "path": "Mage",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 130,
     "ranks": [
       "120401",
@@ -1668,7 +1668,7 @@
     "tag": "bailu",
     "rarity": 5,
     "path": "Priest",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 100,
     "ranks": [
       "121101",
@@ -2665,7 +2665,7 @@
     "tag": "acheron",
     "rarity": 5,
     "path": "Warlock",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 9,
     "ranks": [
       "130801",
@@ -3161,7 +3161,7 @@
     "tag": "aglaea",
     "rarity": 5,
     "path": "Memory",
-    "element": "Lightning",
+    "element": "Thunder",
     "max_sp": 350,
     "ranks": [
       "140201",

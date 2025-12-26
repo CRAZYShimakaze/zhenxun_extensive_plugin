@@ -134,7 +134,9 @@ class PlayerInfo:
 
             role_info["天赋"] = []
             for skill in data["skillLevelMap"]:
-                if skill[-1] == "1":
+                if skill in role_info_json[role_name].get("技能", []):
+                    skill_detail = {"等级": data["skillLevelMap"][skill], "图标": role_info_json[role_name].get("技能")[skill]}
+                elif skill[-1] == "1":
                     if role_info_json[role_name]["武器"] == "单手剑":
                         skill_detail = {
                             "等级": data["skillLevelMap"][skill],
