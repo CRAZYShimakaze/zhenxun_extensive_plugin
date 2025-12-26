@@ -49,8 +49,9 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
         data = player_info.get_roles_info(role)
         # 角色卡背景
         card_bg = Image.new("RGBA", card_size, (240, 236, 227, 0))
-        print(data["元素"])
-        bg_img = load_image(f"{bg_path}/背景_{data['元素']}.png", mode="RGBA")
+        # print(data["元素"])
+        # bg_img = load_image(f"{bg_path}/背景_{data['元素']}.png", mode="RGBA")
+        bg_img = load_image(f"{bg_path}/bg.png", mode="RGBA")
         card_bg.alpha_composite(bg_img.resize((card_bg.width, card_bg.height), Image.Resampling.LANCZOS), (0, 0))
         card_bg_draw = ImageDraw.Draw(card_bg)
 
