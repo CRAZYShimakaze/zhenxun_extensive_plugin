@@ -1,5 +1,6 @@
 import copy
 import math
+import os.path
 import re
 
 from PIL import Image, ImageDraw
@@ -43,6 +44,11 @@ special_list = {
 }
 pos_name = [1, 2, 3, 4, 5, 6]
 role_avatar_url = {
+    "照": "https://patchwiki.biligame.com/images/zzz/a/a7/4x6ftmp0p7f3aiy07e2c05ramfc0gr7.png",
+    "叶瞬光": "https://patchwiki.biligame.com/images/zzz/a/aa/k2flhkxogiuzi1wdo0jrifxvy6z3ux8.png",
+    "般岳": "https://patchwiki.biligame.com/images/zzz/d/d0/imvff8sf35pqb1letn16eukp4h7xn4g.png",
+    "琉音": "https://patchwiki.biligame.com/images/zzz/f/f4/ootwjjl52b9idun1izgsm6nfzyc06gh.png",
+    "伊德海莉": "https://patchwiki.biligame.com/images/zzz/f/f8/s6xiph52l7yocidb48obxu397gcgdgq.png",
     "卢西娅": "https://patchwiki.biligame.com/images/zzz/a/aa/bewpw892egodvlvmedvwfeda48zlppy.png",
     "奥菲丝&「鬼火」": "https://patchwiki.biligame.com/images/zzz/9/9e/2hxzo9jbadg0hcxbzz2x86e1bko982n.png",
     "「席德」": "https://patchwiki.biligame.com/images/zzz/b/b2/okaku4fnrnzg61icd84jsao92wkd7db.png",
@@ -240,16 +246,16 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         bg.alpha_composite(role_pic, (560, 50))  # 234))
         base_mask = load_image(f"{other_path}/底遮罩.png")
         bg.alpha_composite(base_mask, (0, 0))
-
-        type_icon = load_image(f"{type_path}/{data['特性']}.png")
-        # type_icon = await get_img(url=special_list.get(data["特性"]), save_path=type_icon, mode="RGBA")
-        type_icon = type_icon.resize((130, 130), Image.Resampling.LANCZOS)
-        bg.alpha_composite(type_icon, (0, 4))
-
-        element_icon = load_image(f"{type_path}/{data['元素']}.png")
-        # element_icon = await get_img(url=resource_url.format(data["元素"]), save_path=element_icon, mode='RGBA')
-        element_icon = element_icon.resize((130, 130), Image.Resampling.LANCZOS)
-        bg.alpha_composite(element_icon, (1080 - 130, 4))
+        if os.path.exists(f"{type_path}/{data['特性']}.png"):
+            type_icon = load_image(f"{type_path}/{data['特性']}.png")
+            # type_icon = await get_img(url=special_list.get(data["特性"]), save_path=type_icon, mode="RGBA")
+            type_icon = type_icon.resize((130, 130), Image.Resampling.LANCZOS)
+            bg.alpha_composite(type_icon, (0, 4))
+        if os.path.exists(f"{type_path}/{data['元素']}.png"):
+            element_icon = load_image(f"{type_path}/{data['元素']}.png")
+            # element_icon = await get_img(url=resource_url.format(data["元素"]), save_path=element_icon, mode='RGBA')
+            element_icon = element_icon.resize((130, 130), Image.Resampling.LANCZOS)
+            bg.alpha_composite(element_icon, (1080 - 130, 4))
 
         bg_draw = ImageDraw.Draw(bg)
         bg_draw.text((131, 40), f"UID{uid}", fill="white", font=get_font(48, "number.ttf"))
@@ -348,9 +354,11 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         y = 377  # 436
 
         b = 379  # 438
+        cnt = 0
         for item in prop_list:
-            if prop.get(f"额外{item}", 0) == 0:
+            if prop.get(f"额外{item}", 0) == 0 and cnt >= 6:
                 continue
+            cnt += 1
             if "能量" in item:
                 text = math.floor(prop.get(f"基础{item}", 0) * (10000 + prop.get(f"额外{item}", 0)) / 10000)
             else:
@@ -802,7 +810,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         """
     effect = {}
     for item in effective:
-        name = item.replace("百分比", "%").replace("暴击率", "暴击").replace("暴击伤害", "爆伤").replace("异常", "").replace("能量回复", "回能").replace("力", "").replace("值", "")
+        name = item.replace("百分比", "").replace("暴击率", "暴击").replace("暴击伤害", "爆伤").replace("异常", "").replace("能量回复", "回能").replace("力", "").replace("值", "")
         if name not in effect:
             effect[name] = effective.get(item)
     effect = dict(sorted(effect.items(), key=lambda x: x[1], reverse=True))

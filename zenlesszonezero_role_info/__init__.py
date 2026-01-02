@@ -6,6 +6,8 @@ import random
 import re
 import shutil
 import time
+from datetime import datetime
+from pathlib import Path
 
 import nonebot
 from nonebot import Driver, on_command, on_message, on_regex
@@ -65,7 +67,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="0.2.0",
+        version="0.2.1",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
