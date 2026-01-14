@@ -147,10 +147,13 @@ async def get_enka_info(uid, update_info, event):
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
         req = 0
         status_code = 0
+        hint = "未知问题..."
         for i in range(2):
             try:
                 print(f"请求{api_url[0].format(uid)}...")
-                req = await AsyncHttpx.get(url=api_url[0].format(uid), headers=headers, follow_redirects=True)
+                req = await AsyncHttpx.get(
+                    url=api_url[0].format(uid), headers=headers, follow_redirects=True
+                )
                 if req.status_code == 200:
                     break
                 else:
@@ -164,10 +167,13 @@ async def get_enka_info(uid, update_info, event):
                         print(f"HTTP错误状态码: {status_code}")
                     else:
                         print(f"其它错误: {exception}")
+                if status_code == 0:
+                    print(f"其它错误：{e}")
+                    hint = f"其它错误：{e}\n也许是游戏更新后一切都崩溃了 / 游戏服务器维护中..."
             except Exception as e:
                 print(f"其它错误: {e}")
+                hint = f"其它错误：{e}"
         else:
-            hint = "未知问题..."
             if status_code == 400:
                 hint = "UID 格式错误..."
             elif status_code == 404:
