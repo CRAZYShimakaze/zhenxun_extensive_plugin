@@ -25,24 +25,27 @@ main_max_value = [
 
 
 def get_full_times(effective, artifact, pos_idx):
-    sorted_items = sorted(effective.items(), key=lambda x: x[1] if x[0] not in small_property else x[1] * 0.3, reverse=True)
+    # sorted_items = sorted(effective.items(), key=lambda x: x[1] if x[0] not in small_property else x[1] * 0.3, reverse=True)
+    sorted_items = sorted(effective.items(), key=lambda x: x[1], reverse=True)
     times = []
     best_find = 0
     # 只考虑副词条
     if pos_idx <= 2:
         for i, (key, value) in enumerate(sorted_items):
             if key in sub_grow_max_value.keys() and not best_find:
-                if key in small_property:
-                    times.append(value * 6 * 0.3)
-                else:
-                    times.append(value * 6)
+                times.append(value * 6)
+                # if key in small_property:
+                #     times.append(value * 6 * 0.3)
+                # else:
+                #     times.append(value * 6)
                 best_find = 1
 
             elif key in sub_grow_max_value.keys():
-                if key in small_property:
-                    times.append(value * 0.3)
-                else:
-                    times.append(value)
+                times.append(value)
+                # if key in small_property:
+                #     times.append(value * 0.3)
+                # else:
+                #     times.append(value)
             if len(times) == 4:
                 break
     else:
@@ -67,25 +70,27 @@ def get_full_times(effective, artifact, pos_idx):
             if not main_find:
                 if bak_find:
                     main_name = bak_name
-        #print(main_name)
+        # print(main_name)
         # 再确定副词条
         for i, (key, value) in enumerate(sorted_items):
             if key == main_name:
                 continue
             if key in sub_grow_max_value.keys() and not best_find:
-                if key in small_property:
-                    times.append(value * 6 * 0.3)
-                else:
-                    times.append(value * 6)
+                times.append(value * 6)
+                # if key in small_property:
+                #     times.append(value * 6 * 0.3)
+                # else:
+                #     times.append(value * 6)
                 best_find = 1
             elif key in sub_grow_max_value.keys():
-                if key in small_property:
-                    times.append(value * 0.3)
-                else:
-                    times.append(value)
+                times.append(value)
+                # if key in small_property:
+                #     times.append(value * 0.3)
+                # else:
+                #     times.append(value)
             if len(times) == 5:
                 break
-        #print(times)
+        # print(times)
     return sum(times) / 100
 
 
@@ -94,8 +99,8 @@ def get_artifact_score(effective, artifact, role_info, pos_idx):
     sub_score = 0
     for sub in artifact["词条"]:
         score = (1 + sub["提升次数"]) * effective.get(sub["属性名"], 0) / 100
-        if sub["属性名"] in small_property:
-            score *= 0.3
+        # if sub["属性名"] in small_property:
+        #     score *= 0.3
         sub_score += score
     if pos_idx < 3:
         main_score = 0

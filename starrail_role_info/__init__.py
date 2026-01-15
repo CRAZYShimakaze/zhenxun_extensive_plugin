@@ -8,6 +8,7 @@ import re
 import shutil
 import time
 
+import httpx
 import nonebot
 from nonebot import Driver, on_command, on_regex
 from nonebot.adapters.onebot.v11 import (
@@ -25,7 +26,6 @@ from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
-from zhenxun.utils.http_utils import AsyncHttpx
 
 from ..plugin_utils.auth_utils import gold_cost
 from .data_source.draw_artifact_card import draw_artifact_card
@@ -98,6 +98,8 @@ name_list = alias_file["characters"]
 
 check = on_command("srck", permission=SUPERUSER, priority=4, block=True)
 
+client = httpx.AsyncClient(timeout=30)
+
 
 @check.handle()
 async def _(event: MessageEvent):
@@ -145,21 +147,37 @@ async def get_msg_uid(event):
 async def get_starrail_info(url, uid, update_info, event):
     update_role_list = set()
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
-        for i in range(3):
+        for i in range(2):
             try:
-                req = await AsyncHttpx.get(
+                req = await client.get(
                     url=url,
                     headers=headers,
                     follow_redirects=True,
                 )
-            except Exception:
-                await asyncio.sleep(1)
+            except Exception as e:
+                print(e)
                 continue
             if req.status_code == 200:
                 break
+            else:
+                print(req.status_code)
         else:
+            hint = "未知问题..."
+            status_code = req.status_code
+            if status_code == 400:
+                hint = "UID 格式错误..."
+            elif status_code == 404:
+                hint = "玩家不存在（MHY 服务器说的）..."
+            elif status_code == 424:
+                hint = "游戏维护中 / 游戏更新后一切都崩溃了..."
+            elif status_code == 429:
+                hint = "请求频率限制（被我的或者MHY的服务器）..."
+            elif status_code == 500:
+                hint = "服务器错误..."
+            elif status_code == 503:
+                hint = "我搞砸了..."
             return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                "服务器维护中,请稍后再试..."
+                hint
             )
         data = req.json()
         player_info = PlayerInfo(uid)
@@ -437,7 +455,7 @@ async def get_char(uid, event):
     url = starrail_url.format(uid)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
-            req = await AsyncHttpx.get(url=url, follow_redirects=True)
+            req = await client.get(url=url, follow_redirects=True)
         except Exception as e:
             print(e)
             return await get_card.finish(  # MessageSegment.reply(event.message_id) +
@@ -594,7 +612,7 @@ def check_uid(uid):
 async def get_update_info():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/README.md"
     try:
-        version = await AsyncHttpx.get(url, follow_redirects=True)
+        version = await client.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
@@ -607,7 +625,7 @@ async def _check_update():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/starrail_role_info/__init__.py"
     bot = nonebot.get_bot()
     try:
-        version = await AsyncHttpx.get(url, follow_redirects=True)
+        version = await client.get(url, follow_redirects=True)
         version = re.search(r'version="(\d+\.\d+\.\d+)"', str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")

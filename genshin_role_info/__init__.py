@@ -8,6 +8,7 @@ import re
 import shutil
 import time
 
+import httpx
 import nonebot
 from nonebot import Driver, on_command, on_message, on_regex
 from nonebot.adapters.onebot.v11 import (
@@ -72,7 +73,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.2",
+        version="4.2.3",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -106,6 +107,8 @@ import_artifact = on_message(permission=PRIVATE, priority=1, block=False)
 # import_artifact = on_notice(priority=1, block=False)
 import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
 check = on_command("gsck", permission=SUPERUSER, priority=4, block=True)
+
+client = httpx.AsyncClient(timeout=30)
 
 
 @check.handle()
@@ -156,11 +159,10 @@ async def get_msg_uid(event):
 async def get_enka_info(uid, update_info, event):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
-        req = 0
         for i in range(2):
             try:
                 print(f"请求{api_url[i].format(uid)}...")
-                req = await AsyncHttpx.get(url=api_url[i].format(uid), headers=headers, follow_redirects=True)
+                req = await client.get(url=api_url[i].format(uid), headers=headers, follow_redirects=True)
             except Exception as e:
                 print(e)
                 continue
@@ -170,12 +172,7 @@ async def get_enka_info(uid, update_info, event):
                 print(req.status_code)
         else:
             hint = "未知问题..."
-            try:
-                status_code = req.status_code
-            except:
-                return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                    hint
-                )
+            status_code = req.status_code
             if status_code == 400:
                 hint = "UID 格式错误..."
             elif status_code == 404:
@@ -341,7 +338,7 @@ async def import_artifact(bot: Bot, event):
     # print(f'x:{x}')
     uid = await get_msg_uid(event)
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
-    # await AsyncHttpx.download_file(event.file.get('url'), f'{player_info_path}/{uid}_artifact.json')
+    # await client.download_file(event.file.get('url'), f'{player_info_path}/{uid}_artifact.json')
     decoded_data = base64.b64decode(x.get("base64", ""))
     with open(f"{player_info_path}/{uid}_artifact.json", "wb") as file:
         file.write(decoded_data)
@@ -691,7 +688,7 @@ async def get_char(uid, event):
     url = enka_url.format(uid)
     if not os.path.exists(f"{player_info_path}/{uid}.json"):
         try:
-            req = await AsyncHttpx.get(url=url, follow_redirects=True)
+            req = await client.get(url=url, follow_redirects=True)
         except Exception as e:
             print(e)
             return await get_card.finish("更新出错,请重试...")
@@ -836,7 +833,7 @@ def check_uid(uid):
 async def get_update_info():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/README.md"
     try:
-        version = await AsyncHttpx.get(url, follow_redirects=True)
+        version = await client.get(url, follow_redirects=True)
         version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
@@ -846,11 +843,10 @@ async def get_update_info():
 
 @check_update.handle()
 async def _check_update():
-    await AsyncHttpx.download_file(weapon_loc_url, path=f"{json_path}/weapon_loc.json", follow_redirects=True)
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
     bot = nonebot.get_bot()
     try:
-        version = await AsyncHttpx.get(url, follow_redirects=True)
+        version = await client.get(url, follow_redirects=True)
         version = re.search(r'version="(\d+\.\d+\.\d+)"', str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")

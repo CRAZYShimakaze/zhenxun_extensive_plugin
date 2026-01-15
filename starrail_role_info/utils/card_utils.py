@@ -172,9 +172,9 @@ class PlayerInfo:
                     }
                 else:
                     weapon_prop_info = {"属性名": "能量恢复效率", "属性值": 0}
-            prop["额外生命值"] += weapon_info["生命值"]
-            prop["额外攻击力"] += weapon_info["攻击力"]
-            prop["额外防御力"] += weapon_info["防御力"]
+            prop["基础生命值"] += weapon_info["生命值"]
+            prop["基础攻击力"] += weapon_info["攻击力"]
+            prop["基础防御力"] += weapon_info["防御力"]
 
         role_info["光锥"] = weapon_info
 
