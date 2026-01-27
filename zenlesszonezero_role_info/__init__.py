@@ -514,8 +514,8 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
-        qq_name = qq_name["nickname"]
+        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split("-")[-1].rstrip(".png")))
+        qq_name = qq_name["card"] or qq_name["nickname"]
         await group_best.finish(  # MessageSegment.reply(event.message_id) +
             f"本群最强{role}!仅根据驱动盘评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
@@ -538,8 +538,8 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
-        qq_name = qq_name["nickname"]
+        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split("-")[-1].rstrip(".png")))
+        qq_name = qq_name["card"] or qq_name["nickname"]
         await group_worst.finish(  # MessageSegment.reply(event.message_id) +
             f"本群最菜{role}!仅根据驱动盘评分评判.\n由'{qq_name}'查询\n" + role_pic
         )

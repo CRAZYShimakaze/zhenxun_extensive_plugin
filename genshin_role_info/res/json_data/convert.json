@@ -39,7 +39,9 @@
     "LongNightsOath": "深廊终曲",
     "FinaleOfTheDeepGalleries": "长夜之誓",
     "RealmMirrorNight": "穹境示现之夜",
-    "SpinMoonSerenade": "纺月的夜歌"
+    "SpinMoonSerenade": "纺月的夜歌",
+    "AubadeOfMorningstarAndMoon": "晨星与月的晓歌",
+    "ADayCarvedFromRisingWinds": "风起之日"
   },
   "位置": {
     "flower": 0,
@@ -527,6 +529,20 @@
       "祭霜者的迷狂",
       "至纯者的欢荣",
       "司信者的圣冕"
+    ],
+    "晨星与月的晓歌": [
+      "献与月的华梦",
+      "献与月的离光",
+      "献与月的终时",
+      "献与月的酹祭",
+      "献与月的银冕"
+    ],
+    "风起之日": [
+      "风花的箴铭",
+      "晨光的明誓",
+      "春律的片刻",
+      "未言的宴话",
+      "哀慕的恋歌"
     ]
   }
 }

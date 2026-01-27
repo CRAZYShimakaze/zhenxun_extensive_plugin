@@ -84,7 +84,7 @@ enka_url = "https://enka.network/api/uid/{}"
 microgg_url = "https://profile.microgg.cn/api/uid/{}"
 headers = {"User-Agent": "Miao-Plugin/3.0"}
 
-weapon_loc_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/loc.json"
+weapon_loc_url = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/refs/heads/master/store/gi/locs.json"
 api_url = [microgg_url, enka_url]
 bind = on_regex(r"(?:原神绑定|绑定原神).*?(\d+)", priority=5, block=True)
 unbind = on_command("原神解绑", priority=5, block=True)
@@ -335,7 +335,7 @@ async def import_artifact(bot: Bot, event):
     pos = convert.get("位置")
     main = convert.get("主词条")
     sub = convert.get("副词条")
-    # print(f'x:{x}')
+    # print(f"x:{x}")
     uid = await get_msg_uid(event)
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     # await client.download_file(event.file.get('url'), f'{player_info_path}/{uid}_artifact.json')
@@ -633,8 +633,8 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
-        qq_name = qq_name["nickname"]
+        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split("-")[-1].rstrip(".png")))
+        qq_name = qq_name["card"] or qq_name["nickname"]
         await group_best.send(  # MessageSegment.reply(event.message_id) +
             f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
@@ -657,8 +657,8 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
-        qq_name = qq_name["nickname"]
+        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split("-")[-1].rstrip(".png")))
+        qq_name = qq_name["card"] or qq_name["nickname"]
         await group_worst.send(  # MessageSegment.reply(event.message_id) +
             f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
