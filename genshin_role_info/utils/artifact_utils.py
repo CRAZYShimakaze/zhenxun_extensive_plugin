@@ -53,7 +53,9 @@ def get_artifact_score(point_mark, max_mark, artifact, element, pos_idx):
         for s in artifact["词条"]
     ]
     # 主词条收益系数（百分数），沙杯头位置主词条不正常时对圣遗物总分进行惩罚，最多扣除 50% 总分
-    calc_main_pct = 100 if pos_idx < 2 else (100 - 50 * (1 - point_mark.get(main_name, 0) * artifact["主属性"]["属性值"] / max_mark[str(pos_idx)]["main"] / 2 / 4))
+    calc_main_pct = (
+        100 if pos_idx < 2 else (100 - 50 * (1 - point_mark.get(main_name, 0) * artifact["主属性"]["属性值"] / max_mark[str(pos_idx)]["main"] / 2 / 4))
+    )
     # 总分对齐系数（百分数），按满分 66 对齐各位置圣遗物的总分
     calc_total_pct = 66 / (max_mark[str(pos_idx)]["total"] * 46.6 / 6 / 100) * 100
     # 最终圣遗物总分
@@ -531,15 +533,17 @@ def get_effective(data):
                     "heal": 0,
                 }
                 suffix += "战斗"
-            if len(data["命座"]) == 4:
+            if len(data["命座"]) >= 4:
                 weight["recharge"] = 75
                 suffix += "4命"
         elif role_name == "基尼奇":
-            if len(data["命座"]) == 4:
-                weight["recharge"] = 35
-                suffix += "4命"
+            if len(data["命座"]) >= 1:
+                suffix += "高命"
+                weight["atk"] = 100
+                if len(data["命座"]) >= 4:
+                    weight["recharge"] = 35
         elif role_name == "玛拉妮":
-            if len(data["命座"]) == 4:
+            if len(data["命座"]) >= 4:
                 weight["recharge"] = 30
                 suffix += "4命"
         elif role_name == "希诺宁":
