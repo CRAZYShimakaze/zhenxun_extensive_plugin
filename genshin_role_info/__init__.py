@@ -73,7 +73,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.3",
+        version="4.2.4",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -854,7 +854,9 @@ async def _check_update():
     if version.group(1) > __plugin_version__:
         update_info = await get_update_info()
         try:
-            await check_update.send(f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
+            await check_update.send(
+                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
+            )
         except Exception:
             for admin in bot.config.superusers:
                 await bot.send_private_msg(
