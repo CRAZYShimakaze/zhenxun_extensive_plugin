@@ -56,6 +56,7 @@
             "Title": "额外能力：团膳套餐",
             "Description": "队伍中存在与自身属性或阵营相同的角色时触发：\n苍角消耗<color=#FFFFFF>[涡流]</color>发动<color=#FFFFFF>[展旗]</color>时，全队角色造成的<color=#98EFF0>冰属性伤害</color>提升20%，持续22秒。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "30501": 0,
@@ -411,12 +412,6 @@
             "DazeValue": 26330,
             "DazeGrowth": 1200
         },
-        "1131007": {
-            "DamageValue": 12750,
-            "DamageGrowth": 1160,
-            "DazeValue": 12750,
-            "DazeGrowth": 580
-        },
         "1131008": {
             "DamageValue": 2840,
             "DamageGrowth": 260,
@@ -518,12 +513,6 @@
             "DamageGrowth": 2400,
             "DazeValue": 23130,
             "DazeGrowth": 1060
-        },
-        "1131025": {
-            "DamageValue": 11320,
-            "DamageGrowth": 1030,
-            "DazeValue": 9910,
-            "DazeGrowth": 460
         },
         "1131026": {
             "DamageValue": 11320,

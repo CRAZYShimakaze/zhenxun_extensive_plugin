@@ -56,6 +56,7 @@
             "Title": "额外能力：《月华乱舞》",
             "Description": "队伍中存在<color=#FFFFFF>[强攻]</color>、<color=#FFFFFF>[异常]</color>或<color=#FFFFFF>[命破]</color>角色时触发：\n消耗能量发动<color=#FFFFFF>[精准支援]</color>或<color=#FFFFFF>[普通攻击：终曲]</color>时，耀嘉音将额外追加释放1道<color=#FFFFFF>[震音]</color>和3枚<color=#FFFFFF>[音簇]</color>进行攻击。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "30501": 0,
@@ -408,12 +409,6 @@
             "DazeValue": 4840,
             "DazeGrowth": 220
         },
-        "1311007": {
-            "DamageValue": 5500,
-            "DamageGrowth": 500,
-            "DazeValue": 4840,
-            "DazeGrowth": 220
-        },
         "1311008": {
             "DamageValue": 4600,
             "DamageGrowth": 420,
@@ -461,42 +456,6 @@
             "DamageGrowth": 2770,
             "DazeValue": 26100,
             "DazeGrowth": 1190
-        },
-        "1311016": {
-            "DamageValue": 11000,
-            "DamageGrowth": 1000,
-            "DazeValue": 4840,
-            "DazeGrowth": 220
-        },
-        "1311017": {
-            "DamageValue": 9200,
-            "DamageGrowth": 840,
-            "DazeValue": 0,
-            "DazeGrowth": 0
-        },
-        "1311018": {
-            "DamageValue": 4800,
-            "DamageGrowth": 440,
-            "DazeValue": 0,
-            "DazeGrowth": 0
-        },
-        "1311019": {
-            "DamageValue": 180000,
-            "DamageGrowth": 2890,
-            "DazeValue": 34930,
-            "DazeGrowth": 1590
-        },
-        "1311020": {
-            "DamageValue": 184070,
-            "DamageGrowth": 16740,
-            "DazeValue": 77280,
-            "DazeGrowth": 3520
-        },
-        "1311021": {
-            "DamageValue": 368140,
-            "DamageGrowth": 33470,
-            "DazeValue": 77280,
-            "DazeGrowth": 3520
         }
     }
 }

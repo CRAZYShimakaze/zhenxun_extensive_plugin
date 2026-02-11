@@ -56,6 +56,7 @@
             "Title": "额外能力：潜袭支点",
             "Description": "队伍中存在<color=#FFFFFF>[击破]</color>角色或<color=#FFFFFF>[支援]</color>角色时触发：\n伊芙琳的<color=#FFFFFF>[连携技]</color>和<color=#FFFFFF>[终结技]</color>造成的伤害提升30%；当伊芙琳的暴击率大于等于80%时，<color=#FFFFFF>[连携技：月辉丝·绊]</color>、<color=#FFFFFF>[终结技：月辉丝·弦音]</color>和<color=#FFFFFF>[终结技：月辉丝·弦影]</color>的伤害倍率提升至原本的125%。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "20101": 0,
@@ -499,48 +500,6 @@
             "DamageGrowth": 2660,
             "DazeValue": 24900,
             "DazeGrowth": 1140
-        },
-        "1321022": {
-            "DamageValue": 7820,
-            "DamageGrowth": 720,
-            "DazeValue": 6210,
-            "DazeGrowth": 290
-        },
-        "1321023": {
-            "DamageValue": 0,
-            "DamageGrowth": 0,
-            "DazeValue": 0,
-            "DazeGrowth": 0
-        },
-        "1321024": {
-            "DamageValue": 103660,
-            "DamageGrowth": 9430,
-            "DazeValue": 23660,
-            "DazeGrowth": 1080
-        },
-        "1321025": {
-            "DamageValue": 248570,
-            "DamageGrowth": 22600,
-            "DazeValue": 26040,
-            "DazeGrowth": 1190
-        },
-        "1321026": {
-            "DamageValue": 57210,
-            "DamageGrowth": 5210,
-            "DazeValue": 22010,
-            "DazeGrowth": 1010
-        },
-        "1321027": {
-            "DamageValue": 71520,
-            "DamageGrowth": 6510,
-            "DazeValue": 22010,
-            "DazeGrowth": 1010
-        },
-        "1321028": {
-            "DamageValue": 39600,
-            "DamageGrowth": 3600,
-            "DazeValue": 0,
-            "DazeGrowth": 0
         }
     }
 }

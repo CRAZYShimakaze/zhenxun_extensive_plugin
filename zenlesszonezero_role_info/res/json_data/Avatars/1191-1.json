@@ -56,6 +56,7 @@
             "Title": "额外能力：风暴潮",
             "Description": "队伍中存在与自身属性或阵营相同的角色或<color=#FFFFFF>[击破]</color>角色时触发：\n艾莲造成<color=#98EFF0>冰属性伤害</color>时，后继<color=#98EFF0>冰属性伤害</color>提升3%，持续10秒，最多叠加10层，重复触发时刷新持续时间。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "20101": 0,
@@ -575,30 +576,6 @@
             "DamageGrowth": 3990,
             "DazeValue": 38480,
             "DazeGrowth": 1750
-        },
-        "1191023": {
-            "DamageValue": 10350,
-            "DamageGrowth": 950,
-            "DazeValue": 10350,
-            "DazeGrowth": 480
-        },
-        "1191024": {
-            "DamageValue": 23150,
-            "DamageGrowth": 2110,
-            "DazeValue": 15480,
-            "DazeGrowth": 710
-        },
-        "1191025": {
-            "DamageValue": 17980,
-            "DamageGrowth": 1640,
-            "DazeValue": 6500,
-            "DazeGrowth": 300
-        },
-        "1191026": {
-            "DamageValue": 2750,
-            "DamageGrowth": 250,
-            "DazeValue": 0,
-            "DazeGrowth": 0
         },
         "1191027": {
             "DamageValue": 6040,

@@ -56,6 +56,7 @@
             "Title": "额外能力：击「球」准备！",
             "Description": "队伍中存在与自身属性或阵营相同的角色或<color=#FFFFFF>[命破]</color>角色时触发：\n亲卫队小猪可以继承露西的暴击率和暴击伤害。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "30501": 0,
@@ -397,18 +398,6 @@
             "DazeValue": 20800,
             "DazeGrowth": 950
         },
-        "1151006": {
-            "DamageValue": 1240,
-            "DamageGrowth": 120,
-            "DazeValue": 1240,
-            "DazeGrowth": 60
-        },
-        "1151007": {
-            "DamageValue": 6170,
-            "DamageGrowth": 570,
-            "DazeValue": 5920,
-            "DazeGrowth": 270
-        },
         "1151008": {
             "DamageValue": 6170,
             "DamageGrowth": 570,
@@ -420,18 +409,6 @@
             "DamageGrowth": 630,
             "DazeValue": 6920,
             "DazeGrowth": 320
-        },
-        "1151010": {
-            "DamageValue": 2610,
-            "DamageGrowth": 240,
-            "DazeValue": 1310,
-            "DazeGrowth": 60
-        },
-        "1151011": {
-            "DamageValue": 50840,
-            "DamageGrowth": 4630,
-            "DazeValue": 36460,
-            "DazeGrowth": 1660
         },
         "1151012": {
             "DamageValue": 50840,
@@ -522,12 +499,6 @@
             "DamageGrowth": 2280,
             "DazeValue": 2000,
             "DazeGrowth": 100
-        },
-        "1151027": {
-            "DamageValue": 30000,
-            "DamageGrowth": 0,
-            "DazeValue": 4170,
-            "DazeGrowth": 0
         }
     }
 }

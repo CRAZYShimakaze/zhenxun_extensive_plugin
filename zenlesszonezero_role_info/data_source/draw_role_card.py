@@ -810,7 +810,15 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         """
     effect = {}
     for item in effective:
-        name = item.replace("百分比", "").replace("暴击率", "暴击").replace("暴击伤害", "爆伤").replace("异常", "").replace("能量回复", "回能").replace("力", "").replace("值", "")
+        name = (
+            item.replace("百分比", "%")
+            .replace("暴击率", "暴击")
+            .replace("暴击伤害", "爆伤")
+            .replace("异常", "")
+            .replace("能量回复", "回能")
+            .replace("力", "")
+            .replace("值", "")
+        )
         if name not in effect:
             effect[name] = effective.get(item)
     effect = dict(sorted(effect.items(), key=lambda x: x[1], reverse=True))

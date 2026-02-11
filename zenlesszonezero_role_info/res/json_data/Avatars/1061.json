@@ -56,6 +56,7 @@
             "Title": "额外能力：扫除帮手",
             "Description": "队伍中存在与自身属性或阵营相同的角色时触发：\n可琳攻击命中处于失衡状态下的敌人时，自身造成的伤害提升35%。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "21101": 0,
@@ -358,23 +359,11 @@
             "DazeValue": 18640,
             "DazeGrowth": 850
         },
-        "1061005": {
-            "DamageValue": 11690,
-            "DamageGrowth": 1070,
-            "DazeValue": 8630,
-            "DazeGrowth": 400
-        },
         "1061006": {
             "DamageValue": 42120,
             "DamageGrowth": 3830,
             "DazeValue": 34200,
             "DazeGrowth": 1560
-        },
-        "1061007": {
-            "DamageValue": 12460,
-            "DamageGrowth": 1140,
-            "DazeValue": 9580,
-            "DazeGrowth": 440
         },
         "1061008": {
             "DamageValue": 6670,
@@ -477,54 +466,6 @@
             "DamageGrowth": 4980,
             "DazeValue": 48860,
             "DazeGrowth": 2230
-        },
-        "1061025": {
-            "DamageValue": 23330,
-            "DamageGrowth": 2130,
-            "DazeValue": 5840,
-            "DazeGrowth": 270
-        },
-        "1061026": {
-            "DamageValue": 322500,
-            "DamageGrowth": 29320,
-            "DazeValue": 107500,
-            "DazeGrowth": 4890
-        },
-        "1061027": {
-            "DamageValue": 24350,
-            "DamageGrowth": 2220,
-            "DazeValue": 6090,
-            "DazeGrowth": 280
-        },
-        "1061028": {
-            "DamageValue": 36250,
-            "DamageGrowth": 3300,
-            "DazeValue": 10990,
-            "DazeGrowth": 500
-        },
-        "1061029": {
-            "DamageValue": 72500,
-            "DamageGrowth": 6600,
-            "DazeValue": 21970,
-            "DazeGrowth": 1000
-        },
-        "1061030": {
-            "DamageValue": 72500,
-            "DamageGrowth": 6600,
-            "DazeValue": 21970,
-            "DazeGrowth": 1000
-        },
-        "1061031": {
-            "DamageValue": 36250,
-            "DamageGrowth": 3300,
-            "DazeValue": 10990,
-            "DazeGrowth": 500
-        },
-        "1061032": {
-            "DamageValue": 14040,
-            "DamageGrowth": 0,
-            "DazeValue": 10800,
-            "DazeGrowth": 0
         }
     }
 }

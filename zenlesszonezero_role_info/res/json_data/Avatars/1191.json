@@ -56,6 +56,7 @@
             "Title": "额外能力：风暴潮",
             "Description": "队伍中存在与自身属性或阵营相同的角色时触发：\n艾莲造成<color=#98EFF0>冰属性伤害</color>时，后继<color=#98EFF0>冰属性伤害</color>提升3%，持续10秒，最多叠加10层，重复触发时刷新持续时间。"
         },
+        "AwakenAbility": {},
         "BaseProps": [
             {
                 "20101": 0,
@@ -521,54 +522,6 @@
             "DamageGrowth": 3990,
             "DazeValue": 38480,
             "DazeGrowth": 1750
-        },
-        "1191023": {
-            "DamageValue": 10350,
-            "DamageGrowth": 950,
-            "DazeValue": 10350,
-            "DazeGrowth": 480
-        },
-        "1191024": {
-            "DamageValue": 23150,
-            "DamageGrowth": 2110,
-            "DazeValue": 15480,
-            "DazeGrowth": 710
-        },
-        "1191025": {
-            "DamageValue": 17980,
-            "DamageGrowth": 1640,
-            "DazeValue": 6500,
-            "DazeGrowth": 300
-        },
-        "1191026": {
-            "DamageValue": 2750,
-            "DamageGrowth": 250,
-            "DazeValue": 0,
-            "DazeGrowth": 0
-        },
-        "1191027": {
-            "DamageValue": 6040,
-            "DamageGrowth": 550,
-            "DazeValue": 2580,
-            "DazeGrowth": 120
-        },
-        "1191028": {
-            "DamageValue": 1300,
-            "DamageGrowth": 120,
-            "DazeValue": 560,
-            "DazeGrowth": 30
-        },
-        "1191029": {
-            "DamageValue": 23020,
-            "DamageGrowth": 2100,
-            "DazeValue": 6700,
-            "DazeGrowth": 310
-        },
-        "1191030": {
-            "DamageValue": 14680,
-            "DamageGrowth": 1340,
-            "DazeValue": 8420,
-            "DazeGrowth": 390
         }
     }
 }
