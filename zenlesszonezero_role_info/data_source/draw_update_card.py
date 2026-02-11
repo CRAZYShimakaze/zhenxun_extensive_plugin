@@ -57,7 +57,8 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
 
         # 角色图
         role_bg = f"{avatar_path}/{data['名称']}.png"
-        role_bg = await get_img(url=role_avatar_url.get(data["名称"], "https://patchwiki.biligame.com/images/zzz/a/aa/bewpw892egodvlvmedvwfeda48zlppy.png"), save_path=role_bg, mode="RGBA")
+        if role_avatar_url.get(data["名称"],"") != "":
+            role_bg = await get_img(url=role_avatar_url.get(data["名称"]), save_path=role_bg, mode="RGBA")
 
         card_bg.alpha_composite(role_bg.resize((card_size[0], card_size[0]), Image.Resampling.LANCZOS), (0, 38 * multiple if top_name else 0))
 

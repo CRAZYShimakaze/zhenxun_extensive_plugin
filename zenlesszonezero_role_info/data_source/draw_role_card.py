@@ -44,6 +44,7 @@ special_list = {
 }
 pos_name = [1, 2, 3, 4, 5, 6]
 role_avatar_url = {
+    "千夏":"https://patchwiki.biligame.com/images/zzz/4/46/gidrjjm8ujx5v07rwaofdyjzhwzzfjk.png",
     "照": "https://patchwiki.biligame.com/images/zzz/a/a7/4x6ftmp0p7f3aiy07e2c05ramfc0gr7.png",
     "叶瞬光": "https://patchwiki.biligame.com/images/zzz/a/aa/k2flhkxogiuzi1wdo0jrifxvy6z3ux8.png",
     "般岳": "https://patchwiki.biligame.com/images/zzz/d/d0/imvff8sf35pqb1letn16eukp4h7xn4g.png",
