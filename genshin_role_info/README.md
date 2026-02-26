@@ -5,6 +5,7 @@
 展示橱窗中角色的面板和伤害数据(与原神角色卡插件部分命令有冲突，建议只安装一个)
 
 ## 使用
+
 - 原神绑定UID/uidXXX
 - 原神解绑
 - 圣遗物导入
@@ -35,6 +36,10 @@
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2026/2/25**[v4.2.5]
+
+1. 支持法尔伽
 
 **2026/2/4**[v4.2.4]
 

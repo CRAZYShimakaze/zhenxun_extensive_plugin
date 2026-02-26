@@ -1,18 +1,17 @@
 from PIL import Image, ImageDraw
 
+from .draw_role_card import weapon_url
 from ..utils.card_utils import (
     avatar_path,
     bg_path,
     get_font,
-    json_path,
     other_path,
     weapon_path,
 )
 from ..utils.image_utils import draw_center_text, get_img, image_build, load_image
-from ..utils.json_utils import load_json
-from .draw_role_card import weapon_url
 
 role_url = "https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/{}.png"
+
 
 async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
     """
@@ -68,6 +67,7 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
                 "Rogue",
                 "Warlock",
                 "Memory",
+                "Elation",
             ].index(player_info.get_roles_info(x)["命途"]),
         ),
         reverse=True,

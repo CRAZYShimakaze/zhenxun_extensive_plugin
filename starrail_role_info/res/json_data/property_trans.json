@@ -22,6 +22,7 @@
     "QuantumAddedRatio": "量子伤害加成",
     "ImaginaryAddedRatio": "虚数伤害加成",
     "BreakDamageAddedRatioBase": "击破特攻",
+    "ElationDamageAddedRatioBase": "欢愉度",
     "SPRatioBase": "能量恢复效率"
   },
   "path": {
@@ -31,7 +32,7 @@
     "?": "Explore",
     "Shaman": "Harmony",
     "Rogue": "Hunt",
-    "??": "Joy",
+    "Elation": "Joy",
     "Memory": "Memory",
     "Warlock": "Nihility",
     "Knight": "Preservation"

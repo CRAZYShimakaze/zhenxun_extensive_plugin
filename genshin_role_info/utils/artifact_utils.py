@@ -563,6 +563,14 @@ def get_effective(data):
                 weight["cpct"] = 100
                 weight["cdmg"] = 100
                 suffix += "战斗"
+        elif role_name == "瓦雷莎":
+             if len(data["命座"]) == 6:
+                weight["recharge"] = 0
+                suffix += "满命"
+        elif role_name == "杜林":
+             if len(data["命座"]) >= 1 and artifacts[3]["主属性"]["属性名"] == "百分比攻击力":
+                weight["atk"] = 100
+                suffix += "辅助"
         # weight = copy.deepcopy(role_score.get(role_name))
         role_score = {}
         for info in weight.keys():
