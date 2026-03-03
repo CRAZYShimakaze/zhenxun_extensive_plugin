@@ -180,7 +180,7 @@ def get_effective(data):
     :return: 有效词条列表
     """
     role_name = data["名称"]
-    return role_score["权重"].get(role_name, {}), role_name
+    return role_score["权重"].get(role_name, {"攻击力": 75, "攻击力百分比": 75, "暴击率": 100, "暴击伤害": 100}), role_name
 
 
 def check_effective(prop_name: str, effective: dict):

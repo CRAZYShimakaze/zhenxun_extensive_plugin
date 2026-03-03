@@ -571,6 +571,18 @@ def get_effective(data):
              if len(data["命座"]) >= 1 and artifacts[3]["主属性"]["属性名"] == "百分比攻击力":
                 weight["atk"] = 100
                 suffix += "辅助"
+        elif role_name == "阿蕾奇诺":
+            if data["属性"]["元素精通"] < 50:
+                weight["atk"] = 85
+                weight["mastery"] = 0
+                suffix += "纯火"
+        elif role_name == "菲林斯":
+            if data["武器"]["名称"] == "血染荒城":
+                weight["recharge"] -= 5
+                suffix += "专武"
+            if len(data["命座"]) >= 1:
+                weight["recharge"] -= 5
+                suffix += "高命"
         # weight = copy.deepcopy(role_score.get(role_name))
         role_score = {}
         for info in weight.keys():

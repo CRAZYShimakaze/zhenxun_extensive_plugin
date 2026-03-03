@@ -1,12 +1,12 @@
 import base64
 import copy
-from datetime import datetime
 import os
-from pathlib import Path
 import random
 import re
 import shutil
 import time
+from datetime import datetime
+from pathlib import Path
 
 import httpx
 import nonebot
@@ -633,8 +633,15 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split("-")[-1].rstrip(".png")))
-        qq_name = qq_name["card"] or qq_name["nickname"]
+        try:
+            qq_name = await bot.get_group_member_info(
+                group_id=event.group_id,
+                user_id=int(role_info.split("-")[-1].rstrip(".png")),
+            )
+            qq_name = qq_name["card"] or qq_name["nickname"]
+        except:
+            qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
+            qq_name = qq_name["nickname"]
         await group_best.send(  # MessageSegment.reply(event.message_id) +
             f"本群最强{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
@@ -657,8 +664,15 @@ async def _(event: GroupMessageEvent, args: tuple[str, ...] = RegexGroup()):
         role_pic = load_image(f"{role_path}/{role_info}")
         role_pic = image_build(img=role_pic, quality=100, mode="RGB")
         bot = nonebot.get_bot()
-        qq_name = await bot.get_group_member_info(group_id=event.group_id, user_id=int(role_info.split("-")[-1].rstrip(".png")))
-        qq_name = qq_name["card"] or qq_name["nickname"]
+        try:
+            qq_name = await bot.get_group_member_info(
+                group_id=event.group_id,
+                user_id=int(role_info.split("-")[-1].rstrip(".png")),
+            )
+            qq_name = qq_name["card"] or qq_name["nickname"]
+        except:
+            qq_name = await bot.get_stranger_info(user_id=int(role_info.split("-")[-1].rstrip(".png")))
+            qq_name = qq_name["nickname"]
         await group_worst.send(  # MessageSegment.reply(event.message_id) +
             f"本群最菜{role}!仅根据圣遗物评分评判.\n由'{qq_name}'查询\n" + role_pic
         )
@@ -854,9 +868,7 @@ async def _check_update():
     if version.group(1) > __plugin_version__:
         update_info = await get_update_info()
         try:
-            await check_update.send(
-                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
-            )
+            await check_update.send(f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
         except Exception:
             for admin in bot.config.superusers:
                 await bot.send_private_msg(
