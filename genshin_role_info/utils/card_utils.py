@@ -118,7 +118,7 @@ class PlayerInfo:
         if role_name is not None:
             role_info["名称"] = role_name
             role_info["等级"] = int(data["propMap"]["4001"]["val"])
-            if role_name in ["荧", "空"]:
+            if role_name in ["荧", "空", "女奇偶", "男奇偶"]:
                 traveler_skill = role_skill["Name"][list(data["skillLevelMap"].keys())[-2]]
                 find_element = re.search(r"([风雷岩草水火冰])", traveler_skill).group(1)
                 role_info["元素"] = find_element
@@ -135,7 +135,10 @@ class PlayerInfo:
             role_info["天赋"] = []
             for skill in data["skillLevelMap"]:
                 if skill in role_info_json[role_name].get("技能", []):
-                    skill_detail = {"等级": data["skillLevelMap"][skill], "图标": role_info_json[role_name].get("技能")[skill]}
+                    skill_detail = {
+                        "等级": data["skillLevelMap"][skill],
+                        "图标": role_info_json[role_name].get("技能")[skill],
+                    }
                 elif skill[-1] == "1":
                     if role_info_json[role_name]["武器"] == "单手剑":
                         skill_detail = {

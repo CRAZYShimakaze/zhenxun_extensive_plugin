@@ -208,7 +208,7 @@ def get_effective(data):
     artifacts = data["圣遗物"]
     suffix = ""
     try:
-        if role_name in ["荧", "空"]:
+        if role_name in ["荧", "空", "女奇偶", "男奇偶"]:
             if data["元素"] == "火":
                 role_name = "火主"
             elif data["元素"] == "水":
@@ -445,20 +445,11 @@ def get_effective(data):
                 weight["heal"] = 95
                 suffix += "战斗"
         elif role_name == "芙宁娜":
-            if len(data["命座"]) == 6:
-                weight = {
-                    "hp": 100,
-                    "atk": 0,
-                    "def": 0,
-                    "cpct": 100,
-                    "cdmg": 100,
-                    "mastery": 45,
-                    "dmg": 100,
-                    "phy": 0,
-                    "recharge": 75,
-                    "heal": 95,
-                }
-                suffix += "满命"
+            if len(data["命座"]) >= 4:
+                weight["recharge"] = 60
+                if len(data["命座"]) == 6:
+                    weight["mastery"] = 45
+                suffix += "高命"
         elif role_name == "白术":
             if len(data["命座"]) == 6:
                 weight = {
@@ -564,12 +555,18 @@ def get_effective(data):
                 weight["cdmg"] = 100
                 suffix += "战斗"
         elif role_name == "瓦雷莎":
-             if len(data["命座"]) == 6:
+            if len(data["命座"]) == 6:
                 weight["recharge"] = 0
                 suffix += "满命"
+        elif role_name == "兹白":
+            if data["武器"]["名称"] == "息燧之笛":
+                weight["def"] = 75
+                suffix += "息燧"
         elif role_name == "杜林":
-             if len(data["命座"]) >= 1 and artifacts[3]["主属性"]["属性名"] == "百分比攻击力":
+            if len(data["命座"]) >= 1 and artifacts[3]["主属性"]["属性名"] == "百分比攻击力":
                 weight["atk"] = 100
+                weight["mastery"] = 30
+                weight["dmg"] = 80
                 suffix += "辅助"
         elif role_name == "阿蕾奇诺":
             if data["属性"]["元素精通"] < 50:
@@ -580,9 +577,19 @@ def get_effective(data):
             if data["武器"]["名称"] == "血染荒城":
                 weight["recharge"] -= 5
                 suffix += "专武"
-            if len(data["命座"]) >= 1:
-                weight["recharge"] -= 5
+        elif role_name == "哥伦比娅":
+            if data["武器"]["名称"] == "帷间夜曲":
+                weight["recharge"] -= 15
+                suffix += "专武"
+            if len(data["命座"]) >= 4:
+                weight["recharge"] -= 15
                 suffix += "高命"
+        elif role_name == "娜维娅":
+            if len(data["命座"]) >= 1:
+                weight["recharge"] -= 10
+                suffix += "高命"
+                if len(data["命座"]) == 6:
+                    weight["atk"] = 100
         # weight = copy.deepcopy(role_score.get(role_name))
         role_score = {}
         for info in weight.keys():
