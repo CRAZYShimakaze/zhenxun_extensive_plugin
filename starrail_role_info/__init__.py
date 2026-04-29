@@ -64,17 +64,16 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="1.3.6",
+        version="1.3.7",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
 __zx_plugin_name__ = __plugin_meta__.name
 __plugin_version__ = __plugin_meta__.extra.get("version")
-
-starrail_url = "https://api.mihomo.me/sr_info/{}"
-starrail_url = "https://enka.network/api/hsr/uid/{}"
+mihomo_url = "https://api.mihomo.me/sr_info/{}"
+enka_url = "https://enka.network/api/hsr/uid/{}"
 headers = {"User-Agent": "Miao-Plugin/3.0"}
-
+api_url = [mihomo_url, enka_url]
 my_card = on_command("我的星铁角色", aliases={"我的崩铁角色"}, priority=4, block=True)
 his_card = on_command("他的星铁角色", aliases={"他的崩铁角色"}, priority=4, block=True)
 
@@ -97,7 +96,7 @@ name_list = alias_file["characters"]
 
 check = on_command("srck", permission=SUPERUSER, priority=4, block=True)
 
-client = httpx.AsyncClient(timeout=30)
+client = httpx.AsyncClient(timeout=120)
 
 
 @check.handle()
@@ -143,41 +142,37 @@ async def get_msg_uid(event):
     return uid
 
 
-async def get_starrail_info(url, uid, update_info, event):
+async def get_starrail_info(uid, update_info, event):
     update_role_list = set()
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
-        for i in range(2):
+        status_hint_map = {
+        400: "UID 格式错误...",
+        404: "玩家不存在（MHY 服务器说的）...",
+        424: "游戏维护中 / 游戏更新后一切都崩溃了...",
+        429: "请求频率限制（被我的或者MHY的服务器）...",
+        500: "服务器错误...",
+        503: "我搞砸了...",
+        }
+        req = None
+        for url_template in api_url[:2]:
+            url = url_template.format(uid)
             try:
-                req = await client.get(
-                    url=url,
-                    headers=headers,
-                    follow_redirects=True,
-                )
+                print(f"请求 {url}...")
+                req = await client.get(url=url, headers=headers, follow_redirects=True)
             except Exception as e:
-                print(e)
+                print(f"请求失败: {e}")
                 continue
+        
             if req.status_code == 200:
                 break
             else:
-                print(req.status_code)
+                print(f"状态码异常: {req.status_code}")
         else:
-            hint = "未知问题..."
-            status_code = req.status_code
-            if status_code == 400:
-                hint = "UID 格式错误..."
-            elif status_code == 404:
-                hint = "玩家不存在（MHY 服务器说的）..."
-            elif status_code == 424:
-                hint = "游戏维护中 / 游戏更新后一切都崩溃了..."
-            elif status_code == 429:
-                hint = "请求频率限制（被我的或者MHY的服务器）..."
-            elif status_code == 500:
-                hint = "服务器错误..."
-            elif status_code == 503:
-                hint = "我搞砸了..."
-            return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                hint
-            )
+            status_code = req.status_code if req else None
+            hint = status_hint_map.get(status_code, "未知问题...")
+        
+            return await get_card.finish(hint)
+        
         data = req.json()
         player_info = PlayerInfo(uid)
         if "avatarDetailList" in data["detailInfo"] or "assistAvatarList" in data["detailInfo"]:
@@ -281,8 +276,7 @@ async def _(event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     role_name = get_role_name(role)
     if not role_name:
         return
-    url = starrail_url.format(uid)
-    player_info, _ = await get_starrail_info(url, uid, update_info=False, event=event)
+    player_info, _ = await get_starrail_info(uid, update_info=False, event=event)
     artifact_list = player_info.get_artifact_list(pos)
 
     if not artifact_list:
@@ -465,38 +459,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def get_char(uid, event):
-    url = starrail_url.format(uid)
-    if not os.path.exists(f"{player_info_path}/{uid}.json"):
-        try:
-            req = await client.get(url=url, follow_redirects=True)
-        except Exception as e:
-            print(e)
-            return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                "更新出错,请重试..."
-            )
-        if req.status_code != 200:
-            return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                "服务器维护中,请稍后再试..."
-            )
-        data = req.json()
-        player_info = PlayerInfo(uid)
-        try:
-            player_info.set_player(data["playerInfo"])
-            if "avatarInfoList" in data:
-                for role in data["avatarInfoList"]:
-                    player_info.set_role(role)
-                player_info.save()
-            else:
-                guide = load_image(f"{other_path}/collections.png")
-                guide = image_build(img=guide, quality=100, mode="RGB")
-                await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                    guide + "在游戏中打开显示详情选项!", at_sender=False
-                )
-        except Exception as e:
-            print(e)
-            return  # await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
-    else:
-        player_info = PlayerInfo(uid)
+    player_info, _ = await get_starrail_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     if not roles_list:
         guide = load_image(f"{other_path}/collections.png")
@@ -519,8 +482,7 @@ async def _(event: MessageEvent):
 
 @gold_cost(coin=1, percent=1)
 async def gen(event: MessageEvent, uid, role_name, at_user):
-    url = starrail_url.format(uid)
-    player_info, _ = await get_starrail_info(url, uid, update_info=False, event=event)
+    player_info, _ = await get_starrail_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     role_data = player_info.get_roles_info(role_name)
@@ -534,7 +496,6 @@ async def gen(event: MessageEvent, uid, role_name, at_user):
 
 @gold_cost(coin=1, percent=1)
 async def update(event, uid, group_save):
-    url = starrail_url.format(uid)
     if os.path.exists(f"{player_info_path}/{uid}.json"):
         data = load_json(f"{player_info_path}/{uid}.json")
         if "玩家信息" in data.keys():
@@ -552,7 +513,7 @@ async def update(event, uid, group_save):
                 await get_card.finish(  # MessageSegment.reply(event.message_id) +
                     f"{60 - cd_time}秒后可再次更新!", at_sender=False
                 )
-    player_info, update_role_list = await get_starrail_info(url, uid, update_info=True, event=event)
+    player_info, update_role_list = await get_starrail_info(uid, update_info=True, event=event)
     await check_artifact(event, player_info, update_role_list, uid, group_save)
     return await get_card.send(  # MessageSegment.reply(event.message_id) +
         await draw_role_pic(uid, update_role_list, player_info)
@@ -646,7 +607,9 @@ async def _check_update():
     if version.group(1) != __plugin_version__:
         update_info = await get_update_info()
         try:
-            await check_update.send(f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}")
+            await check_update.send(
+                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
+            )
         except Exception:
             for admin in bot.config.superusers:
                 await bot.send_private_msg(

@@ -2294,6 +2294,35 @@
             ]
         ]
     },
+    "22007": {
+        "id": "22007",
+        "skill": "同行",
+        "desc": "使装备者的暴击伤害提高#1[i]%。装备者施放终结技后，使我方全体欢愉度提高#2[i]%，持续#3[i]回合。",
+        "params": [
+            [0.12, 0.08, 1],
+            [0.15, 0.09, 1],
+            [0.18, 0.1, 1],
+            [0.21, 0.11, 1],
+            [0.24, 0.12, 1]
+        ],
+        "properties": [
+            [
+                { "type": "CriticalDamageBase", "value": 0.12 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 0.15 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 0.18 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 0.21 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 0.24 }
+            ]
+        ]
+    },
     "23000": {
         "id": "23000",
         "skill": "流星群",
@@ -3864,6 +3893,93 @@
             ]
         ]
     },
+    "23056": {
+        "id": "23056",
+        "skill": "吞没",
+        "desc": "使装备者的暴击率提高#1[i]%。战斗开始时或装备者每累计施放#2[i]次追加攻击，使装备者获得【影噬】，持续#3[i]回合。当装备者持有【影噬】时，攻击力提高#4[i]%，并使敌方全体受到的伤害提高#5[i]%，同类效果无法叠加。",
+        "params": [
+            [0.18, 4, 3, 0.4, 0.2],
+            [0.21, 4, 3, 0.5, 0.225],
+            [0.24, 4, 3, 0.6, 0.25],
+            [0.27, 4, 3, 0.7, 0.275],
+            [0.3, 4, 3, 0.8, 0.3]
+        ],
+        "properties": [
+            [
+                { "type": "CriticalChanceBase", "value": 0.18 }
+            ],
+            [
+                { "type": "CriticalChanceBase", "value": 0.21 }
+            ],
+            [
+                { "type": "CriticalChanceBase", "value": 0.24 }
+            ],
+            [
+                { "type": "CriticalChanceBase", "value": 0.27 }
+            ],
+            [
+                { "type": "CriticalChanceBase", "value": 0.3 }
+            ]
+        ]
+    },
+    "23057": {
+        "id": "23057",
+        "skill": "稳赢",
+        "desc": "使装备者的速度提高#1[i]%，造成的欢愉伤害无视目标#2[i]%的防御力。当装备者对自身单体施放终结技时，获得#3[i]点【笑点】。该效果最多触发1次，施放#4[i]次普攻后重置可触发次数。",
+        "params": [
+            [0.18, 0.2, 20, 3],
+            [0.21, 0.24, 25, 3],
+            [0.24, 0.28, 30, 3],
+            [0.27, 0.32, 35, 3],
+            [0.3, 0.36, 40, 3]
+        ],
+        "properties": [
+            [
+                { "type": "SpeedAddedRatio", "value": 0.18 }
+            ],
+            [
+                { "type": "SpeedAddedRatio", "value": 0.21 }
+            ],
+            [
+                { "type": "SpeedAddedRatio", "value": 0.24 }
+            ],
+            [
+                { "type": "SpeedAddedRatio", "value": 0.27 }
+            ],
+            [
+                { "type": "SpeedAddedRatio", "value": 0.3 }
+            ]
+        ]
+    },
+    "23058": {
+        "id": "23058",
+        "skill": "遐想",
+        "desc": "使装备者的暴击伤害提高#1[i]%，能量恢复效率提高#4[f1]%。装备者的能量上限大于#5[i]时，每超出10点能量上限额外使能量恢复效率提高#6[f1]%，最多计入#7[i]点超出的能量上限。装备者施放欢愉技时，使敌方全体受到的伤害提高#2[f1]%，持续#3[i]回合，同类效果无法叠加。",
+        "params": [
+            [0.6, 0.15, 2, 0.1, 120, 0.003, 360],
+            [0.75, 0.1875, 2, 0.115, 120, 0.003, 360],
+            [0.9, 0.225, 2, 0.13, 120, 0.003, 360],
+            [1.05, 0.2625, 2, 0.145, 120, 0.003, 360],
+            [1.2, 0.3, 2, 0.16, 120, 0.003, 360]
+        ],
+        "properties": [
+            [
+                { "type": "CriticalDamageBase", "value": 0.6 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 0.75 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 0.9 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 1.05 }
+            ],
+            [
+                { "type": "CriticalDamageBase", "value": 1.2 }
+            ]
+        ]
+    },
     "24000": {
         "id": "24000",
         "skill": "扑火",
@@ -4025,6 +4141,35 @@
             ],
             [
                 { "type": "SpeedAddedRatio", "value": 0.12 }
+            ]
+        ]
+    },
+    "24006": {
+        "id": "24006",
+        "skill": "开场",
+        "desc": "使装备者的攻击力提高#1[i]%。当装备者对我方单体角色施放战技或终结技后，使目标欢愉度提高#2[i]%，持续#3[i]回合。",
+        "params": [
+            [0.2, 0.12, 2],
+            [0.25, 0.15, 2],
+            [0.3, 0.18, 2],
+            [0.35, 0.21, 2],
+            [0.4, 0.24, 2]
+        ],
+        "properties": [
+            [
+                { "type": "AttackAddedRatio", "value": 0.2 }
+            ],
+            [
+                { "type": "AttackAddedRatio", "value": 0.25 }
+            ],
+            [
+                { "type": "AttackAddedRatio", "value": 0.3 }
+            ],
+            [
+                { "type": "AttackAddedRatio", "value": 0.35 }
+            ],
+            [
+                { "type": "AttackAddedRatio", "value": 0.4 }
             ]
         ]
     }

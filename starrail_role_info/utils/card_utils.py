@@ -80,7 +80,7 @@ class PlayerInfo:
                 talent_detail = {
                     "图标": f"{role_info['角色ID']}_skill"
                     if i == 2
-                    else f"{role_info['角色ID']}_technique"
+                    else f"{role_info['角色ID']}_ultimate"
                     if i == 4
                     else f"{role_info['角色ID']}_rank{i + 1}"
                 }
