@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 920px;
+      background: #edf3f5;
+      color: #1d2733;
+      font-family: "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+    }
+    .wrap { padding: 26px; }
+    .sheet {
+      overflow: hidden;
+      border: 1px solid #d7e0e4;
+      border-radius: 8px;
+      background: #fffdf8;
+      box-shadow: 0 12px 30px rgba(34, 49, 63, 0.14);
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      gap: 24px;
+      padding: 26px 30px;
+      background: #1e4f5f;
+      color: #fff;
+    }
+    .kicker {
+      color: #f4c86b;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .title-row {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr);
+      gap: 15px;
+      align-items: center;
+      margin-top: 12px;
+    }
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 84px;
+      height: 84px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.12);
+    }
+    .icon img {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+    }
+    .number {
+      color: #d6ecf0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 4px 0 0;
+      font-size: 44px;
+      line-height: 1.1;
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .tag {
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.12);
+      color: #f7fbfc;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .desc {
+      margin-top: 15px;
+      color: #d9edf0;
+      font-size: 17px;
+      line-height: 1.65;
+      word-break: break-word;
+    }
+    .visual {
+      display: grid;
+      place-items: center;
+      min-height: 230px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.95), rgba(223,237,232,0.86));
+    }
+    .visual img {
+      width: 220px;
+      max-height: 220px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 20px rgba(16, 39, 47, 0.22));
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 16px;
+      padding: 24px 30px 28px;
+    }
+    .panel {
+      border: 1px solid #dde5e7;
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+    }
+    .span-2 { grid-column: 1 / -1; }
+    .panel-title {
+      margin-bottom: 14px;
+      color: #173f49;
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .total {
+      margin-bottom: 14px;
+      color: #2274a5;
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .stats { display: grid; gap: 10px; }
+    .stat {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 38px;
+      gap: 9px;
+      align-items: center;
+    }
+    .stat-label, .stat-value {
+      color: #354451;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7edf0;
+    }
+    .fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+    .traits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .trait {
+      min-height: 88px;
+      border-radius: 8px;
+      padding: 12px;
+      background: #f7faf9;
+    }
+    .trait-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .trait-name {
+      color: #1e3440;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .trait-type {
+      flex: 0 0 auto;
+      border-radius: 6px;
+      padding: 3px 8px;
+      background: #ffe4a9;
+      color: #6e4910;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .trait-effect {
+      color: #596875;
+      font-size: 15px;
+      line-height: 1.6;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .evo-track {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .evo {
+      position: relative;
+      width: 150px;
+      border: 1px solid #e0e7ea;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+      text-align: center;
+    }
+    .evo.current {
+      border-color: #f0b84e;
+      box-shadow: inset 0 0 0 2px #f3c66d;
+      background: #fffaf0;
+    }
+    .evo img {
+      width: 84px;
+      height: 84px;
+      object-fit: contain;
+    }
+    .evo-no {
+      margin-top: 5px;
+      color: #7c8a92;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .evo-name {
+      margin-top: 4px;
+      color: #1e3440;
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .evo-condition {
+      margin-top: 6px;
+      color: #7a6460;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .skills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .skill {
+      min-height: 118px;
+      border: 1px solid #e0e7ea;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+    .skill-top {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+    .skill-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #e8f0f2;
+      color: #2d6f7c;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .skill-icon img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+    }
+    .skill-name {
+      color: #1e3440;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .skill-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px;
+    }
+    .pill {
+      border-radius: 6px;
+      padding: 3px 7px;
+      background: #eaf1f3;
+      color: #526572;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .physical { background: #fff0dd; color: #9a510a; }
+    .special { background: #e9f0ff; color: #315fbd; }
+    .defense { background: #e7f6ee; color: #28734d; }
+    .status { background: #f2eafb; color: #7241a3; }
+    .skill-desc {
+      margin-top: 9px;
+      color: #586977;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .empty {
+      border-radius: 8px;
+      padding: 24px;
+      background: #f5f8f9;
+      color: #74828b;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .foot {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      padding: 14px 30px 20px;
+      background: #f7faf9;
+      color: #6f7e86;
+      font-size: 14px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="sheet">
+      <header class="hero">
+        <section>
+          <div class="kicker">洛克王国世界 · 精灵图鉴</div>
+          <div class="title-row">
+            <div class="icon">
+              {% if pet_icon %}
+              <img src="{{ pet_icon }}" alt="{{ name }}" onerror="this.style.display='none'">
+              {% else %}
+              <span>?</span>
+              {% endif %}
+            </div>
+            <div>
+              <div class="number">No.{{ number }}</div>
+              <h1>{{ name }}</h1>
+            </div>
+          </div>
+          <div class="tags">
+            {% for item in pet_types %}
+            <span class="tag">{{ item.name }}</span>
+            {% endfor %}
+            {% if kind %}<span class="tag">{{ kind }}</span>{% endif %}
+            {% if form %}<span class="tag">{{ form }}</span>{% endif %}
+          </div>
+          <div class="desc">{{ description }}</div>
+        </section>
+        <aside class="visual">
+          {% if main_image %}
+          <img src="{{ main_image }}" alt="{{ name }}" onerror="this.onerror=null;this.src='{{ pet_icon }}'">
+          {% elif pet_icon %}
+          <img src="{{ pet_icon }}" alt="{{ name }}" onerror="this.style.display='none'">
+          {% endif %}
+        </aside>
+      </header>
+
+      <section class="content">
+        <section class="panel">
+          <div class="panel-title">种族值</div>
+          <div class="total">{{ total_stats }}</div>
+          <div class="stats">
+            {% for item in pet_stats %}
+            <div class="stat">
+              <div class="stat-label">{{ item.label }}</div>
+              <div class="track">
+                <div class="fill" style="width: {{ item.percent }}%; background: {{ item.color }};"></div>
+              </div>
+              <div class="stat-value">{{ item.value }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">特性与克制</div>
+          <div class="traits">
+            {% for item in pet_traits %}
+            <article class="trait">
+              <div class="trait-head">
+                <span class="trait-name">{{ item.name }}</span>
+                <span class="trait-type">{{ item.type }}</span>
+              </div>
+              <div class="trait-effect">{{ item.effect }}</div>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="panel span-2">
+          <div class="panel-title">进化路线</div>
+          {% if pet_evolution %}
+          <div class="evo-track">
+            {% for item in pet_evolution %}
+            <article class="evo {% if item.is_current %}current{% endif %}">
+              {% if item.image or item.icon %}
+              <img src="{{ item.image or item.icon }}" alt="{{ item.name }}" onerror="this.style.display='none'">
+              {% endif %}
+              <div class="evo-no">No.{{ item.number }}</div>
+              <div class="evo-name">{{ item.name }}</div>
+              {% if item.condition %}
+              <div class="evo-condition">{{ item.condition }}</div>
+              {% endif %}
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="empty">暂无进化路线</div>
+          {% endif %}
+        </section>
+
+        <section class="panel span-2">
+          <div class="panel-title">技能列表{% if skill_total_count %} · {{ skill_total_count }}{% endif %}</div>
+          {% if sprite_skills %}
+          <div class="skills">
+            {% for item in sprite_skills %}
+            <article class="skill">
+              <div class="skill-top">
+                <div class="skill-icon">
+                  {% if item.icon %}
+                  <img src="{{ item.icon }}" alt="{{ item.name }}" onerror="this.style.display='none'">
+                  {% else %}
+                  {{ item.type[:1] or "技" }}
+                  {% endif %}
+                </div>
+                <div>
+                  <div class="skill-name">{{ item.name }}</div>
+                  <div class="skill-meta">
+                    <span class="pill">{{ item.type }}</span>
+                    <span class="pill {{ item.category_class }}">{{ item.category }}</span>
+                    <span class="pill">威力 {{ item.power }}</span>
+                    <span class="pill">能耗 {{ item.pp }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="skill-desc">{{ item.effect }}</div>
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="empty">暂无技能数据</div>
+          {% endif %}
+        </section>
+      </section>
+      <footer class="foot">
+        <div>数据来源：{{ data_source }} · 指令：{{ command_hint }}</div>
+        <div>{{ updated_at }}</div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

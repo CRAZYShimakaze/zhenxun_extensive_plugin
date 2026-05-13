@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 920px;
+      background: #edf3f5;
+      color: #1d2733;
+      font-family: "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+    }
+    .wrap { padding: 24px; }
+    .sheet {
+      overflow: hidden;
+      border: 1px solid #d7e0e4;
+      border-radius: 8px;
+      background: #fffdf8;
+      box-shadow: 0 12px 30px rgba(34, 49, 63, 0.14);
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      padding: 24px 28px;
+      background: #1e4f5f;
+      color: #fff;
+    }
+    .kicker {
+      color: #f4c86b;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 7px 0 0;
+      font-size: 42px;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+    .query {
+      margin-top: 10px;
+      color: #d9edf0;
+      font-size: 19px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+    .summary {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .metric {
+      min-width: 104px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.12);
+      text-align: center;
+    }
+    .metric strong {
+      display: block;
+      color: #fff;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .metric span {
+      display: block;
+      margin-top: 5px;
+      color: #d9edf0;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .content {
+      display: grid;
+      gap: 18px;
+      padding: 22px 28px 26px;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      color: #173f49;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .section-title span {
+      color: #6d7d86;
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .pet {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 12px;
+      min-height: 116px;
+      border: 1px solid #dde5e7;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+    .pet.exact {
+      border-color: #f0b84e;
+      background: #fffaf0;
+      box-shadow: inset 0 0 0 2px #f3c66d;
+    }
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #e8f0f2;
+      color: #2d6f7c;
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .icon img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+    }
+    .name {
+      color: #1e3440;
+      font-size: 21px;
+      line-height: 1.2;
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .pill {
+      border-radius: 6px;
+      padding: 4px 7px;
+      background: #eaf1f3;
+      color: #526572;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+    .pill.match {
+      background: #e7f6ee;
+      color: #28734d;
+    }
+    .empty {
+      border-radius: 8px;
+      padding: 40px 20px;
+      background: #f5f8f9;
+      color: #74828b;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .foot {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      padding: 14px 28px 20px;
+      background: #f7faf9;
+      color: #6f7e86;
+      font-size: 14px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="sheet">
+      <header class="hero">
+        <section>
+          <div class="kicker">洛克王国世界 · 查蛋</div>
+          <h1>{{ subtitle }}</h1>
+          <div class="query">{{ query_label }}</div>
+        </section>
+        <aside class="summary">
+          <div class="metric">
+            <strong>{{ exact_count }}</strong>
+            <span>完美匹配</span>
+          </div>
+          <div class="metric">
+            <strong>{{ candidate_count }}</strong>
+            <span>范围匹配</span>
+          </div>
+        </aside>
+      </header>
+
+      <section class="content">
+        {% if not has_results %}
+        <div class="empty">没有找到匹配当前尺寸的精灵</div>
+        {% endif %}
+
+        {% if exact_matches %}
+        <section>
+          <div class="section-title">完美匹配 <span>同名结果已合并，匹配率取最高值</span></div>
+          <div class="grid">
+            {% for item in exact_matches %}
+            <article class="pet exact">
+              <div class="icon">
+                {% if item.icon %}
+                <img src="{{ item.icon }}" alt="{{ item.name }}" onerror="this.style.display='none'">
+                {% else %}
+                {{ item.name[:1] or "?" }}
+                {% endif %}
+              </div>
+              <div>
+                <div class="name">{{ item.name }} #{{ item.id }}</div>
+                <div class="meta">
+                  <span class="pill">身高 {{ item.height_label }}</span>
+                  <span class="pill">体重 {{ item.weight_label }}</span>
+                  <span class="pill match">{{ item.match_info_label }}</span>
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        {% if candidate_matches %}
+        <section>
+          <div class="section-title">范围匹配 <span>按后端概率排序</span></div>
+          <div class="grid">
+            {% for item in candidate_matches %}
+            <article class="pet">
+              <div class="icon">
+                {% if item.icon %}
+                <img src="{{ item.icon }}" alt="{{ item.name }}" onerror="this.style.display='none'">
+                {% else %}
+                {{ item.name[:1] or "?" }}
+                {% endif %}
+              </div>
+              <div>
+                <div class="name">{{ item.name }} #{{ item.id }}</div>
+                <div class="meta">
+                  <span class="pill">身高 {{ item.height_label }}</span>
+                  <span class="pill">体重 {{ item.weight_label }}</span>
+                  <span class="pill match">{{ item.match_info_label }}</span>
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+      </section>
+      <footer class="foot">
+        <div>数据来源：{{ data_source }} · 指令：{{ command_hint }}</div>
+        <div>{{ updated_at }}</div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

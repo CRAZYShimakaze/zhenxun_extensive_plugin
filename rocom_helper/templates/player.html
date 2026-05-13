@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1200, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #1a1a1a;
+      font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: #fff;
+    }
+
+    /* ─── page ─── */
+    .stats-page {
+      width: 900px;
+      min-height: 600px;
+      margin: 0 auto;
+      padding: 28px 26px 24px;
+      background: linear-gradient(170deg, #2c2518 0%, #3a2f1f 30%, #2a2318 100%);
+      border-radius: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stats-page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(255,186,0,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(255,186,0,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* ─── title banner ─── */
+    .stats-title {
+      text-align: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .stats-title-text {
+      display: inline-block;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: #d4c8a5;
+      padding: 6px 36px;
+      border: 1px solid rgba(212,200,165,0.25);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ─── main layout: left + right ─── */
+    .stats-main {
+      display: flex;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .stats-left { flex: 1; min-width: 0; }
+    .stats-right { width: 310px; flex-shrink: 0; }
+
+    /* ─── user info card ─── */
+    .stats-user-info {
+      padding: 20px 22px 18px;
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(243,238,226,0.95), rgba(232,225,209,0.92));
+      position: relative;
+      overflow: hidden;
+    }
+    .stats-user-info::after {
+      content: "";
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(255,186,0,0.12);
+      pointer-events: none;
+    }
+
+    .user-info-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* avatar */
+    .user-avatar {
+      position: relative;
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: #fbf7ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .user-avatar::before {
+      content: "";
+      position: absolute; inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffc65f, #e8a030);
+    }
+    .user-avatar-inner {
+      position: relative;
+      width: 66px; height: 66px;
+      border-radius: 50%;
+      background: #f3eee2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      color: #3a2f1f;
+      z-index: 1;
+    }
+
+    .user-name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-name {
+      font-size: 28px;
+      font-weight: 900;
+      color: #1f1f1f;
+      max-width: 320px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .user-level-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      height: 24px;
+      padding: 0 12px;
+      border-radius: 24px;
+      background: #ffc65f;
+      color: #3d3d3d;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .user-uid-row {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-uid {
+      color: rgba(0,0,0,0.65);
+      font-size: 14px;
+    }
+    .user-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      height: 22px;
+      border-radius: 22px;
+      background: rgba(251,247,238,0.8);
+      color: #423c38;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #b7aaa0;
+    }
+    .status-dot.online { background: #4cc76a; }
+
+    /* head tags */
+    .user-head-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .head-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      height: 26px;
+      border-radius: 26px;
+      background: rgba(243,238,226,0.7);
+      border: 1px solid rgba(141,106,68,0.12);
+    }
+    .head-tag-label {
+      color: #6e665f;
+      font-size: 12px;
+    }
+    .head-tag-value {
+      color: #3d3d3d;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* signature inline */
+    .user-signature-inline {
+      margin: 14px 0 0;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(251,247,238,0.72);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .user-signature-label {
+      flex-shrink: 0;
+      color: #423c38;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .user-signature-text {
+      color: #5a534d;
+      font-size: 14px;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    /* ─── info panels (beige cards) ─── */
+    .info-panel {
+      border-radius: 16px;
+      background: #f3eee2;
+      padding: 16px 18px 14px;
+      margin-top: 16px;
+    }
+    .info-panel-title {
+      color: #272727;
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .info-panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .info-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #e8e1d1;
+    }
+    .info-item-label {
+      color: #3d3d3d;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .info-item-value {
+      color: rgba(61,61,61,0.7);
+      font-size: 16px;
+      font-weight: 700;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    /* ─── right side: summary stats ─── */
+    .right-panel {
+      border-radius: 16px;
+      background: #f3eee2;
+      padding: 16px 18px;
+    }
+    .right-panel + .right-panel {
+      margin-top: 16px;
+    }
+    .right-panel-title {
+      color: #272727;
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .stat-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-card {
+      padding: 14px 12px;
+      border-radius: 14px;
+      background: #e8e1d1;
+      text-align: center;
+    }
+    .stat-card-label {
+      color: #3d3d3d;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .stat-card-value {
+      margin-top: 6px;
+      color: rgba(61,61,61,0.7);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    /* notes list */
+    .note-list {
+      display: grid;
+      gap: 8px;
+    }
+    .note-item {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #e8e1d1;
+      color: #5a534d;
+      font-size: 13px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    /* ─── footer ─── */
+    .page-footer {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 4px 0;
+      border-top: 1px solid rgba(212,200,165,0.15);
+      position: relative;
+      z-index: 1;
+    }
+    .footer-hint {
+      color: rgba(212,200,165,0.6);
+      font-size: 13px;
+    }
+    .footer-time {
+      color: rgba(212,200,165,0.4);
+      font-size: 12px;
+    }
+
+    /* ─── empty state ─── */
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #d2ccb8;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="stats-page">
+
+    <!-- title -->
+    <div class="stats-title">
+      <span class="stats-title-text">洛克王国 · 玩家搜索</span>
+    </div>
+
+    <div class="stats-main">
+      <!-- ─── LEFT ─── -->
+      <div class="stats-left">
+
+        <!-- user info card -->
+        <div class="stats-user-info">
+          <div class="user-info-header">
+            <div class="user-avatar">
+              <div class="user-avatar-inner">
+                {{ nickname[:1] if nickname else "?" }}
+              </div>
+            </div>
+            <div>
+              <div class="user-name-row">
+                <span class="user-name">{{ nickname }}</span>
+                <span class="user-level-badge">Lv.{{ level }}</span>
+              </div>
+              <div class="user-uid-row">
+                <span class="user-uid">UID {{ uid }}</span>
+                <span class="user-status-badge">
+                  <span class="status-dot {{ 'online' if online == '是' else '' }}"></span>
+                  {{ '在线' if online == '是' else '离线' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- head tags -->
+          {% if head_tags %}
+          <div class="user-head-tags">
+            {% for tag in head_tags %}
+            <span class="head-tag">
+              <span class="head-tag-label">{{ tag.label }}</span>
+              <span class="head-tag-value">{{ tag.value }}</span>
+            </span>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- signature -->
+          {% if show_signature %}
+          <div class="user-signature-inline">
+            <span class="user-signature-label">签名</span>
+            <span class="user-signature-text">{{ signature }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- detail sections -->
+        {% if sections %}
+          {% for section in sections %}
+          <div class="info-panel">
+            <div class="info-panel-title">{{ section.title }}</div>
+            <div class="info-panel-grid">
+              {% for item in section["items"] %}
+              <div class="info-item">
+                <span class="info-item-label">{{ item.label }}</span>
+                <span class="info-item-value">{{ item.value }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="info-panel">
+            <div class="empty-state">接口未返回可展示的玩家资料</div>
+          </div>
+        {% endif %}
+
+      </div>
+
+      <!-- ─── RIGHT ─── -->
+      <div class="stats-right">
+
+        {% if summary_cards %}
+        <div class="right-panel">
+          <div class="right-panel-title">数据总览</div>
+          <div class="stat-cards">
+            {% for item in summary_cards %}
+            <div class="stat-card">
+              <div class="stat-card-label">{{ item.label }}</div>
+              <div class="stat-card-value">{{ item.value }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if notes %}
+        <div class="right-panel">
+          <div class="right-panel-title">附加说明</div>
+          <div class="note-list">
+            {% for item in notes %}
+            <div class="note-item">{{ item.value }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- footer -->
+    <div class="page-footer">
+      <span class="footer-hint">💡 {{ command_hint }}</span>
+      <span class="footer-time">{{ data_source }} · {{ updated_at }}</span>
+    </div>
+
+  </div>
+</body>
+</html>

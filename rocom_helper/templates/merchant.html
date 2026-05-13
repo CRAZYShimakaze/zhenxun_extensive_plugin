@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 960px;
+      background: #e7decf;
+      color: #2d251b;
+      font-family: "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+    }
+    .wrap {
+      padding: 17px;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 130px;
+      border: 1px solid rgba(135, 104, 62, 0.12);
+      border-radius: 21px;
+      padding: 20px 23px;
+      background: linear-gradient(135deg, #fffdf8 0%, #f6efe4 100%);
+      box-shadow: 0 8px 24px rgba(78, 61, 38, 0.08);
+    }
+    .brand {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      border-radius: 19px;
+      background: linear-gradient(145deg, #d49a3d, #be7d21);
+      color: #fff9ef;
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 900;
+      box-shadow: inset 0 -8px 16px rgba(120, 72, 16, 0.12);
+    }
+    h1 {
+      margin: 0;
+      color: #2c2319;
+      font-size: 41px;
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+    .date {
+      margin-top: 11px;
+      color: #715f4a;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+    .stats {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 14px;
+    }
+    .count {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 55px;
+      border: 1px solid #eadfce;
+      border-radius: 28px;
+      padding: 0 17px;
+      background: rgba(255, 253, 248, 0.9);
+      color: #6e604f;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .count strong {
+      color: #b36d23;
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .pills {
+      display: flex;
+      gap: 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 33px;
+      border: 1px solid #eadfce;
+      border-radius: 17px;
+      padding: 0 14px;
+      background: rgba(255, 253, 248, 0.86);
+      color: #40372e;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .pill.time {
+      color: #c95d42;
+      font-weight: 900;
+    }
+    .list {
+      display: grid;
+      gap: 16px;
+      margin-top: 17px;
+    }
+    .item {
+      display: grid;
+      grid-template-columns: 112px 1fr auto;
+      align-items: center;
+      min-height: 142px;
+      border: 1px solid rgba(135, 104, 62, 0.1);
+      border-radius: 20px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #fffdf8 0%, #f7f0e7 100%);
+      box-shadow: 0 8px 22px rgba(78, 61, 38, 0.07);
+    }
+    .item.highlight {
+      border-color: rgba(214, 139, 35, 0.5);
+      box-shadow:
+        0 8px 22px rgba(78, 61, 38, 0.07),
+        inset 0 0 0 2px rgba(214, 139, 35, 0.18);
+    }
+    .thumb {
+      display: grid;
+      place-items: center;
+      width: 112px;
+      height: 112px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fffdf8 0%, #f1e8d9 100%);
+    }
+    .thumb img {
+      width: 106px;
+      height: 106px;
+      object-fit: contain;
+    }
+    .placeholder {
+      color: #b36d23;
+      font-size: 56px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .info {
+      min-width: 0;
+      padding-left: 16px;
+    }
+    .name {
+      color: #2c2319;
+      font-size: 35px;
+      line-height: 1.12;
+      font-weight: 900;
+    }
+    .desc {
+      margin-top: 8px;
+      color: #5d5247;
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 600;
+    }
+    .time-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 35px;
+      margin-top: 12px;
+      border-radius: 18px;
+      padding: 0 14px;
+      background: #f6dfb9;
+      color: #9a5a18;
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 91px;
+      min-height: 42px;
+      border: 1px solid #eadfce;
+      border-radius: 13px;
+      padding: 0 12px;
+      background: rgba(255, 253, 248, 0.9);
+      color: #9a5a18;
+      font-size: 18px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .tag.highlight-tag {
+      border-color: #f0c27a;
+      background: #fff0cf;
+      color: #c55235;
+    }
+    .empty {
+      min-height: 250px;
+      border: 1px solid rgba(135, 104, 62, 0.1);
+      border-radius: 20px;
+      padding: 92px 20px;
+      background: linear-gradient(135deg, #fffdf8 0%, #f7f0e7 100%);
+      color: #8a7864;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 900;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">远</div>
+        <div>
+          <h1>{{ title }}</h1>
+          <div class="date">{{ date_label }}</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="count">
+          <span>当前商品数</span>
+          <strong>{{ current_item_count }}</strong>
+        </div>
+        <div class="pills">
+          <div class="pill">{{ round_status_label }}</div>
+          <div class="pill time">剩余 {{ countdown }}</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="list">
+      {% if current_items %}
+        {% for item in current_items %}
+        <section class="item {% if item.is_highlight %}highlight{% endif %}">
+          <div class="thumb">
+            {% if item.image %}
+            <img src="{{ item.image }}" alt="{{ item.name }}">
+            {% else %}
+            <span class="placeholder">{{ item.name[:1] or "?" }}</span>
+            {% endif %}
+          </div>
+          <div class="info">
+            <div class="name">{{ item.name }}</div>
+            <div class="desc">远行商人当前轮次商品</div>
+            <div class="time-label">北京时间 {{ item.time_label }}</div>
+          </div>
+          {% if item.is_highlight %}
+          <div class="tag highlight-tag">重点货物</div>
+          {% else %}
+          <div class="tag">本轮商品</div>
+          {% endif %}
+        </section>
+        {% endfor %}
+      {% else %}
+      <div class="empty">当前轮次暂无商品</div>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>
