@@ -53,6 +53,8 @@
 - [猜成语赚金币版](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/guess_riddle)
 - [发涩图](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/setu)
 - [绝区零角色面板](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/zenlesszonezero_role_info)
+- [洛克王国助手](https://github.com/CRAZYShimakaze/zhenxun_extensive_plugin/tree/main/rocom_helper)
+
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/CRAZYShimakaze/zhenxun_extensive_plugin.svg?variant=adaptive)](https://starchart.cc/CRAZYShimakaze/zhenxun_extensive_plugin)
