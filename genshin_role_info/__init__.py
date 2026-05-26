@@ -1,12 +1,12 @@
 import base64
 import copy
+from datetime import datetime
 import os
+from pathlib import Path
 import random
 import re
 import shutil
 import time
-from datetime import datetime
-from pathlib import Path
 
 import httpx
 import nonebot
@@ -26,7 +26,6 @@ from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
-from zhenxun.utils.http_utils import AsyncHttpx
 
 from ..plugin_utils.auth_utils import gold_cost
 from .data_source.draw_artifact_card import draw_artifact_card
@@ -73,7 +72,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.6",
+        version="4.2.7",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -108,7 +107,7 @@ import_artifact = on_message(permission=PRIVATE, priority=1, block=False)
 import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
 check = on_command("gsck", permission=SUPERUSER, priority=4, block=True)
 
-client = httpx.AsyncClient(timeout=30)
+client = httpx.AsyncClient(timeout=120)
 
 
 @check.handle()
@@ -159,35 +158,34 @@ async def get_msg_uid(event):
 async def get_enka_info(uid, update_info, event):
     update_role_list = []
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
-        for i in range(2):
+        status_hint_map = {
+            400: "UID 格式错误...",
+            404: "玩家不存在（MHY 服务器说的）...",
+            424: "游戏维护中 / 游戏更新后一切都崩溃了...",
+            429: "请求频率限制（被我的或者MHY的服务器）...",
+            500: "服务器错误...",
+            503: "我搞砸了...",
+        }
+        req = None
+        for url_template in api_url[:2]:
+            url = url_template.format(uid)
             try:
-                print(f"请求{api_url[i].format(uid)}...")
-                req = await client.get(url=api_url[i].format(uid), headers=headers, follow_redirects=True)
+                print(f"请求 {url}...")
+                req = await client.get(url=url, headers=headers, follow_redirects=True)
             except Exception as e:
-                print(e)
+                print(f"请求失败: {e}")
                 continue
+
             if req.status_code == 200:
                 break
             else:
-                print(req.status_code)
+                print(f"状态码异常: {req.status_code}")
         else:
-            hint = "未知问题..."
-            status_code = req.status_code
-            if status_code == 400:
-                hint = "UID 格式错误..."
-            elif status_code == 404:
-                hint = "玩家不存在（MHY 服务器说的）..."
-            elif status_code == 424:
-                hint = "游戏维护中 / 游戏更新后一切都崩溃了..."
-            elif status_code == 429:
-                hint = "请求频率限制（被我的或者MHY的服务器）..."
-            elif status_code == 500:
-                hint = "服务器错误..."
-            elif status_code == 503:
-                hint = "我搞砸了..."
-            return await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                hint
-            )
+            status_code = req.status_code if req else None
+            hint = status_hint_map.get(status_code, "未知问题...")
+
+            return await get_card.finish(hint)
+
         data = req.json()
         player_info = PlayerInfo(uid)
         player_info.set_player(data["playerInfo"])
@@ -699,34 +697,7 @@ async def _(event: MessageEvent, arg: Message = CommandArg()):
 
 
 async def get_char(uid, event):
-    url = enka_url.format(uid)
-    if not os.path.exists(f"{player_info_path}/{uid}.json"):
-        try:
-            req = await client.get(url=url, follow_redirects=True)
-        except Exception as e:
-            print(e)
-            return await get_card.finish("更新出错,请重试...")
-        if req.status_code != 200:
-            return await get_card.finish("服务器维护中,请稍后再试...")
-        data = req.json()
-        player_info = PlayerInfo(uid)
-        try:
-            player_info.set_player(data["playerInfo"])
-            if data.get("avatarInfoList", ""):
-                for role in data["avatarInfoList"]:
-                    player_info.set_role(role)
-                player_info.save()
-            else:
-                guide = load_image(f"{other_path}/collections.png")
-                guide = image_build(img=guide, quality=100, mode="RGB")
-                await get_card.finish(  # MessageSegment.reply(event.message_id) +
-                    guide + "在游戏中打开显示详情选项!", at_sender=False
-                )
-        except Exception as e:
-            print(e)
-            return  # await char_card.finish("发生错误，请尝试更新命令！", at_sender=True)
-    else:
-        player_info = PlayerInfo(uid)
+    player_info, _ = await get_enka_info(uid, update_info=False, event=event)
     roles_list = player_info.get_roles_list()
     if not roles_list:
         guide = load_image(f"{other_path}/collections.png")
