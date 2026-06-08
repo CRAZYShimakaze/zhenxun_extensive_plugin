@@ -1319,6 +1319,94 @@
         "sub_affix_id": "2",
         "icon": "icon/relic/130_3.png"
     },
+    "31311": {
+        "id": "31311",
+        "set_id": "131",
+        "name": "领航员的深空之镜",
+        "rarity": 2,
+        "type": "HEAD",
+        "max_level": 6,
+        "main_affix_id": "21",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/131_0.png"
+    },
+    "31312": {
+        "id": "31312",
+        "set_id": "131",
+        "name": "领航员的游戏之骰",
+        "rarity": 2,
+        "type": "HAND",
+        "max_level": 6,
+        "main_affix_id": "22",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/131_1.png"
+    },
+    "31313": {
+        "id": "31313",
+        "set_id": "131",
+        "name": "领航员的星图制服",
+        "rarity": 2,
+        "type": "BODY",
+        "max_level": 6,
+        "main_affix_id": "23",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/131_2.png"
+    },
+    "31314": {
+        "id": "31314",
+        "set_id": "131",
+        "name": "领航员的永行魔靴",
+        "rarity": 2,
+        "type": "FOOT",
+        "max_level": 6,
+        "main_affix_id": "24",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/131_3.png"
+    },
+    "31321": {
+        "id": "31321",
+        "set_id": "132",
+        "name": "名冶的火兽面罩",
+        "rarity": 2,
+        "type": "HEAD",
+        "max_level": 6,
+        "main_affix_id": "21",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/132_0.png"
+    },
+    "31322": {
+        "id": "31322",
+        "set_id": "132",
+        "name": "名冶的镔铁护手",
+        "rarity": 2,
+        "type": "HAND",
+        "max_level": 6,
+        "main_affix_id": "22",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/132_1.png"
+    },
+    "31323": {
+        "id": "31323",
+        "set_id": "132",
+        "name": "名冶的辟火匠衫",
+        "rarity": 2,
+        "type": "BODY",
+        "max_level": 6,
+        "main_affix_id": "23",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/132_2.png"
+    },
+    "31324": {
+        "id": "31324",
+        "set_id": "132",
+        "name": "名冶的无拘重靴",
+        "rarity": 2,
+        "type": "FOOT",
+        "max_level": 6,
+        "main_affix_id": "24",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/132_3.png"
+    },
     "33015": {
         "id": "33015",
         "set_id": "301",
@@ -3211,6 +3299,94 @@
         "sub_affix_id": "3",
         "icon": "icon/relic/130_3.png"
     },
+    "41311": {
+        "id": "41311",
+        "set_id": "131",
+        "name": "领航员的深空之镜",
+        "rarity": 3,
+        "type": "HEAD",
+        "max_level": 9,
+        "main_affix_id": "31",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/131_0.png"
+    },
+    "41312": {
+        "id": "41312",
+        "set_id": "131",
+        "name": "领航员的游戏之骰",
+        "rarity": 3,
+        "type": "HAND",
+        "max_level": 9,
+        "main_affix_id": "32",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/131_1.png"
+    },
+    "41313": {
+        "id": "41313",
+        "set_id": "131",
+        "name": "领航员的星图制服",
+        "rarity": 3,
+        "type": "BODY",
+        "max_level": 9,
+        "main_affix_id": "33",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/131_2.png"
+    },
+    "41314": {
+        "id": "41314",
+        "set_id": "131",
+        "name": "领航员的永行魔靴",
+        "rarity": 3,
+        "type": "FOOT",
+        "max_level": 9,
+        "main_affix_id": "34",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/131_3.png"
+    },
+    "41321": {
+        "id": "41321",
+        "set_id": "132",
+        "name": "名冶的火兽面罩",
+        "rarity": 3,
+        "type": "HEAD",
+        "max_level": 9,
+        "main_affix_id": "31",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/132_0.png"
+    },
+    "41322": {
+        "id": "41322",
+        "set_id": "132",
+        "name": "名冶的镔铁护手",
+        "rarity": 3,
+        "type": "HAND",
+        "max_level": 9,
+        "main_affix_id": "32",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/132_1.png"
+    },
+    "41323": {
+        "id": "41323",
+        "set_id": "132",
+        "name": "名冶的辟火匠衫",
+        "rarity": 3,
+        "type": "BODY",
+        "max_level": 9,
+        "main_affix_id": "33",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/132_2.png"
+    },
+    "41324": {
+        "id": "41324",
+        "set_id": "132",
+        "name": "名冶的无拘重靴",
+        "rarity": 3,
+        "type": "FOOT",
+        "max_level": 9,
+        "main_affix_id": "34",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/132_3.png"
+    },
     "43015": {
         "id": "43015",
         "set_id": "301",
@@ -5102,6 +5278,94 @@
         "main_affix_id": "44",
         "sub_affix_id": "4",
         "icon": "icon/relic/130_3.png"
+    },
+    "51311": {
+        "id": "51311",
+        "set_id": "131",
+        "name": "领航员的深空之镜",
+        "rarity": 4,
+        "type": "HEAD",
+        "max_level": 12,
+        "main_affix_id": "41",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/131_0.png"
+    },
+    "51312": {
+        "id": "51312",
+        "set_id": "131",
+        "name": "领航员的游戏之骰",
+        "rarity": 4,
+        "type": "HAND",
+        "max_level": 12,
+        "main_affix_id": "42",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/131_1.png"
+    },
+    "51313": {
+        "id": "51313",
+        "set_id": "131",
+        "name": "领航员的星图制服",
+        "rarity": 4,
+        "type": "BODY",
+        "max_level": 12,
+        "main_affix_id": "43",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/131_2.png"
+    },
+    "51314": {
+        "id": "51314",
+        "set_id": "131",
+        "name": "领航员的永行魔靴",
+        "rarity": 4,
+        "type": "FOOT",
+        "max_level": 12,
+        "main_affix_id": "44",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/131_3.png"
+    },
+    "51321": {
+        "id": "51321",
+        "set_id": "132",
+        "name": "名冶的火兽面罩",
+        "rarity": 4,
+        "type": "HEAD",
+        "max_level": 12,
+        "main_affix_id": "41",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/132_0.png"
+    },
+    "51322": {
+        "id": "51322",
+        "set_id": "132",
+        "name": "名冶的镔铁护手",
+        "rarity": 4,
+        "type": "HAND",
+        "max_level": 12,
+        "main_affix_id": "42",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/132_1.png"
+    },
+    "51323": {
+        "id": "51323",
+        "set_id": "132",
+        "name": "名冶的辟火匠衫",
+        "rarity": 4,
+        "type": "BODY",
+        "max_level": 12,
+        "main_affix_id": "43",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/132_2.png"
+    },
+    "51324": {
+        "id": "51324",
+        "set_id": "132",
+        "name": "名冶的无拘重靴",
+        "rarity": 4,
+        "type": "FOOT",
+        "max_level": 12,
+        "main_affix_id": "44",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/132_3.png"
     },
     "53015": {
         "id": "53015",
@@ -7060,6 +7324,94 @@
         "main_affix_id": "54",
         "sub_affix_id": "5",
         "icon": "icon/relic/130_3.png"
+    },
+    "61311": {
+        "id": "61311",
+        "set_id": "131",
+        "name": "领航员的深空之镜",
+        "rarity": 5,
+        "type": "HEAD",
+        "max_level": 15,
+        "main_affix_id": "51",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/131_0.png"
+    },
+    "61312": {
+        "id": "61312",
+        "set_id": "131",
+        "name": "领航员的游戏之骰",
+        "rarity": 5,
+        "type": "HAND",
+        "max_level": 15,
+        "main_affix_id": "52",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/131_1.png"
+    },
+    "61313": {
+        "id": "61313",
+        "set_id": "131",
+        "name": "领航员的星图制服",
+        "rarity": 5,
+        "type": "BODY",
+        "max_level": 15,
+        "main_affix_id": "53",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/131_2.png"
+    },
+    "61314": {
+        "id": "61314",
+        "set_id": "131",
+        "name": "领航员的永行魔靴",
+        "rarity": 5,
+        "type": "FOOT",
+        "max_level": 15,
+        "main_affix_id": "54",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/131_3.png"
+    },
+    "61321": {
+        "id": "61321",
+        "set_id": "132",
+        "name": "名冶的火兽面罩",
+        "rarity": 5,
+        "type": "HEAD",
+        "max_level": 15,
+        "main_affix_id": "51",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/132_0.png"
+    },
+    "61322": {
+        "id": "61322",
+        "set_id": "132",
+        "name": "名冶的镔铁护手",
+        "rarity": 5,
+        "type": "HAND",
+        "max_level": 15,
+        "main_affix_id": "52",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/132_1.png"
+    },
+    "61323": {
+        "id": "61323",
+        "set_id": "132",
+        "name": "名冶的辟火匠衫",
+        "rarity": 5,
+        "type": "BODY",
+        "max_level": 15,
+        "main_affix_id": "53",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/132_2.png"
+    },
+    "61324": {
+        "id": "61324",
+        "set_id": "132",
+        "name": "名冶的无拘重靴",
+        "rarity": 5,
+        "type": "FOOT",
+        "max_level": 15,
+        "main_affix_id": "54",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/132_3.png"
     },
     "63015": {
         "id": "63015",

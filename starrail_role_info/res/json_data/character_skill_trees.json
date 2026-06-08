@@ -62445,6 +62445,766 @@
         ],
         "icon": "icon/skill/1506_elation.png"
     },
+    "1507001": {
+        "id": "1507001",
+        "name": "",
+        "max_level": 6,
+        "desc": "",
+        "params": [],
+        "anchor": "Point01",
+        "pre_points": [],
+        "level_up_skills": [
+            { "id": "150701", "num": 1 },
+            { "id": "150708", "num": 1 }
+        ],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 0,
+                "properties": [],
+                "materials": []
+            },
+            {
+                "promotion": 2,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 5000 },
+                    { "id": "110311", "num": 3 },
+                    { "id": "116001", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 3,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 10000 },
+                    { "id": "110312", "num": 3 },
+                    { "id": "116002", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 20000 },
+                    { "id": "110312", "num": 5 },
+                    { "id": "116002", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 45000 },
+                    { "id": "110313", "num": 3 },
+                    { "id": "116003", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "116003", "num": 4 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_basic_atk.png"
+    },
+    "1507002": {
+        "id": "1507002",
+        "name": "",
+        "max_level": 10,
+        "desc": "",
+        "params": [],
+        "anchor": "Point02",
+        "pre_points": [],
+        "level_up_skills": [
+            { "id": "150702", "num": 1 },
+            { "id": "150709", "num": 1 }
+        ],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 0,
+                "properties": [],
+                "materials": []
+            },
+            {
+                "promotion": 1,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 2500 },
+                    { "id": "116001", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 2,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 5000 },
+                    { "id": "110311", "num": 3 },
+                    { "id": "116001", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 3,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 10000 },
+                    { "id": "110312", "num": 3 },
+                    { "id": "116002", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 20000 },
+                    { "id": "110312", "num": 5 },
+                    { "id": "116002", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 30000 },
+                    { "id": "110312", "num": 7 },
+                    { "id": "116002", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 45000 },
+                    { "id": "110313", "num": 3 },
+                    { "id": "116003", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 80000 },
+                    { "id": "110313", "num": 5 },
+                    { "id": "110508", "num": 1 },
+                    { "id": "116003", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 300000 },
+                    { "id": "110313", "num": 14 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_skill.png"
+    },
+    "1507003": {
+        "id": "1507003",
+        "name": "",
+        "max_level": 10,
+        "desc": "",
+        "params": [],
+        "anchor": "Point03",
+        "pre_points": [],
+        "level_up_skills": [
+            { "id": "150703", "num": 1 },
+            { "id": "150714", "num": 1 }
+        ],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 0,
+                "properties": [],
+                "materials": []
+            },
+            {
+                "promotion": 1,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 2500 },
+                    { "id": "116001", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 2,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 5000 },
+                    { "id": "110311", "num": 3 },
+                    { "id": "116001", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 3,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 10000 },
+                    { "id": "110312", "num": 3 },
+                    { "id": "116002", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 20000 },
+                    { "id": "110312", "num": 5 },
+                    { "id": "116002", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 30000 },
+                    { "id": "110312", "num": 7 },
+                    { "id": "116002", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 45000 },
+                    { "id": "110313", "num": 3 },
+                    { "id": "116003", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 80000 },
+                    { "id": "110313", "num": 5 },
+                    { "id": "110508", "num": 1 },
+                    { "id": "116003", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 300000 },
+                    { "id": "110313", "num": 14 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_ultimate.png"
+    },
+    "1507004": {
+        "id": "1507004",
+        "name": "",
+        "max_level": 10,
+        "desc": "",
+        "params": [],
+        "anchor": "Point04",
+        "pre_points": [],
+        "level_up_skills": [
+            { "id": "150704", "num": 1 }
+        ],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 0,
+                "properties": [],
+                "materials": []
+            },
+            {
+                "promotion": 1,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 2500 },
+                    { "id": "116001", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 2,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 5000 },
+                    { "id": "110311", "num": 3 },
+                    { "id": "116001", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 3,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 10000 },
+                    { "id": "110312", "num": 3 },
+                    { "id": "116002", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 20000 },
+                    { "id": "110312", "num": 5 },
+                    { "id": "116002", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 30000 },
+                    { "id": "110312", "num": 7 },
+                    { "id": "116002", "num": 6 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 45000 },
+                    { "id": "110313", "num": 3 },
+                    { "id": "116003", "num": 3 }
+                ]
+            },
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 80000 },
+                    { "id": "110313", "num": 5 },
+                    { "id": "110508", "num": 1 },
+                    { "id": "116003", "num": 4 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            },
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 300000 },
+                    { "id": "110313", "num": 14 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_talent.png"
+    },
+    "1507007": {
+        "id": "1507007",
+        "name": "",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point05",
+        "pre_points": [],
+        "level_up_skills": [
+            { "id": "150707", "num": 1 }
+        ],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 0,
+                "properties": [],
+                "materials": []
+            }
+        ],
+        "icon": "icon/skill/1507_technique.png"
+    },
+    "1507101": {
+        "id": "1507101",
+        "name": "百炼骨",
+        "max_level": 1,
+        "desc": "千冶•刃可积攒最多#2[i]点溢出能量，施放终结技后清空并恢复相应的能量值。战斗开始时或结界解除时，若能量不足#1[i]%则立刻恢复至#1[i]%。当能量恢复至上限时解除自身所有负面效果。",
+        "params": [
+            [0.75, 80]
+        ],
+        "anchor": "Point06",
+        "pre_points": [],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 2,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 5000 },
+                    { "id": "110311", "num": 3 },
+                    { "id": "110508", "num": 1 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_skilltree1.png"
+    },
+    "1507102": {
+        "id": "1507102",
+        "name": "千锻魂",
+        "max_level": 1,
+        "desc": "结界持续期间，被敌方攻击的概率提高，自身受到的伤害降低#2[i]%，受到的治疗量提高#3[i]%，且受到攻击后使对应目标陷入【煞火缠身】状态并使千冶•刃获得1点充能。",
+        "params": [
+            [10, 0.5, 0.5]
+        ],
+        "anchor": "Point07",
+        "pre_points": [],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 20000 },
+                    { "id": "110312", "num": 5 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_skilltree2.png"
+    },
+    "1507103": {
+        "id": "1507103",
+        "name": "万淬心",
+        "max_level": 1,
+        "desc": "结界持续期间，我方目标造成的伤害提高#1[i]%，我方队伍中存在除千冶•刃之外的「虚无」命途角色时，使我方目标造成的终结技伤害提高#2[i]%，否则，使千冶•刃造成的伤害额外提高#3[i]%。",
+        "params": [
+            [0.5, 0.75, 0.75]
+        ],
+        "anchor": "Point08",
+        "pre_points": [],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "241", "num": 1 },
+                    { "id": "110508", "num": 1 }
+                ]
+            }
+        ],
+        "icon": "icon/skill/1507_skilltree3.png"
+    },
+    "1507201": {
+        "id": "1507201",
+        "name": "伤害强化•火",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point09",
+        "pre_points": [],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 1,
+                "properties": [
+                    { "type": "FireAddedRatio", "value": 0.032 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 2500 },
+                    { "id": "116001", "num": 2 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconFireAddedRatio.png"
+    },
+    "1507202": {
+        "id": "1507202",
+        "name": "暴击率强化",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point10",
+        "pre_points": ["1507101"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 2,
+                "level": 0,
+                "properties": [
+                    { "type": "CriticalChanceBase", "value": 0.027 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 5000 },
+                    { "id": "110311", "num": 3 },
+                    { "id": "116001", "num": 6 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconCriticalChance.png"
+    },
+    "1507203": {
+        "id": "1507203",
+        "name": "伤害强化•火",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point11",
+        "pre_points": ["1507202"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 3,
+                "level": 0,
+                "properties": [
+                    { "type": "FireAddedRatio", "value": 0.032 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 10000 },
+                    { "id": "110312", "num": 3 },
+                    { "id": "116002", "num": 3 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconFireAddedRatio.png"
+    },
+    "1507204": {
+        "id": "1507204",
+        "name": "生命强化",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point12",
+        "pre_points": ["1507203"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 3,
+                "level": 0,
+                "properties": [
+                    { "type": "HPAddedRatio", "value": 0.04 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 10000 },
+                    { "id": "110312", "num": 3 },
+                    { "id": "116002", "num": 3 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconMaxHP.png"
+    },
+    "1507205": {
+        "id": "1507205",
+        "name": "伤害强化•火",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point13",
+        "pre_points": ["1507102"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 4,
+                "level": 0,
+                "properties": [
+                    { "type": "FireAddedRatio", "value": 0.048 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 20000 },
+                    { "id": "110312", "num": 5 },
+                    { "id": "116002", "num": 4 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconFireAddedRatio.png"
+    },
+    "1507206": {
+        "id": "1507206",
+        "name": "暴击率强化",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point14",
+        "pre_points": ["1507205"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [
+                    { "type": "CriticalChanceBase", "value": 0.04 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 45000 },
+                    { "id": "110313", "num": 3 },
+                    { "id": "116003", "num": 3 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconCriticalChance.png"
+    },
+    "1507207": {
+        "id": "1507207",
+        "name": "伤害强化•火",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point15",
+        "pre_points": ["1507206"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 5,
+                "level": 0,
+                "properties": [
+                    { "type": "FireAddedRatio", "value": 0.048 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 45000 },
+                    { "id": "110313", "num": 3 },
+                    { "id": "116003", "num": 3 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconFireAddedRatio.png"
+    },
+    "1507208": {
+        "id": "1507208",
+        "name": "生命强化",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point16",
+        "pre_points": ["1507103"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 6,
+                "level": 0,
+                "properties": [
+                    { "type": "HPAddedRatio", "value": 0.06 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "116003", "num": 8 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconMaxHP.png"
+    },
+    "1507209": {
+        "id": "1507209",
+        "name": "暴击率强化",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point17",
+        "pre_points": ["1507103"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 75,
+                "properties": [
+                    { "type": "CriticalChanceBase", "value": 0.053 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "116003", "num": 8 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconCriticalChance.png"
+    },
+    "1507210": {
+        "id": "1507210",
+        "name": "伤害强化•火",
+        "max_level": 1,
+        "desc": "",
+        "params": [],
+        "anchor": "Point18",
+        "pre_points": ["1507201"],
+        "level_up_skills": [],
+        "levels": [
+            {
+                "promotion": 0,
+                "level": 80,
+                "properties": [
+                    { "type": "FireAddedRatio", "value": 0.064 }
+                ],
+                "materials": [
+                    { "id": "2", "num": 160000 },
+                    { "id": "110313", "num": 8 },
+                    { "id": "116003", "num": 8 }
+                ]
+            }
+        ],
+        "icon": "icon/property/IconFireAddedRatio.png"
+    },
     "8001001": {
         "id": "8001001",
         "name": "",

@@ -1539,6 +1539,16 @@
         "preview": "image/light_cone_preview/23058.png",
         "portrait": "image/light_cone_portrait/23058.png"
     },
+    "23059": {
+        "id": "23059",
+        "name": "灼尽炼狱的新骸",
+        "rarity": 5,
+        "path": "Warlock",
+        "desc": "一刻，是水流涌动。躯体渐沉，坠入蓝渊的最深处。\n一刻，是荒芜孤岛，往昔的声音自云雾中回荡，飘远，再飘远。\n一刻，是火红的彼岸花原，残锋自烈火中灼烧、重塑，最终归合为一。\n「既然时日未到，便再造一新。」\n绝境为炉，此身为引，他已不记得是第几次感受这般痛楚。\n「我将以死为锤，也将…斩断宿命！」\n浴火新生的刹那，烈焰四散开来，火光直冲天际，一路燃至彼岸尽头。\n彼时，宿业尽数了断。那经由千锤百冶的新躯，已然熔铸而成。",
+        "icon": "icon/light_cone/23059.png",
+        "preview": "image/light_cone_preview/23059.png",
+        "portrait": "image/light_cone_portrait/23059.png"
+    },
     "24000": {
         "id": "24000",
         "name": "记一位星神的陨落",
