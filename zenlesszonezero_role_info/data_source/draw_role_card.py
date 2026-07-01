@@ -22,81 +22,18 @@ from ..utils.card_utils import (
     skill_path,
     type_path,
     weapon_path,
+    json_path,
 )
 from ..utils.image_utils import draw_center_text, draw_right_text, get_img, load_image
 from .damage_cal import get_role_dmg
+from ..utils.json_utils import load_json
 
 resource_url = "https://enka.network/{}"
-skill_0 = "https://enka.network/ui/zzz/IconRoleSkillKeyNormal.png"
-skill_1 = "https://enka.network/ui/zzz/IconRoleSkillKeyEvade.png"
-skill_2 = "https://enka.network/ui/zzz/IconRoleSkillKeySwitch.png"
-skill_3 = "https://enka.network/ui/zzz/IconRoleSkillKeySpecialV2.png"
-skill_4 = "https://enka.network/ui/zzz/IconRoleSkillKeyUltimateV2.png"
-skill_5 = "https://api.hakush.in/zzz/UI/Icon_CoreSkill.webp"
-skill_list = [skill_0, skill_1, skill_2, skill_3, skill_4, skill_5]
-special_list = {
-    "强攻": "https://enka.network/ui/zzz/IconAttack.png",
-    "击破": "https://enka.network/ui/zzz/IconStun.png",
-    "命破": "https://enka.network/ui/zzz/IconRupture.png",
-    "异常": "https://enka.network/ui/zzz/IconAnomaly.png",
-    "防护": "https://enka.network/ui/zzz/IconDefense.png",
-    "支援": "https://enka.network/ui/zzz/IconSupport.png",
-}
+skill_list = load_json(f"{json_path}/skill_list.json")
+special_list = load_json(f"{json_path}/special_list.json")
 pos_name = [1, 2, 3, 4, 5, 6]
-role_avatar_url = {
-    "普罗米娅": "https://patchwiki.biligame.com/images/zzz/d/d1/3fh5azkfcuhy18bxfeagudlivtldeag.png",
-    "希希芙": "https://patchwiki.biligame.com/images/zzz/7/70/m20kufbhnpdqqt96srscy9tqx2osjvr.png",
-    "南宫羽": "https://patchwiki.biligame.com/images/zzz/6/61/m3sghl98vjnpi06nnqfbk7hjqha8n1d.png",
-    "爱芮": "https://patchwiki.biligame.com/images/zzz/d/d3/79gfhzgj71lmj0qrke33hqbhu63qlc6.png",
-    "千夏": "https://patchwiki.biligame.com/images/zzz/4/46/gidrjjm8ujx5v07rwaofdyjzhwzzfjk.png",
-    "照": "https://patchwiki.biligame.com/images/zzz/a/a7/4x6ftmp0p7f3aiy07e2c05ramfc0gr7.png",
-    "叶瞬光": "https://patchwiki.biligame.com/images/zzz/a/aa/k2flhkxogiuzi1wdo0jrifxvy6z3ux8.png",
-    "般岳": "https://patchwiki.biligame.com/images/zzz/d/d0/imvff8sf35pqb1letn16eukp4h7xn4g.png",
-    "琉音": "https://patchwiki.biligame.com/images/zzz/f/f4/ootwjjl52b9idun1izgsm6nfzyc06gh.png",
-    "伊德海莉": "https://patchwiki.biligame.com/images/zzz/f/f8/s6xiph52l7yocidb48obxu397gcgdgq.png",
-    "卢西娅": "https://patchwiki.biligame.com/images/zzz/a/aa/bewpw892egodvlvmedvwfeda48zlppy.png",
-    "奥菲丝&「鬼火」": "https://patchwiki.biligame.com/images/zzz/9/9e/2hxzo9jbadg0hcxbzz2x86e1bko982n.png",
-    "「席德」": "https://patchwiki.biligame.com/images/zzz/b/b2/okaku4fnrnzg61icd84jsao92wkd7db.png",
-    "爱丽丝": "https://patchwiki.biligame.com/images/zzz/c/ca/d5m3r8feuu4lbskwnntt3mu3f4hdvqb.png",
-    "柚叶": "https://patchwiki.biligame.com/images/zzz/b/be/p6n16r8ky85he83f9dp2yzv0pi51xjv.png",
-    "橘福福": "https://patchwiki.biligame.com/images/zzz/a/a8/qkkknw4clwwy66i1zvnb9zv5cw1dfug.png",
-    "仪玄": "https://patchwiki.biligame.com/images/zzz/f/f9/a1nsugpbqvqamnkj8hy9e6mzm3bdx80.png",
-    "雨果": "https://patchwiki.biligame.com/images/zzz/7/73/hifxwv8qhq376yck21r9fzao66e70zr.png",
-    "薇薇安": "https://patchwiki.biligame.com/images/zzz/7/79/bvjii4ks3f3azw21ablr42xk1f13n7t.png",
-    "「扳机」": "https://patchwiki.biligame.com/images/zzz/2/2d/18ehwn3zvj8d04h7wyw7lu5p7iphm50.png",
-    "零号·安比": "https://patchwiki.biligame.com/images/zzz/7/78/ca4mf2zqcu79wh21d86x3ocl3ijtre4.png",
-    "伊芙琳": "https://patchwiki.biligame.com/images/zzz/8/83/gyh51mrzure6iav0szztvotfli2vwo9.png",
-    "耀嘉音": "https://patchwiki.biligame.com/images/zzz/d/da/322lo9l3y2krzkkwukc3om19aa76l7s.png",
-    "悠真": "https://patchwiki.biligame.com/images/zzz/0/00/pn3g45zabacr80qwo0qjdrz5iienb76.png",
-    "雅": "https://patchwiki.biligame.com/images/zzz/3/31/6ljd0fuxbygzw1set0zvvaieqgxz9hu.png",
-    "莱特": "https://patchwiki.biligame.com/images/zzz/1/1f/khvnv6fg8rauu0np5lal4n2n811lvwe.png",
-    "柳": "https://patchwiki.biligame.com/images/zzz/6/6b/3irwi4x4qkmu9ubv9ek58peevgqz11p.png",
-    "柏妮思": "https://patchwiki.biligame.com/images/zzz/0/00/0qs4vaonwjatcfuak8e1dc9bxtpwkac.png",
-    "凯撒": "https://patchwiki.biligame.com/images/zzz/e/ee/7udos7ucca30nreqerjkrna785fvyo5.png",
-    "简": "https://patchwiki.biligame.com/images/zzz/0/0b/68nwr179hb7ueguv7fu27eum3pnrjs5.png",
-    "青衣": "https://patchwiki.biligame.com/images/zzz/7/7c/dvt31p5cc1xe9cxcrf1z27ipw9fwpo7.png",
-    "朱鸢": "https://patchwiki.biligame.com/images/zzz/b/b9/4be11gi82faanxjl0kiq7txh5h7rvnh.png",
-    "「11号」": "https://patchwiki.biligame.com/images/zzz/c/c7/5arwkgiu3yvgxeg1eqwurk20dugxzh1.png",
-    "莱卡恩": "https://patchwiki.biligame.com/images/zzz/3/37/koxlptfvzl0vzq3qjyy6bu3guhb87iw.png",
-    "丽娜": "https://patchwiki.biligame.com/images/zzz/8/8b/9y0kt391kj33gzaifu4uh8v2ljwguhw.png",
-    "艾莲": "https://patchwiki.biligame.com/images/zzz/6/63/3o75q4xil7ifwh0azhk0nfndm5u4db3.png",
-    "珂蕾妲": "https://patchwiki.biligame.com/images/zzz/1/18/6heujuc6d956o73zz15rr2lpot7rrjf.png",
-    "格莉丝": "https://patchwiki.biligame.com/images/zzz/a/af/1cqpy7o7rujm7hc8rgbn1birtbfytdg.png",
-    "猫又": "https://patchwiki.biligame.com/images/zzz/c/c7/szadxd50h9aq1ykccw4kb3hsql8ock7.png",
-    "真斗": "https://patchwiki.biligame.com/images/zzz/6/65/nonhxe2x6vq5m02lfsijs0ipxkizp9s.png",
-    "潘引壶": "https://patchwiki.biligame.com/images/zzz/2/22/24vbgnv0j02zgyvjlghxqaaz68yphbu.png",
-    "波可娜": "https://patchwiki.biligame.com/images/zzz/6/6e/ndj19fh7x8d9z5g3cjnkuk7rgw5pl8c.png",
-    "赛斯": "https://patchwiki.biligame.com/images/zzz/a/a5/h30yvx8psx74cu0l64asyml4in4othp.png",
-    "可琳": "https://patchwiki.biligame.com/images/zzz/3/33/6uqxh23spl0wtgfk2qidooabodv0u2d.png",
-    "安东": "https://patchwiki.biligame.com/images/zzz/d/d6/8zfp36j8pjwrxadhpwtqeqqa1szmrk1.png",
-    "本": "https://patchwiki.biligame.com/images/zzz/6/69/ig9c0meb9fpwpvk8ivu9figyf7ei2rn.png",
-    "比利": "https://patchwiki.biligame.com/images/zzz/9/96/me3g5rbobr0ibzl5hcy20zy7t95hsrx.png",
-    "安比": "https://patchwiki.biligame.com/images/zzz/e/e7/e1g98nfpbfeem9p5jpe73xqinoimd35.png",
-    "妮可": "https://patchwiki.biligame.com/images/zzz/a/ae/posa7yw93z9vnzep092rtnrqxksdx4k.png",
-    "苍角": "https://patchwiki.biligame.com/images/zzz/1/17/co1tz6xt4fuspz27d1dp4a29mla8i8x.png",
-    "派派": "https://patchwiki.biligame.com/images/zzz/9/97/pfu4zzfl1h0cwia744at26rwtzi0997.png",
-    "露西": "https://patchwiki.biligame.com/images/zzz/4/4b/nun3urflupvt1lq85o81qxeoie6t9vk.png",
-}
+role_avatar_url = load_json(f"{json_path}/role_avatar_url.json")
+
 
 
 def draw_dmg_pic(dmg: dict[str, tuple | list]):

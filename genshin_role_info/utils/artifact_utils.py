@@ -225,6 +225,8 @@ def get_effective(data):
                 role_name = "草主"
 
         weight = copy.deepcopy(role_ori.get(role_name))
+        if weight is None:
+            return {"百分比攻击力": 75, "暴击率": 100, "暴击伤害": 100}, role_name
 
         if role_name == "钟离":
             if data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 2.4:
@@ -450,6 +452,30 @@ def get_effective(data):
                 if len(data["命座"]) == 6:
                     weight["mastery"] = 45
                 suffix += "高命"
+            if data["武器"]["名称"] == "西风剑" and data["属性"]["元素充能效率"] > 250:
+                weight["hp"] = 0
+                weight["mastery"] = 0
+                weight["cpct"] = 100
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "西风纯辅"
+            if data["武器"]["名称"] == "苍古自由之誓" and data["属性"]["元素充能效率"] > 220:
+                weight["hp"] = 0
+                weight["mastery"] = 0
+                weight["cpct"] = 0
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "苍古纯辅"
+            if data["武器"]["名称"] == "圣显之钥" and data["属性"]["元素充能效率"] > 220:
+                weight["hp"] = 100
+                weight["mastery"] = 0
+                weight["cpct"] = 0
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "板砖纯辅"
         elif role_name == "白术":
             if len(data["命座"]) == 6:
                 weight = {
@@ -590,6 +616,43 @@ def get_effective(data):
                 suffix += "高命"
                 if len(data["命座"]) == 6:
                     weight["atk"] = 100
+        elif role_name == "玛薇卡":
+            if data["属性"]["元素精通"] < 50:
+                weight["atk"] = 85
+                weight["mastery"] = 0
+                suffix += "纯火"
+        elif role_name == "莫娜":
+            if data["武器"]["名称"] == "讨龙英杰谭":
+                weight["atk"] = 0
+                weight["mastery"] = 0
+                weight["cpct"] = 0
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 0
+                suffix += "讨龙"
+            if data["武器"]["名称"] == "西风密典":
+                weight["atk"] = 0
+                weight["mastery"] = 0
+                weight["cpct"] = 100
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "西风"
+        elif role_name == "爱可菲":
+            if data["武器"]["名称"] == "西风长枪" and data["属性"]["元素充能效率"] > 230:
+                weight["atk"] = 0
+                weight["cpct"] = 100
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "西风纯辅"
+            if data["武器"]["名称"] == "香韵奏者" and data["属性"]["元素充能效率"] > 230:
+                weight["atk"] = 0
+                weight["cpct"] = 0
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "餐叉纯辅"
         # weight = copy.deepcopy(role_score.get(role_name))
         role_score = {}
         for info in weight.keys():
