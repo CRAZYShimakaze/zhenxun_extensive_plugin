@@ -24,6 +24,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
+#from zhenxun.plugins.call import capture
 from zhenxun.utils.enum import PluginType
 
 from ..plugin_utils.auth_utils import gold_cost
@@ -102,7 +103,8 @@ client = httpx.AsyncClient(timeout=120)
 @check.handle()
 async def _(event: MessageEvent):
     uid = await get_msg_uid(event)
-    url = f"https://enka.network/hsr/{uid}"  # await capture(event, url)
+    url = f"https://enka.network/hsr/{uid}"
+    #await capture(event, url)
 
 
 def get_role_name(role):
@@ -146,12 +148,12 @@ async def get_starrail_info(uid, update_info, event):
     update_role_list = set()
     if not os.path.exists(f"{player_info_path}/{uid}.json") or update_info:
         status_hint_map = {
-        400: "UID 格式错误...",
-        404: "玩家不存在（MHY 服务器说的）...",
-        424: "游戏维护中 / 游戏更新后一切都崩溃了...",
-        429: "请求频率限制（被我的或者MHY的服务器）...",
-        500: "服务器错误...",
-        503: "我搞砸了...",
+            400: "UID 格式错误...",
+            404: "玩家不存在（MHY 服务器说的）...",
+            424: "游戏维护中 / 游戏更新后一切都崩溃了...",
+            429: "请求频率限制（被我的或者MHY的服务器）...",
+            500: "服务器错误...",
+            503: "我搞砸了...",
         }
         req = None
         for url_template in api_url[:2]:
@@ -162,7 +164,7 @@ async def get_starrail_info(uid, update_info, event):
             except Exception as e:
                 print(f"请求失败: {e}")
                 continue
-        
+
             if req.status_code == 200:
                 break
             else:
@@ -170,9 +172,9 @@ async def get_starrail_info(uid, update_info, event):
         else:
             status_code = req.status_code if req else None
             hint = status_hint_map.get(status_code, "未知问题...")
-        
+
             return await get_card.finish(hint)
-        
+
         data = req.json()
         player_info = PlayerInfo(uid)
         if "avatarDetailList" in data["detailInfo"] or "assistAvatarList" in data["detailInfo"]:
@@ -184,8 +186,8 @@ async def get_starrail_info(uid, update_info, event):
                 detail += data["detailInfo"].get("assistAvatarList")
             for role in detail:
                 try:
-                    player_info.set_role(role)
-                    update_role_list.add(get_name_by_id(str(role["avatarId"])))
+                    if player_info.set_role(role):
+                        update_role_list.add(get_name_by_id(str(role["avatarId"])))
                 except Exception as e:
                     await get_card.send(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
             player_info.save()

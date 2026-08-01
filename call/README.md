@@ -6,8 +6,7 @@
 
 ## 使用
 
-- `zhenxun_bot/configs/config.yaml`内可配置开启长图（默认不开启）
-- 网页截图：call/ck+网址（仅管理员可用）
+- 网页截图：call/ck + 网址（仅管理员可用，默认截取整页）
 
 ## 更新
 

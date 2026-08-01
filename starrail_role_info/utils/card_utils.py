@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 import datetime
 import os
 
@@ -63,17 +64,22 @@ class PlayerInfo:
         self.player_info["角色列表"] = dictlist_to_list(data.get("avatarDetailList"))
         self.player_info["更新时间"] = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
 
-    def set_role(self, data: dict):
+    def set_role(self, data: dict) -> bool:
         try:
-            role_info = {}
-            role_name = get_name_by_id(str(data["avatarId"]))
+            role_id = str(data["avatarId"])
+            metadata = role_data.get(role_id)
+            if not isinstance(metadata, Mapping):
+                return False
 
-            role_info["角色ID"] = str(data["avatarId"])
+            role_info = {}
+            role_name = get_name_by_id(role_id)
+
+            role_info["角色ID"] = role_id
             role_info["等级"] = data["level"]
             role_info["晋升"] = data.get("promotion", 0)
-            role_info["元素"] = role_data[role_info["角色ID"]]["element"]
+            role_info["元素"] = metadata["element"]
             role_info["名称"] = role_name
-            role_info["命途"] = role_data[role_info["角色ID"]]["path"]
+            role_info["命途"] = metadata["path"]
 
             role_info["星魂"] = []
             for i in range(data.get("rank", 0)):
@@ -264,8 +270,10 @@ class PlayerInfo:
             role_info["属性"] = prop
             role_info["更新时间"] = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
             self.roles[role_info["名称"]] = role_info
+            return True
         except Exception as e:
             print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
+            return False
 
     def cal_prop(self, prop, main, sub):
         if "百分比" in main["属性名"]:
@@ -355,13 +363,17 @@ def get_artifact_suit(artifacts: list):
     return suit_4, suit_2
 
 
-def get_name_by_id(role_id: str):
+def get_name_by_id(role_id: str) -> str:
     """
     根据角色id获取角色名
     :param role_id: 角色id
     :return: 角色名字符串
     """
-    return role_data.get(role_id, "").get("name")
+    metadata = role_data.get(role_id)
+    if not isinstance(metadata, Mapping):
+        return role_id
+    name = metadata.get("name")
+    return name if isinstance(name, str) and name else role_id
 
 
 def dictlist_to_list(data):

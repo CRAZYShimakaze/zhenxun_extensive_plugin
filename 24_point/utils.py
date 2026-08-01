@@ -7,19 +7,35 @@ from PIL.Image import Image as IMG
 from PIL.ImageFont import FreeTypeFont
 
 from zhenxun.configs.path_config import FONT_PATH
-from zhenxun.utils.http_utils import AsyncHttpx
+
+from ..plugin_utils.download_utils import download_file_checked
 
 
 async def load_font(name: str, fontsize: int) -> FreeTypeFont:
     tff_path = FONT_PATH / name
-    if not tff_path.exists():
-        try:
-            url = f"https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{name}"
-            await AsyncHttpx.download_file(url, tff_path)
-        except:
-            url = f"https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{name}"
-            await AsyncHttpx.download_file(url, tff_path)
+    try:
+        return ImageFont.truetype(str(tff_path), fontsize, encoding="utf-8")
+    except OSError:
+        urls = [
+            "https://raw.githubusercontent.com/CRAZYShimakaze/"
+            f"CRAZYShimakaze.github.io/main/fonts/{name}",
+            "https://mirror.ghproxy.com/https://raw.githubusercontent.com/"
+            f"CRAZYShimakaze/CRAZYShimakaze.github.io/main/fonts/{name}",
+        ]
+        await download_file_checked(
+            urls,
+            tff_path,
+            validator=lambda path: _is_valid_font(path, fontsize),
+        )
     return ImageFont.truetype(str(tff_path), fontsize, encoding="utf-8")
+
+
+def _is_valid_font(path, fontsize: int) -> bool:
+    try:
+        ImageFont.truetype(str(path), fontsize, encoding="utf-8")
+    except OSError:
+        return False
+    return True
 
 
 def twentyfour(cards):
@@ -73,7 +89,7 @@ def check_result(submit: str, question) -> bool:
                             if not num:
                                 return True
         return False
-    except:
+    except Exception:
         return False
 
 

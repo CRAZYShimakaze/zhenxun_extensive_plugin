@@ -476,6 +476,15 @@ def get_effective(data):
                 weight["dmg"] = 0
                 weight["recharge"] = 100
                 suffix += "板砖纯辅"
+            if data["武器"]["名称"] == "岩峰巡歌" and data["属性"]["元素充能效率"] > 220:
+                weight["hp"] = 0
+                weight["def"] = 100
+                weight["mastery"] = 0
+                weight["cpct"] = 0
+                weight["cdmg"] = 0
+                weight["dmg"] = 0
+                weight["recharge"] = 100
+                suffix += "岩峰纯辅"
         elif role_name == "白术":
             if len(data["命座"]) == 6:
                 weight = {
@@ -638,21 +647,21 @@ def get_effective(data):
                 weight["dmg"] = 0
                 weight["recharge"] = 100
                 suffix += "西风"
-        elif role_name == "爱可菲":
-            if data["武器"]["名称"] == "西风长枪" and data["属性"]["元素充能效率"] > 230:
-                weight["atk"] = 0
-                weight["cpct"] = 100
-                weight["cdmg"] = 0
-                weight["dmg"] = 0
-                weight["recharge"] = 100
-                suffix += "西风纯辅"
-            if data["武器"]["名称"] == "香韵奏者" and data["属性"]["元素充能效率"] > 230:
-                weight["atk"] = 0
-                weight["cpct"] = 0
-                weight["cdmg"] = 0
-                weight["dmg"] = 0
-                weight["recharge"] = 100
-                suffix += "餐叉纯辅"
+        # elif role_name == "爱可菲":
+        #     if data["武器"]["名称"] == "西风长枪" and data["属性"]["元素充能效率"] > 230:
+        #         weight["atk"] = 0
+        #         weight["cpct"] = 100
+        #         weight["cdmg"] = 0
+        #         weight["dmg"] = 0
+        #         weight["recharge"] = 100
+        #         suffix += "西风纯辅"
+        #     if data["武器"]["名称"] == "香韵奏者" and data["属性"]["元素充能效率"] > 230:
+        #         weight["atk"] = 0
+        #         weight["cpct"] = 0
+        #         weight["cdmg"] = 0
+        #         weight["dmg"] = 0
+        #         weight["recharge"] = 100
+        #         suffix += "餐叉纯辅"
         # weight = copy.deepcopy(role_score.get(role_name))
         role_score = {}
         for info in weight.keys():

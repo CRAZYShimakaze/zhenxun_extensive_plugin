@@ -185,7 +185,13 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal):
         new_h = 650
         new_w = int(role_pic.size[0] * (new_h / role_pic.size[1]))
         role_pic = role_pic.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        bg.alpha_composite(role_pic, (560, 50))  # 234))
+        
+        if data["名称"] in ["蕾米埃尔"]:
+            bg.alpha_composite(role_pic, (260, 50))  # 234))
+        elif data["名称"] in ["佩洛伊斯"]:
+            bg.alpha_composite(role_pic, (440, 50))  # 234))
+        else:
+            bg.alpha_composite(role_pic, (560, 50))  # 234))
         base_mask = load_image(f"{other_path}/底遮罩.png")
         bg.alpha_composite(base_mask, (0, 0))
         if os.path.exists(f"{type_path}/{data['特性']}.png"):

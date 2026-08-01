@@ -23,6 +23,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
+#from zhenxun.plugins.call import capture
 from zhenxun.utils.enum import PluginType
 from zhenxun.utils.exception import AllURIsFailedError
 
@@ -71,6 +72,10 @@ __plugin_meta__ = PluginMetadata(
 __zx_plugin_name__ = __plugin_meta__.name
 __plugin_version__ = __plugin_meta__.extra.get("version")
 
+
+def _version_key(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split("."))
+
 enka_url = "https://enka.network/api/zzz/uid/{}"
 headers = {"User-Agent": "Miao-Plugin/3.0"}
 api_url = [enka_url]
@@ -101,7 +106,8 @@ client = httpx.AsyncClient(timeout=120)
 @check.handle()
 async def _(event: MessageEvent):
     uid = await get_msg_uid(event)
-    url = f"https://enka.network/api/zzz/uid/{uid}"  # await capture(event, url)
+    url = f"https://enka.network/zzz/{uid}"
+    #await capture(event, url)
 
 
 def get_role_name(role):
@@ -267,7 +273,7 @@ async def _(event: MessageEvent, arg: tuple[str, ...] = RegexGroup()):
             f"您已绑定过uid：{uid}，如果希望更换uid，请先发送绝区零解绑"
         )
     else:
-        if not check_uid(msg):
+        if 0:#not check_uid(msg):
             await bind.finish(  # MessageSegment.reply(event.message_id) +
                 f"绑定的uid{msg}不合法，请重新绑定!"
             )
@@ -730,9 +736,14 @@ async def get_update_info():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/zenlesszonezero_role_info/README.md"
     try:
         version = await client.get(url, follow_redirects=True)
-        version = re.search(r"\*\*\[v\d.\d.\d]((?:.|\n)*?)\*\*", str(version.text))
+        version = re.search(
+            r"\*\*\[v[0-9]+(?:\.[0-9]+)*\]((?:.|\n)*?)\*\*",
+            str(version.text),
+        )
     except Exception as e:
         print(f"{__zx_plugin_name__}插件获取更新内容失败，请检查github连接性是否良好!: {e}")
+        return ""
+    if not version:
         return ""
     return version.group(1).strip()
 
@@ -743,21 +754,28 @@ async def _check_update():
     bot = nonebot.get_bot()
     try:
         version = await client.get(url, follow_redirects=True)
-        version = re.search(r'version="(\d+\.\d+\.\d+)"', str(version.text))
+        version = re.search(
+            r'version\s*=\s*"([0-9]+(?:\.[0-9]+)*)"',
+            str(version.text),
+        )
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
         return
-    if version.group(1) > __plugin_version__:
+    if not version:
+        print(f"{__zx_plugin_name__}插件检查更新失败，远端版本号格式无效")
+        return
+    latest_version = version.group(1)
+    if _version_key(latest_version) > _version_key(__plugin_version__):
         update_info = await get_update_info()
         try:
             await check_update.send(
-                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
+                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{latest_version})！请前往github下载！\n本次更新内容如下:\n{update_info}"
             )
         except Exception:
             for admin in bot.config.superusers:
                 await bot.send_private_msg(
                     user_id=int(admin),
-                    message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}",
+                    message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{latest_version})！请前往github下载！\n本次更新内容如下:\n{update_info}",
                 )
             print(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
     else:

@@ -17,7 +17,7 @@ async def check_gold(event, coin: int, percent: int = 0):
     if percent:
         coin = coin if user_coin * percent // 1000 < coin else user_coin * percent // 1000
     if user_coin < coin:
-        if str(event.user_id) == "674015283" or str(event.group_id) in ["217496217", "929291130"]:
+        if str(event.user_id) == "674015283" or str(event.group_id) in ["217496217", "929291130", "617641874"]:
             return
         bot = nonebot.get_bot()
         await bot.send_group_msg(
@@ -88,8 +88,10 @@ def gold_cost(coin: int = 10, percent: int = 1):
                     or str(event.user_id) == "2020693819"
                     or str(event.group_id)
                     in [
+                        "1073905724",
                         "217496217",
                         "929291130",
+                        "617641874",
                     ]
                 ):
                     return await func(*args, **kwargs)

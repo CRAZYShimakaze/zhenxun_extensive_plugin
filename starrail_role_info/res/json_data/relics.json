@@ -1979,6 +1979,50 @@
         "sub_affix_id": "2",
         "icon": "icon/relic/326_1.png"
     },
+    "33275": {
+        "id": "33275",
+        "set_id": "327",
+        "name": "启航地的搁浅列车",
+        "rarity": 2,
+        "type": "NECK",
+        "max_level": 6,
+        "main_affix_id": "25",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/327_0.png"
+    },
+    "33276": {
+        "id": "33276",
+        "set_id": "327",
+        "name": "启航地的梦想银轨",
+        "rarity": 2,
+        "type": "OBJECT",
+        "max_level": 6,
+        "main_affix_id": "26",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/327_1.png"
+    },
+    "33285": {
+        "id": "33285",
+        "set_id": "328",
+        "name": "生研院的中心突触",
+        "rarity": 2,
+        "type": "NECK",
+        "max_level": 6,
+        "main_affix_id": "25",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/328_0.png"
+    },
+    "33286": {
+        "id": "33286",
+        "set_id": "328",
+        "name": "生研院的外周管线",
+        "rarity": 2,
+        "type": "OBJECT",
+        "max_level": 6,
+        "main_affix_id": "26",
+        "sub_affix_id": "2",
+        "icon": "icon/relic/328_1.png"
+    },
     "41011": {
         "id": "41011",
         "set_id": "101",
@@ -3959,6 +4003,50 @@
         "sub_affix_id": "3",
         "icon": "icon/relic/326_1.png"
     },
+    "43275": {
+        "id": "43275",
+        "set_id": "327",
+        "name": "启航地的搁浅列车",
+        "rarity": 3,
+        "type": "NECK",
+        "max_level": 9,
+        "main_affix_id": "35",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/327_0.png"
+    },
+    "43276": {
+        "id": "43276",
+        "set_id": "327",
+        "name": "启航地的梦想银轨",
+        "rarity": 3,
+        "type": "OBJECT",
+        "max_level": 9,
+        "main_affix_id": "36",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/327_1.png"
+    },
+    "43285": {
+        "id": "43285",
+        "set_id": "328",
+        "name": "生研院的中心突触",
+        "rarity": 3,
+        "type": "NECK",
+        "max_level": 9,
+        "main_affix_id": "35",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/328_0.png"
+    },
+    "43286": {
+        "id": "43286",
+        "set_id": "328",
+        "name": "生研院的外周管线",
+        "rarity": 3,
+        "type": "OBJECT",
+        "max_level": 9,
+        "main_affix_id": "36",
+        "sub_affix_id": "3",
+        "icon": "icon/relic/328_1.png"
+    },
     "51011": {
         "id": "51011",
         "set_id": "101",
@@ -5938,6 +6026,50 @@
         "main_affix_id": "46",
         "sub_affix_id": "4",
         "icon": "icon/relic/326_1.png"
+    },
+    "53275": {
+        "id": "53275",
+        "set_id": "327",
+        "name": "启航地的搁浅列车",
+        "rarity": 4,
+        "type": "NECK",
+        "max_level": 12,
+        "main_affix_id": "45",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/327_0.png"
+    },
+    "53276": {
+        "id": "53276",
+        "set_id": "327",
+        "name": "启航地的梦想银轨",
+        "rarity": 4,
+        "type": "OBJECT",
+        "max_level": 12,
+        "main_affix_id": "46",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/327_1.png"
+    },
+    "53285": {
+        "id": "53285",
+        "set_id": "328",
+        "name": "生研院的中心突触",
+        "rarity": 4,
+        "type": "NECK",
+        "max_level": 12,
+        "main_affix_id": "45",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/328_0.png"
+    },
+    "53286": {
+        "id": "53286",
+        "set_id": "328",
+        "name": "生研院的外周管线",
+        "rarity": 4,
+        "type": "OBJECT",
+        "max_level": 12,
+        "main_affix_id": "46",
+        "sub_affix_id": "4",
+        "icon": "icon/relic/328_1.png"
     },
     "55001": {
         "id": "55001",
@@ -7984,5 +8116,49 @@
         "main_affix_id": "56",
         "sub_affix_id": "5",
         "icon": "icon/relic/326_1.png"
+    },
+    "63275": {
+        "id": "63275",
+        "set_id": "327",
+        "name": "启航地的搁浅列车",
+        "rarity": 5,
+        "type": "NECK",
+        "max_level": 15,
+        "main_affix_id": "55",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/327_0.png"
+    },
+    "63276": {
+        "id": "63276",
+        "set_id": "327",
+        "name": "启航地的梦想银轨",
+        "rarity": 5,
+        "type": "OBJECT",
+        "max_level": 15,
+        "main_affix_id": "56",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/327_1.png"
+    },
+    "63285": {
+        "id": "63285",
+        "set_id": "328",
+        "name": "生研院的中心突触",
+        "rarity": 5,
+        "type": "NECK",
+        "max_level": 15,
+        "main_affix_id": "55",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/328_0.png"
+    },
+    "63286": {
+        "id": "63286",
+        "set_id": "328",
+        "name": "生研院的外周管线",
+        "rarity": 5,
+        "type": "OBJECT",
+        "max_level": 15,
+        "main_affix_id": "56",
+        "sub_affix_id": "5",
+        "icon": "icon/relic/328_1.png"
     }
 }

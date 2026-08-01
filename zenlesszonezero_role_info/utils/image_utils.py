@@ -6,6 +6,8 @@ from PIL import Image
 
 from zhenxun.utils.http_utils import AsyncHttpx
 
+from ...plugin_utils.download_utils import download_file_checked, validate_image
+
 
 def draw_right_text(draw, text: str, width: int, height: int, fill: str, font):
     """
@@ -50,19 +52,26 @@ async def get_img(
     crop: tuple[int, int, int, int] | None = None,
     **kwargs,
 ) -> str | Image.Image:
-    if save_path and Path(save_path).exists():
-        img = Image.open(save_path)
+    if save_path:
+        path = Path(save_path)
+        try:
+            img = _open_image(path)
+        except (OSError, ValueError):
+            await download_file_checked(
+                url,
+                path,
+                validator=validate_image,
+                **{"follow_redirects": True, **kwargs},
+            )
+            img = _open_image(path)
     else:
-        if save_path and not Path(save_path).exists():
-            save_path = Path(save_path)
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-        for _ in range(2):
-            await AsyncHttpx.download_file(url, save_path, follow_redirects=True)
-            try:
-                img = Image.open(save_path)
-                break
-            except:
-                continue
+        content = await AsyncHttpx.get_content(
+            url,
+            **{"follow_redirects": True, **kwargs},
+        )
+        with Image.open(BytesIO(content)) as source:
+            source.load()
+            img = source.copy()
     if size:
         if isinstance(size, float):
             img = img.resize(
@@ -75,11 +84,13 @@ async def get_img(
         img = img.convert(mode)
     if crop:
         img = img.crop(crop)
-    if save_path and not Path(save_path).exists():
-        save_path = Path(save_path)
-        save_path.parent.mkdir(parents=True, exist_ok=True)
-        img.save(save_path)
     return img
+
+
+def _open_image(path: Path) -> Image.Image:
+    with Image.open(path) as source:
+        source.load()
+        return source.copy()
 
 
 def load_image(
