@@ -145,17 +145,17 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
                 ),
                 10,
                 fill=(101, 101, 101)
-                if score <= 16.5 * 5
+                if score < 14 * 5
                 else (86, 190, 191)
-                if score <= 23.1 * 5
+                if score < 21 * 5
                 else (45, 158, 98)
-                if score <= 29.7 * 5
+                if score < 28 * 5
                 else (61, 146, 183)
-                if score <= 36.3 * 5
+                if score < 35 * 5
                 else (55, 85, 183)
-                if score <= 42.9 * 5
+                if score < 42 * 5
                 else (119, 71, 177)
-                if score <= 49.5 * 5
+                if score < 49 * 5
                 else (245, 89, 40),
             )
             draw_center_text(

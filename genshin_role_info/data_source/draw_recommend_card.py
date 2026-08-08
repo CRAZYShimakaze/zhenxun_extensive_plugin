@@ -76,7 +76,14 @@ def sort_recommend(artifact, position):
         if "主" in role_name or "旅行者" in role_name:
             role_name = "空"
         affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]["属性"])
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], position)
+        artifact_score, grade, mark = get_artifact_score(
+            point_mark,
+            max_mark,
+            artifact,
+            role_info_json[role_name]["元素"],
+            position,
+            role_name,
+        )
 
         artifact_pk_info = {"角色": role_name}
         artifact_pk_info["星级"] = artifact["星级"]
@@ -126,7 +133,14 @@ async def gen_artifact_recommend(title, data, artifact_list, uid, role_name, pos
         data["圣遗物"][pos] = artifact
         effective, _ = get_effective(data)
         affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]["属性"])
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos)
+        artifact_score, grade, mark = get_artifact_score(
+            point_mark,
+            max_mark,
+            artifact,
+            role_info_json[role_name]["元素"],
+            pos,
+            role_name,
+        )
         artifact_pk_info["星级"] = artifact["星级"]
         artifact_pk_info["图标"] = artifact["图标"]
         artifact_pk_info["名称"] = artifact["名称"]
@@ -193,11 +207,17 @@ async def gen_suit_recommend(title, data, player_info, uid, role_name, suit, occ
                 continue
             best_grade_same = False
             best_grade = False
-            artifact_pk_info = {}
             data["圣遗物"][pos] = artifact
             # effective, _ = get_effective(data)
             affix_weight, point_mark, max_mark = get_miao_score(effective, role_info_json[role_name]["属性"])
-            artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, role_info_json[role_name]["元素"], pos)
+            artifact_score, grade, mark = get_artifact_score(
+                point_mark,
+                max_mark,
+                artifact,
+                role_info_json[role_name]["元素"],
+                pos,
+                role_name,
+            )
             if grade >= best_grade_score or grade >= best_grade_same_score:
                 if grade >= best_grade_same_score and suit in artifact["所属套装"]:
                     best_grade_same_score = grade

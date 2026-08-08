@@ -1,12 +1,11 @@
-import base64
 import copy
-from datetime import datetime
 import os
-from pathlib import Path
 import random
 import re
 import shutil
 import time
+from datetime import datetime
+from pathlib import Path
 
 import httpx
 import nonebot
@@ -25,6 +24,8 @@ from nonebot.plugin import PluginMetadata
 from nonebot_plugin_apscheduler import scheduler
 
 from zhenxun.configs.utils import PluginExtraData
+
+# from zhenxun.plugins.call import capture
 from zhenxun.utils.enum import PluginType
 
 from ..plugin_utils.auth_utils import gold_cost
@@ -72,7 +73,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.8",
+        version="4.2.9",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -113,7 +114,8 @@ client = httpx.AsyncClient(timeout=120)
 @check.handle()
 async def _(event: MessageEvent):
     uid = await get_msg_uid(event)
-    url = f"https://enka.network/u/{uid}"  # await capture(event, url)
+    url = f"https://enka.network/u/{uid}"
+    # await capture(url)
 
 
 def get_role_name(role):
@@ -305,25 +307,14 @@ async def _():
 
 @import_artifact.handle()
 async def import_artifact(bot: Bot, event):
-    match = re.search(r"file=([\w\d_]+\.json)", str(event.message))
-    if match:
-        filename = match.group(1)
-        print(filename)
-        if filename != "good.json":
-            return
-    else:
+    file_segment = next((segment for segment in event.message if segment.type == "file"), None)
+    if not file_segment or file_segment.data.get("file") != "good.json":
         return
-    match = re.search(r"file_id=([\w-]+)", str(event.message))
-    if match:
-        file_id = match.group(1)
-        print(file_id)
-    x = await bot.get_file(file_id=file_id)
-    """
-    if event.notice_type != "offline_file":
+    file_id = file_segment.data.get("file_id")
+    if not file_id:
+        await bot.send_private_msg(user_id=event.user_id, message="good.json缺少文件标识，请重新发送。")
         return
-    if event.file.get('name') != 'good.json':
-        return
-    """
+
     convert = load_json(path=f"{json_path}/convert.json")
     role = role_info_json
     name = convert.get("名称")
@@ -333,14 +324,36 @@ async def import_artifact(bot: Bot, event):
     pos = convert.get("位置")
     main = convert.get("主词条")
     sub = convert.get("副词条")
-    # print(f"x:{x}")
+
     uid = await get_msg_uid(event)
     player_info, _ = await get_enka_info(uid, update_info=False, event=event)
-    # await client.download_file(event.file.get('url'), f'{player_info_path}/{uid}_artifact.json')
-    decoded_data = base64.b64decode(x.get("base64", ""))
+    try:
+        file_info = await bot.call_api("get_private_file_url", file_id=file_id)
+        file_url = file_info.get("url", "")
+        if not file_url:
+            raise ValueError("未获取到私聊文件下载地址")
+        response = await client.get(file_url, follow_redirects=True)
+        response.raise_for_status()
+        decoded_data = response.content
+    except Exception as e:
+        print(f"good.json读取失败: {e}")
+        await bot.send_private_msg(
+            user_id=event.user_id,
+            message="good.json读取失败，请重新发送文件后再试。",
+        )
+        return
+
     with open(f"{player_info_path}/{uid}_artifact.json", "wb") as file:
         file.write(decoded_data)
-    arti = load_json(path=f"{player_info_path}/{uid}_artifact.json")
+    try:
+        arti = load_json(path=f"{player_info_path}/{uid}_artifact.json")
+    except Exception as e:
+        print(f"good.json解析失败: {e}")
+        await bot.send_private_msg(
+            user_id=event.user_id,
+            message="good.json格式不正确，无法导入。",
+        )
+        return
     if "artifacts" in arti:
         await bot.send_private_msg(user_id=event.user_id, message="检测到圣遗物缓存文件,正在导入...")
         same = 0
@@ -826,41 +839,40 @@ async def get_update_info():
     return version.group(1).strip()
 
 
-@check_update.handle()
-async def _check_update():
+async def _get_update_message():
     url = "https://raw.githubusercontent.com/CRAZYShimakaze/zhenxun_extensive_plugin/main/genshin_role_info/__init__.py"
-    bot = nonebot.get_bot()
     try:
         version = await client.get(url, follow_redirects=True)
         version = re.search(r'version="(\d+\.\d+\.\d+)"', str(version.text))
     except Exception as e:
         print(f"{__zx_plugin_name__}插件检查更新失败，请检查github连接性是否良好!: {e}")
-        return
+        return None
+    update_info = await get_update_info()
     if version.group(1) > __plugin_version__:
-        update_info = await get_update_info()
-        try:
-            await check_update.send(
-                f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
-            )
-        except Exception:
-            for admin in bot.config.superusers:
-                await bot.send_private_msg(
-                    user_id=int(admin),
-                    message=f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}",
-                )
-            print(f"检测到{__zx_plugin_name__}插件有更新！请前往github下载！")
-    else:
-        update_info = await get_update_info()
-        try:
-            await check_update.send(f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{update_info}")
-        except Exception:
-            pass
+        return f"检测到{__zx_plugin_name__}插件有更新(当前V{__plugin_version__},最新V{version.group(1)})！请前往github下载！\n本次更新内容如下:\n{update_info}"
+    return f"{__zx_plugin_name__}插件已经是最新V{__plugin_version__}！最近一次的更新内容如下:\n{update_info}"
+
+
+async def _notify_update_to_superusers():
+    message = await _get_update_message()
+    if not message:
+        return
+    bot = nonebot.get_bot()
+    for admin in bot.config.superusers:
+        await bot.send_private_msg(user_id=int(admin), message=message)
+
+
+@check_update.handle()
+async def _check_update():
+    message = await _get_update_message()
+    if message:
+        await check_update.send(message)
 
 
 @driver.on_startup
 async def _():
     scheduler.add_job(
-        _check_update,
+        _notify_update_to_superusers,
         "cron",
         hour=random.randint(9, 22),
         minute=random.randint(0, 59),

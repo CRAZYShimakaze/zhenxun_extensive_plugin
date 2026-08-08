@@ -36,12 +36,14 @@
     "UnfinishedReverie": "未竟的遐思",
     "ScrollOfTheHeroOfCinderCity": "烬城勇者绘卷",
     "ObsidianCodex": "黑曜秘典",
-    "LongNightsOath": "深廊终曲",
-    "FinaleOfTheDeepGalleries": "长夜之誓",
+    "LongNightsOath": "长夜之誓",
+    "FinaleOfTheDeepGalleries": "深廊终曲",
     "RealmMirrorNight": "穹境示现之夜",
     "SpinMoonSerenade": "纺月的夜歌",
     "AubadeOfMorningstarAndMoon": "晨星与月的晓歌",
-    "ADayCarvedFromRisingWinds": "风起之日"
+    "ADayCarvedFromRisingWinds": "风起之日",
+    "DisenchantmentInDeepShadow": "影中沉凝的幻灭",
+    "HeavensGift": "天之美赐"
   },
   "位置": {
     "flower": 0,
@@ -543,6 +545,20 @@
       "春律的片刻",
       "未言的宴话",
       "哀慕的恋歌"
+    ],
+    "影中沉凝的幻灭": [
+      "止于荣礼的缎彩",
+      "止于妙想成型的锋毫",
+      "止于宏伟梦醒的时刻",
+      "止于祝庆的喝礼",
+      "止于阔步跌坠的灵摆"
+    ],
+    "天之美赐": [
+      "天授之馨",
+      "天授之殁",
+      "天授之令",
+      "天授之禄",
+      "天授之冕"
     ]
   }
 }

@@ -3,7 +3,14 @@ import os.path
 
 from PIL import Image, ImageDraw
 
-from ..utils.artifact_utils import check_effective, get_artifact_score, get_artifact_suit, get_effective, get_miao_score
+from ..utils.artifact_utils import (
+    check_effective,
+    get_artifact_score,
+    get_artifact_suit,
+    get_effective,
+    get_mark_class,
+    get_miao_score,
+)
 from ..utils.card_utils import avatar_path, bg_path, char_pic_path, get_font, json_path, other_path, outline_path, regoin_path, reli_path, skill_path, talent_path, weapon_path
 from ..utils.image_utils import draw_center_text, draw_right_text, get_img, load_image
 from ..utils.json_utils import load_json
@@ -75,7 +82,6 @@ def draw_dmg_pic(dmg: dict[str, tuple | list]):
 
 async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title=None):
     artifact_pk = player_info.data["圣遗物榜单"]
-    artifact_all = player_info.data["圣遗物列表"]
     if not only_cal:
         bg_card = load_image(f"{bg_path}/背景_{data['元素']}.png", mode="RGBA")
         try:
@@ -228,7 +234,14 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         if not artifact:
             continue
 
-        artifact_score, grade, mark = get_artifact_score(point_mark, max_mark, artifact, data["元素"], i)
+        artifact_score, grade, mark = get_artifact_score(
+            point_mark,
+            max_mark,
+            artifact,
+            data["元素"],
+            i,
+            data["名称"],
+        )
         i = i - 2 if i > 1 else i
         if not title:
             player_info.data["大毕业圣遗物"] = player_info.data["大毕业圣遗物"] + 1 if artifact_score == "ACE*" else player_info.data["大毕业圣遗物"]
@@ -294,48 +307,21 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         data["评分"] = total_all
     if not only_cal:
         # 圣遗物评分
-        if total_cnt and total_all <= 66 * total_cnt:
-            # score_ave = total_all / total_cnt
-            # score_ave = round(score_ave)
-            """
-            total_rank = 'ACE' if score_ave > 66 else 'ACE' if score_ave > 56.1 else 'ACE' if score_ave > 49.5 \
-                else 'SSS' if score_ave > 42.9 else 'SS' if score_ave > 36.3 else 'S' if score_ave > 29.7 else 'A' \
-                if score_ave > 23.1 else 'B' if score_ave > 16.5 else 'C' if score_ave > 10 else 'D'
-            """
-            total_rank = (
-                "ACE"
-                if total_all > 66 * 5
-                else "ACE"
-                if total_all > 56.1 * 5
-                else "ACE"
-                if total_all > 49.5 * 5
-                else "SSS"
-                if total_all > 42.9 * 5
-                else "SS"
-                if total_all > 36.3 * 5
-                else "S"
-                if total_all > 29.7 * 5
-                else "A"
-                if total_all > 23.1 * 5
-                else "B"
-                if total_all > 16.5 * 5
-                else "C"
-                if total_all > 10 * 5
-                else "D"
-            )
-        else:
-            total_rank = "D"
+        total_rank = get_mark_class(total_all / 5)
         total_int = round(total_all)
         bg_draw.text((119, 1057), "圣遗物总评分", fill="#afafaf", font=get_font(36))
         rank_icon = load_image(f"{other_path}/评分{total_rank[0]}.png", mode="RGBA")
-        if total_rank == "ACE":
+        if total_rank.startswith("ACE"):
             rank_icon = load_image(f"{other_path}/ACE-A.png", mode="RGBA", size=(55, 73))
             bg.alpha_composite(rank_icon, (95, 964))
             rank_icon = load_image(f"{other_path}/ACE-C.png", mode="RGBA", size=(55, 73))
             bg.alpha_composite(rank_icon, (145, 964))
             rank_icon = load_image(f"{other_path}/ACE-E.png", mode="RGBA", size=(55, 73))
             bg.alpha_composite(rank_icon, (195, 964))
-            bg_draw.text((250, 974), str(total_int), fill="white", font=get_font(60, "number.ttf"))
+            score_x = 275 if total_rank == "ACE*" else 250
+            if total_rank == "ACE*":
+                bg_draw.text((252, 974), "*", fill="white", font=get_font(42, "number.ttf"))
+            bg_draw.text((score_x, 974), str(total_int), fill="white", font=get_font(60, "number.ttf"))
         elif len(total_rank) == 3:
             bg.alpha_composite(rank_icon, (95, 964))
             bg.alpha_composite(rank_icon, (145, 964))
