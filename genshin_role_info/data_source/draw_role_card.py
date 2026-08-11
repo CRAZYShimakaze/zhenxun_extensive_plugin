@@ -14,7 +14,8 @@ from ..utils.artifact_utils import (
 from ..utils.card_utils import avatar_path, bg_path, char_pic_path, get_font, json_path, other_path, outline_path, regoin_path, reli_path, skill_path, talent_path, weapon_path
 from ..utils.image_utils import draw_center_text, draw_right_text, get_img, load_image
 from ..utils.json_utils import load_json
-from .damage_cal import get_role_dmg
+from .damage import get_role_dmg
+from .damage.render import draw_dmg_pic
 
 weapon_url = "https://enka.network/ui/{}.png"
 artifact_url = "https://enka.network/ui/{}.png"
@@ -25,59 +26,6 @@ role_url = "https://enka.network/ui/{}.png"
 element_type = ["物理", "火元素", "雷元素", "水元素", "草元素", "风元素", "岩元素", "冰元素"]
 
 role_info_json = load_json(f"{json_path}/role_info.json")
-
-
-def draw_dmg_pic(dmg: dict[str, tuple | list]):
-    """
-    绘制伤害图片
-    :param dmg: 伤害字典
-    :return: 伤害图片
-    """
-    # 读取图片资源
-    mask_top = load_image(path=f"{other_path}/遮罩top.png")
-    mask_body = load_image(path=f"{other_path}/遮罩body.png")
-    mask_bottom = load_image(path=f"{other_path}/遮罩bottom.png")
-    if len(dmg.get("额外说明", [""])[0]) >= 26:
-        height = 60 * (len(dmg) + 1) - 20
-    else:
-        height = 60 * len(dmg) - 20
-    # 创建画布
-    bg = Image.new("RGBA", (948, height + 80), (0, 0, 0, 0))
-    bg.alpha_composite(mask_top, (0, 0))
-    bg.alpha_composite(mask_body.resize((948, height)), (0, 60))
-    bg.alpha_composite(mask_bottom, (0, height + 60))
-    bg_draw = ImageDraw.Draw(bg)
-    # 绘制顶栏
-    bg_draw.line((250, 0, 250, 948), (255, 255, 255, 75), 2)
-    bg_draw.line((599, 0, 599, 60), (255, 255, 255, 75), 2)
-    bg_draw.line((0, 60, 948, 60), (255, 255, 255, 75), 2)
-    draw_center_text(bg_draw, "伤害计算", 0, 250, 11, "white", get_font(30, "hywh.ttf"))
-    draw_center_text(bg_draw, "期望伤害", 250, 599, 11, "white", get_font(30, "hywh.ttf"))
-    draw_center_text(bg_draw, "暴击伤害", 599, 948, 11, "white", get_font(30, "hywh.ttf"))
-    i = 1
-    for describe, dmg_list in dmg.items():
-        bg_draw.line((0, 60 * i, 948, 60 * i), (255, 255, 255, 75), 2)
-        if describe == "额外说明" and len(dmg.get("额外说明", [""])[0]) >= 26:
-            draw_center_text(bg_draw, describe, 0, 250, 60 * i + 13 + 30, "white", get_font(30, "hywh.ttf"))
-        else:
-            draw_center_text(bg_draw, describe, 0, 250, 60 * i + 13, "white", get_font(30, "hywh.ttf"))
-        if len(dmg_list) == 1:
-            if describe == "额外说明":
-                if len(dmg.get("额外说明", [""])[0]) >= 26:
-                    first, second = dmg_list[0].split("，")[:2], dmg_list[0].split("，")[2:]
-                    draw_center_text(bg_draw, "，".join(first), 250, 948, 60 * i + 13, "white", get_font(30, "hywh.ttf"))
-                    draw_center_text(bg_draw, "，".join(second), 250, 948, 60 * i + 13 + 60, "white", get_font(30, "hywh.ttf"))
-                else:
-                    draw_center_text(bg_draw, dmg_list[0], 250, 948, 60 * i + 13, "white", get_font(30, "hywh.ttf"))
-            else:
-                draw_center_text(bg_draw, dmg_list[0], 250, 948, 60 * i + 16, "white", get_font(30, "number.ttf"))
-        else:
-            bg_draw.line((599, 60 * i, 599, 60 * (i + 1)), (255, 255, 255, 75), 2)
-            draw_center_text(bg_draw, dmg_list[0], 250, 599, 60 * i + 16, "white", get_font(30, "number.ttf"))
-            draw_center_text(bg_draw, dmg_list[1], 599, 948, 60 * i + 16, "white", get_font(30, "number.ttf"))
-        i += 1
-
-    return bg
 
 
 async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title=None):

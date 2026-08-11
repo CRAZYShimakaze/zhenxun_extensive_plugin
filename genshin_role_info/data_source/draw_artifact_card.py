@@ -146,9 +146,14 @@ async def draw_artifact_card(
             fill="white",
             font=get_font(40),
         )
+        score_text = (
+            str(int(artifact["伤害值"]))
+            if "伤害值" in artifact
+            else f"{artifact_score}-{round(grade, 1)}"
+        )
         bg_draw.text(
             (slice_offset_x + 24, slice_offset_y + 63),
-            f"{artifact_score}-{round(grade, 1)}",
+            score_text,
             fill="#ffde6b",
             font=get_font(28, "number.ttf"),
         )

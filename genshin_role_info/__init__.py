@@ -29,6 +29,7 @@ from zhenxun.configs.utils import PluginExtraData
 from zhenxun.utils.enum import PluginType
 
 from ..plugin_utils.auth_utils import gold_cost
+from .data_source.damage.recommend import DamageTargetError
 from .data_source.draw_artifact_card import draw_artifact_card
 from .data_source.draw_recommend_card import (
     gen_artifact_adapt,
@@ -65,6 +66,7 @@ __plugin_meta__ = PluginMetadata(
         XX(花羽沙杯冠)推荐
         XX(乐团/魔女/...)套推荐
         XX(乐团/魔女/...)独立套推荐
+        推荐命令末尾可加伤害序号 (例:胡桃魔女套推荐2)
         原神角色排行
         最强XX (例:最强甘雨)
         最菜XX
@@ -73,7 +75,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.2.9",
+        version="4.3.0",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -96,7 +98,7 @@ get_card = on_regex(r"(.*)面板(.*)", priority=4, block=False)
 group_best = on_regex(r"^(最强|群最强)(.*)", priority=4)
 group_worst = on_regex(r"^(最菜|群最菜)(.*)", priority=4)
 artifact_adapt = on_regex("(.*?)([花羽沙杯冠])适配", priority=4)
-artifact_recommend = on_regex("(.*?)([花羽沙杯冠套])推荐", priority=4)
+artifact_recommend = on_regex(r"(.*?)([花羽沙杯冠套])推荐(\d*)$", priority=4)
 artifact_list = on_command("圣遗物榜单", aliases={"圣遗物排行"}, priority=4, block=True)
 group_artifact_list = on_command("群圣遗物榜单", aliases={"群圣遗物排行"}, priority=4, block=True)
 reset_best = on_command("重置最强", permission=SUPERUSER, priority=3, block=False)
@@ -301,7 +303,7 @@ async def _(event: MessageEvent):
 @import_artifact_hint.handle()
 async def _():
     await import_artifact_hint.send(
-        "请在PC端按以下步骤操作\n1.下载https://github.com/CRAZYShimakaze/yas/releases/download/0.1.21/yas_artifact_v0.1.21.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.21.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。"
+        "请在PC端按以下步骤操作\n1.下载https://github.com/1803233552/yas/releases/download/v0.1.28/yas_artifact_v0.1.28.exe\n2.打开原神，切换到背包圣遗物页面，将背包拉到最上面\n3.在该目录下命令行窗口输入./yas_artifact_v0.1.28.exe -f good --min-level 20命令,开始扫描\n4.扫描完成后，添加机器人为好友，将生成的good.json文件私聊发送给机器人即可。"
     )
 
 
@@ -462,6 +464,7 @@ async def test(bot: Bot, event: MessageEvent, args: tuple[str, ...] = RegexGroup
 @gold_cost(coin=1, percent=1)
 async def test(bot: Bot, event: MessageEvent, args: tuple[str, ...] = RegexGroup()):
     msg = args[0].strip(), args[1].strip()
+    damage_index = int(args[2]) if args[2] else None
     uid = await get_msg_uid(event)
     main_prop = [
         "爆伤",
@@ -511,42 +514,58 @@ async def test(bot: Bot, event: MessageEvent, args: tuple[str, ...] = RegexGroup
     artifact_pos_list = []
     if not is_suit:
         artifact_pos_list = player_info.get_artifact_list(pos)
-        if not artifact_list:
+        if not artifact_pos_list:
             return await artifact_recommend.finish(  # MessageSegment.reply(event.message_id) +
                 f"{pos}号位没有圣遗物缓存！请先执行'更新面板'指令！", at_sender=False
             )
     roles_list = player_info.get_roles_list()
     await check_role_avaliable(role_name, roles_list, event)
     role_data = player_info.get_roles_info(role_name)
-    if not is_suit:
-        img, _ = await gen_artifact_recommend(
-            f"{role_name}{suit_name}{element}{msg[1]}推荐",
-            role_data,
-            artifact_pos_list,
-            uid,
-            role_name,
-            pos,
-            element,
-            suit_name,
-            __plugin_version__,
-        )
-    else:
-        img = await gen_suit_recommend(
-            f"{suit_name}{element}套推荐",
-            role_data,
-            player_info,
-            uid,
-            role_name,
-            suit_name,
-            occupy,
-            __plugin_version__,
-        )
+    command_suffix = str(damage_index) if damage_index is not None else ""
+    recommendation_target = (
+        f"{suit_name or ''}{element or ''}{'套装' if is_suit else msg[1]}"
+    )
+    recommendation_metric = "伤害" if damage_index is not None else "评分"
+    await artifact_recommend.send(
+        f"正在从圣遗物缓存中匹配{recommendation_metric}最高的{recommendation_target}搭配，请稍后...",
+        at_sender=True,
+    )
+    try:
+        if not is_suit:
+            img, target_title = await gen_artifact_recommend(
+                f"{role_name}{suit_name}{element}{msg[1]}推荐{command_suffix}",
+                role_data,
+                artifact_pos_list,
+                uid,
+                role_name,
+                pos,
+                element,
+                suit_name,
+                __plugin_version__,
+                damage_index,
+                player_info,
+            )
+        else:
+            img, target_title = await gen_suit_recommend(
+                f"{suit_name}{element}套推荐{command_suffix}",
+                role_data,
+                player_info,
+                uid,
+                role_name,
+                suit_name,
+                occupy,
+                __plugin_version__,
+                damage_index,
+            )
+    except DamageTargetError as error:
+        return await artifact_recommend.finish(str(error), at_sender=True)
     if not img:
         await artifact_recommend.finish(  # MessageSegment.reply(event.message_id) +
             "未找到符合条件的圣遗物推荐!"
         )
+    target_note = f"目标伤害：{damage_index}.{target_title}\n" if damage_index is not None and target_title else ""
     await artifact_recommend.send(  # MessageSegment.reply(event.message_id) +
-        img + "注:仅根据当前缓存圣遗物进行推荐,发送'圣遗物导入'可导入背包内所有圣遗物."
+        img + target_note + "注:仅根据当前缓存圣遗物进行推荐,发送'圣遗物导入'可导入背包内所有圣遗物."
     )
 
 

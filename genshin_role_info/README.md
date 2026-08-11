@@ -13,6 +13,7 @@
 - XX(花羽沙杯冠)推荐
 - XX(乐团/魔女/...)套推荐
 - XX(乐团/魔女/...)独立套推荐
+- XX(花羽沙杯冠/套)推荐N (按第 N 项期望伤害推荐，例如：胡桃魔女套推荐2、胡桃火伤杯推荐2)
 - XX面板 (例:甘雨面板、甘雨面板@CRAZYShimakaze、甘雨面板104442596)
 - 更新/刷新原神面板 (uid)
 - XX(羽花沙杯头)推荐
@@ -24,6 +25,14 @@
 - 重置最强XX (仅超级用户可用)
 - 检查原神面板更新 (仅超级用户可用)
 
+## 伤害计算
+
+- 角色面板会按照 Miao-Plugin 的角色、天赋、武器、圣遗物套装、反应及 Buff 规则计算伤害
+- 伤害表依次展示暴击伤害和期望伤害；Buff 列表展示默认伤害项目对应的完整计算说明
+- 推荐命令不带数字时仍按圣遗物评分排序；末尾添加数字时，数字对应面板伤害表中的项目序号，并按该项目的期望伤害排序
+- 套装推荐会显示期望伤害最高的整套搭配；单部位推荐会显示伤害靠前的圣遗物排序图，并以伤害值代替原评级位置
+- 伤害推荐需要遍历缓存中的圣遗物，计算期间机器人会先发送匹配提示；推荐结果仅基于当前圣遗物缓存
+
 ## 效果图
 
 <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample.jpg" height="700px"> <img src="https://raw.githubusercontent.com/CRAZYShimakaze/CRAZYShimakaze.github.io/main/genshin/sample2.jpg" height="700px"/>
@@ -31,11 +40,19 @@
 ## 致谢
 
 * [LittlePaimon](https://github.com/CMHopeSunshine/LittlePaimon)的基本框架
-* [Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)的评分规则
+* [Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)的评分及伤害计算规则
 * [Enka](https://enka.network/)的玩家数据
 * [NoneBot Plugin GsPanel](https://github.com/monsterxcn/nonebot-plugin-gspanel)的评分计算
 
 ## 更新
+
+**2026/8/12**[v4.3.0]
+
+1. 伤害计算完全改用 Miao-Plugin 规则，支持上游全部 124 个原神角色，并移除原手写规则的兼容兜底
+2. 对齐 Miao-Plugin 的角色天赋、武器、圣遗物套装、元素反应、月曜反应、数值精度及 Buff 处理
+3. 重制伤害表，展示暴击伤害、期望伤害和默认伤害项目的完整 Buff 列表
+4. 圣遗物推荐命令支持末尾添加伤害序号，套装及单部位推荐均按对应项目的期望伤害排序
+5. 优化耗时推荐的异步计算及提示，避免阻塞机器人处理其他命令
 
 **2026/8/8**[v4.2.9]
 
