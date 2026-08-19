@@ -10,7 +10,7 @@ from ..utils.card_utils import (
 )
 from ..utils.image_utils import draw_center_text, get_img, image_build, load_image
 from ..utils.json_utils import load_json
-from .draw_role_card import weapon_url
+from .draw_role_card import get_icon_url, weapon_url
 
 role_url = "https://enka.network/ui/{}.png"
 
@@ -72,7 +72,7 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
     role_list = sorted(
         role_list,
         key=lambda x: (
-            player_info.get_roles_info(x).get("评分", ""),
+            float(player_info.get_roles_info(x).get("评分") or 0),
             player_info.get_roles_info(x)["等级"],
             len(player_info.get_roles_info(x)["命座"]),
             player_info.get_roles_info(x)["武器"]["精炼等级"],
@@ -134,8 +134,8 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
             get_font(19 * multiple, "优设标题黑.ttf"),
         )
         # 评分
-        if data.get("评分", "") != "":
-            score = round(data["评分"], 1)
+        if data.get("评分") not in (None, ""):
+            score = round(float(data["评分"]), 1)
             card_bg_draw.rounded_rectangle(
                 (
                     90,
@@ -205,7 +205,11 @@ async def draw_role_pic(uid: str, role_dict: dict | list, player_info):
         )
         weapon_icon = f"{weapon_path}/{data['武器']['图标']}.png"
         weapon_icon = await get_img(
-            url=weapon_url.format(data["武器"]["图标"]),
+            url=get_icon_url(
+                data["武器"]["图标"],
+                data["武器"].get("图标链接", ""),
+                weapon_url,
+            ),
             size=(60, 60),
             save_path=weapon_icon,
             mode="RGBA",

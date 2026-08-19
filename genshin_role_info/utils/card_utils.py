@@ -282,10 +282,24 @@ class PlayerInfo:
             artifacts = []
             for artifact in data["equipList"][:-1]:
                 artifact_info = {}
-                artifact_info["名称"] = artifact_list["Name"][artifact["flat"]["icon"]]
-                artifact_info["图标"] = artifact["flat"]["icon"]
-                artifact_info["部位"] = artifact_list["Piece"][artifact["flat"]["icon"].split("_")[-1]][1]
-                artifact_info["所属套装"] = artifact_list["Mapping"][artifact_info["名称"]]
+                artifact_flat = artifact["flat"]
+                artifact_icon = artifact_flat["icon"]
+                artifact_name = artifact_list["Name"].get(artifact_icon)
+                if not artifact_name:
+                    artifact_name = weapon_loc["zh-cn"].get(
+                        str(artifact_flat.get("nameTextMapHash", "")),
+                        artifact_icon,
+                    )
+                artifact_info["名称"] = artifact_name
+                artifact_info["图标"] = artifact_icon
+                artifact_info["部位"] = artifact_list["Piece"][artifact_icon.split("_")[-1]][1]
+                artifact_info["所属套装"] = artifact_list["Mapping"].get(
+                    artifact_name,
+                    weapon_loc["zh-cn"].get(
+                        str(artifact_flat.get("setNameTextMapHash", "")),
+                        f"未知套装({artifact_flat.get('setId', '')})",
+                    ),
+                )
                 artifact_info["等级"] = artifact["reliquary"]["level"] - 1
                 artifact_info["星级"] = artifact["flat"]["rankLevel"]
                 artifact_info["主属性"] = {

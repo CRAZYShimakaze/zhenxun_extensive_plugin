@@ -18,7 +18,7 @@ from ..utils.image_utils import (
     load_image,
 )
 from ..utils.json_utils import load_json
-from .draw_role_card import artifact_url
+from .draw_role_card import artifact_url, get_icon_url
 
 avatar_url = "https://enka.network/ui/{}.png"
 qq_logo_url = "http://q1.qlogo.cn/g?b=qq&nk={}&s=640"
@@ -120,7 +120,9 @@ async def draw_artifact_card(
         bg.alpha_composite(artifact_bg, (slice_offset_x + 200, slice_offset_y + 67))
         reli_icon = f"{reli_path}/{artifact['图标']}.png"
         reli_icon = await get_img(
-            url=artifact_url.format(artifact["图标"]),
+            url=get_icon_url(
+                artifact["图标"], artifact.get("图标链接", ""), artifact_url
+            ),
             size=(100, 100),
             save_path=reli_icon,
             mode="RGBA",

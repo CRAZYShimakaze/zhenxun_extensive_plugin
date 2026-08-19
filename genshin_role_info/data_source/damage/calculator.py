@@ -192,8 +192,14 @@ class DamageCalculator:
 
         dmg_coefficient = 1 + (dmg_bonus + dynamic_bonus) / 100
         def_coefficient = self._defense_coefficient(enemy_def, enemy_ignore)
+        resistance_reduction = self.attr.resistance_reduction
+        if coloring:
+            # Miao applies both ordinary elemental resistance reduction and
+            # reaction resistance reduction (for example Viridescent Venerer)
+            # to converted-element damage.
+            resistance_reduction += self.attr.reaction_resistance_reduction
         resistance = self._resistance_coefficient(
-            self.enemy_resistance - self.attr.resistance_reduction
+            self.enemy_resistance - resistance_reduction
         )
         non_crit = damage_base * dmg_coefficient * def_coefficient * resistance
         return DamageResult(

@@ -10,6 +10,42 @@ weapon_cfg = {
     "护摩之杖": {"attr": "百分比生命值", "abbr": "护摩", "max": 18, "min": 10},
 }
 
+# Miao character artis.js rules that switch support builds to damage builds
+# once the displayed crit value (2 * CRIT Rate + CRIT DMG) reaches a threshold.
+crit_output_rules = {
+    "七七": (2.4, {"cpct": 100, "cdmg": 100, "dmg": 100, "phy": 95}),
+    "丽莎": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 30, "dmg": 100, "recharge": 75}),
+    "久岐忍": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100}),
+    "五郎": (2.4, {"atk": 75, "def": 100, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 55}),
+    "伊安珊": (2.4, {"cpct": 100, "cdmg": 100, "dmg": 100}),
+    "伊法": (2.4, {"cpct": 100, "cdmg": 100, "dmg": 100}),
+    "凯亚": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 30}),
+    "北斗": (2.4, {"hp": 0, "atk": 75, "cpct": 100, "cdmg": 100, "mastery": 45, "dmg": 100}),
+    "叶洛亚": (2.4, {"def": 75, "cpct": 100, "cdmg": 100, "dmg": 100}),
+    "坎蒂丝": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75}),
+    "塔利雅": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100}),
+    "夏沃蕾": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100}),
+    "夏洛蒂": (2.4, {"atk": 85, "cpct": 100, "cdmg": 100, "dmg": 100}),
+    "多莉": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75}),
+    "布伦妮": (2.4, {"cpct": 100, "cdmg": 100, "dmg": 100}),
+    "托马": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75}),
+    "早柚": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 100, "dmg": 100, "recharge": 55}),
+    "柯莱": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 75}),
+    "爱诺": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100, "recharge": 40}),
+    "班尼特": (1.8, {"atk": 100, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 75}),
+    "琳妮特": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 75}),
+    "琴": (2.4, {"cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 75}),
+    "瑶瑶": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 75}),
+    "砂糖": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 75}),
+    "米卡": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "phy": 100, "dmg": 100, "recharge": 55}),
+    "罗莎莉亚": (2.55, {"atk": 75, "cdmg": 100, "dmg": 100, "phy": 80, "recharge": 30}),
+    "蓝砚": (2.4, {"cpct": 100, "cdmg": 100, "mastery": 80, "dmg": 100}),
+    "迪奥娜": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "mastery": 85, "dmg": 100, "recharge": 90}),
+    "阿罗夏": (2.4, {"cpct": 100, "cdmg": 100, "dmg": 100}),
+    "雅珂达": (2.4, {"cpct": 100, "cdmg": 100, "mastery": 75, "dmg": 100}),
+    "莱依拉": (2.4, {"atk": 75, "cpct": 100, "cdmg": 100, "dmg": 100, "recharge": 35}),
+}
+
 grow_max_value = {  # 词条成长值
     "暴击率": 3.89,
     "暴击伤害": 7.77,
@@ -185,9 +221,10 @@ def get_miao_score(affix_weight, base_info):
         else:
             # 沙杯头计算该位置评分权重最高的词条得分
             aval_main_affix = {k: v for k, v in affix_weight.items() if k in main_affixs[str(posIdx)]}
-            main_affix = list(aval_main_affix)[0]
-            max_mark[str(posIdx)]["main"] = affix_weight[main_affix]
-            max_mark[str(posIdx)]["total"] = affix_weight[main_affix] * 2
+            main_affix = next(iter(aval_main_affix), "")
+            main_score = affix_weight.get(main_affix, 0)
+            max_mark[str(posIdx)]["main"] = main_score
+            max_mark[str(posIdx)]["total"] = main_score * 2
 
         max_sub_affixs = {k: v for k, v in affix_weight.items() if k in sub_affixs and k != main_affix and affix_weight.get(k)}
         # 副词条中评分权重最高的词条得分大幅提升
@@ -254,11 +291,54 @@ def get_effective(data):
         if weight is None:
             return fallback_weight, role_name
 
+        crit_value = (
+            data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"]
+        )
+        if role_name in crit_output_rules:
+            threshold, output_weight = crit_output_rules[role_name]
+            if crit_value > threshold:
+                weight.update(output_weight)
+                suffix += "直伤" if role_name == "伊法" else "输出"
+        if (
+            role_name == "五郎"
+            and len(data["命座"]) >= 4
+            and artifacts[4]["主属性"]["属性名"] == "治疗加成"
+        ):
+            weight["heal"] = 100
+            suffix = "治疗" + suffix
+        if role_name == "诺艾尔" and crit_value > 2.4:
+            weight.update(
+                {
+                    "atk": 50,
+                    "cpct": 100,
+                    "cdmg": 100,
+                    "dmg": 100,
+                    "recharge": 70,
+                }
+            )
+            suffix += "输出"
+            if (
+                "元素伤害加成" not in artifacts[3]["主属性"]["属性名"]
+                and data["属性"]["元素精通"] > 80
+            ):
+                weight.update({"atk": 30, "dmg": 0, "mastery": 100})
+                suffix = "月结晶"
+        if role_name == "珊瑚宫心海":
+            if data["属性"]["元素精通"] < 50:
+                weight["mastery"] = 0
+                suffix += "治疗/纯水输出"
+            if any(
+                artifact["主属性"]["属性名"] == "元素精通"
+                for artifact in artifacts[2:]
+            ):
+                weight["mastery"] = 100
+                suffix += "(月)绽放"
+
         if role_name == "钟离":
             if data["武器"]["名称"] == "西风长枪":
                 weight["cpct"] = 100
                 suffix += "西风枪"
-            if data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 2.4:
+            if crit_value > 2.4:
                 weight = {
                     "hp": 80,
                     "atk": 75,
@@ -267,14 +347,12 @@ def get_effective(data):
                     "dmg": 100,
                     "recharge": 30,
                 }
-                suffix += "战斗"
+                if data["属性"]["元素精通"] > 100:
+                    weight["mastery"] = 100
+                    suffix += "月共鸣"
+                suffix += "武神"
         elif role_name == "芭芭拉":
-            if (
-                "元素伤害加成" in artifacts[3]["主属性"]["属性名"]
-                and data["属性"]["暴击率"] * 2
-                + data["属性"]["暴击伤害"]
-                >= 1.8
-            ):
+            if crit_value >= 2.4:
                 weight = {
                     "hp": 50,
                     "atk": 75,
@@ -347,8 +425,7 @@ def get_effective(data):
                 suffix += "蒸发"
         elif role_name == "云堇":
             if (
-                data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 1.8
-                and "元素伤害加成" in artifacts[3]["主属性"]["属性名"]
+                crit_value > 2.4
                 and artifacts[4]["主属性"]["属性名"]
                 in ["暴击率", "暴击伤害", "百分比防御力"]
             ):
@@ -386,6 +463,12 @@ def get_effective(data):
                 weight = {"hp": 90, "atk": 50, "cdmg": 100, "mastery": 90, "dmg": 100}
                 suffix += "核爆"
         elif role_name == "夜兰":
+            if len(data["命座"]) >= 1 and sum(
+                artifact.get("所属套装") == "绝缘之旗印"
+                for artifact in artifacts
+            ) < 4:
+                weight["recharge"] = 55
+                suffix += "高命"
             if data["属性"]["元素精通"] > 80:
                 weight["mastery"] = 75
                 suffix += "精通"
@@ -532,12 +615,13 @@ def get_effective(data):
                 }
                 suffix += "满命"
         elif role_name == "绮良良":
-            if data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 3:
+            if crit_value > 2.4:
                 weight["hp"] = 50
                 weight["atk"] = 75
                 weight["cpct"] = 100
                 weight["cdmg"] = 100
                 weight["dmg"] = 100
+                weight["recharge"] = 30
                 suffix += "战斗"
         elif role_name == "那维莱特" and data["武器"]["名称"] == "万世流涌大典":
             weight = {
@@ -564,7 +648,7 @@ def get_effective(data):
                     "mastery": 0,
                     "dmg": 100,
                     "phy": 0,
-                    "recharge": 75,
+                    "recharge": 100,
                     "heal": 90,
                 }
                 suffix += "满命"
@@ -588,9 +672,11 @@ def get_effective(data):
             if len(data["命座"]) >= 4:
                 weight["recharge"] = 75
                 titles.append("高命")
-            if data["属性"]["暴击率"] * 2 + data["属性"]["暴击伤害"] > 2.0:
+            if crit_value > 2.4:
+                weight["atk"] = 80
                 weight["cpct"] = 100
                 weight["cdmg"] = 100
+                weight["dmg"] = 100
                 titles.append("战斗")
             suffix += "|".join(titles)
         elif role_name == "基尼奇":
@@ -611,6 +697,11 @@ def get_effective(data):
                 weight["heal"] = 70
                 suffix += "战斗"
         elif role_name == "申鹤":
+            if crit_value >= 2.4:
+                weight["cpct"] = 100
+                weight["cdmg"] = 100
+                weight["dmg"] = 100
+                suffix += "输出"
             if len(data["命座"]) > 0:
                 weight["recharge"] = 75
                 suffix += "高命"
@@ -686,19 +777,30 @@ def get_effective(data):
                 weight["mastery"] = 100
                 weight["dmg"] = 0
                 suffix += "星超导"
+                if role_name in {"八重神子", "莱欧斯利"}:
+                    weight["atk"] = 100
                 if role_name == "赛诺":
                     weight["recharge"] = 40
                     if data["武器"]["名称"] == "赤沙之杖":
                         weight["atk"] = 50
                         suffix += "|专武"
         elif role_name == "爱可菲":
-            if data["属性"]["元素充能效率"] >= 2:
+            recharge_limit = (
+                2.2
+                if data["武器"].get("副属性", {}).get("属性名")
+                == "元素充能效率"
+                else 2.0
+            )
+            if data["属性"]["元素充能效率"] >= recharge_limit:
                 weight["atk"] = 100 if len(data["命座"]) > 1 else 75
                 weight["cpct"] = 0
                 weight["cdmg"] = 0
                 weight["dmg"] = 0
                 weight["recharge"] = 100
                 suffix += "纯辅|高命" if len(data["命座"]) > 1 else "纯辅"
+            if data["武器"]["名称"] == "西风长枪":
+                weight["cpct"] = 100
+                suffix += "|西风" if suffix else "西风"
         elif role_name == "梦见月瑞希":
             if data["属性"]["暴击率"] >= 0.6 or data["属性"]["暴击伤害"] >= 1.2:
                 weight["cpct"] = 100

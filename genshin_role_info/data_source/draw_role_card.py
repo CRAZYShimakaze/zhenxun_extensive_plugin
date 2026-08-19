@@ -18,6 +18,12 @@ from .damage import get_role_dmg
 from .damage.render import draw_dmg_pic
 
 weapon_url = "https://enka.network/ui/{}.png"
+
+
+def get_icon_url(icon: str, source: str, fallback: str) -> str:
+    return source or fallback.format(icon)
+
+
 artifact_url = "https://enka.network/ui/{}.png"
 talent_url = "https://enka.network/ui/{}.png"
 skill_url = "https://enka.network/ui/{}.png"
@@ -129,19 +135,22 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         base_icon = load_image(f"{outline_path}/图标_{data['元素']}.png", mode="RGBA")
         base_icon_grey = load_image(f"{outline_path}/图标_灰.png", mode="RGBA")
         for i in range(3):
+            skill = data["天赋"][i]
             bg.alpha_composite(base_icon.resize((83, 90)), (595 + 147 * i, 253 + 495))
-            draw_center_text(bg_draw, str(data["天赋"][i]["等级"]), 545 + 147 * i, 587 + 147 * i, 310 + 470, "white", get_font(34, "number.ttf"))
-            skill_icon = f"{skill_path}/{data['天赋'][i]['图标']}.png"
-            skill_icon = await get_img(url=skill_url.format(data["天赋"][i]["图标"]), size=(36, 36), save_path=skill_icon, mode="RGBA")
+            draw_center_text(bg_draw, str(skill["等级"]), 545 + 147 * i, 587 + 147 * i, 310 + 470, "white", get_font(34, "number.ttf"))
+            skill_icon = f"{skill_path}/{skill['图标']}.png"
+            skill_icon = await get_img(url=get_icon_url(skill["图标"], skill.get("图标链接", ""), skill_url), size=(36, 36), save_path=skill_icon, mode="RGBA")
             bg.alpha_composite(skill_icon, (619 + 147 * i, 776))
 
         # 命座
         lock = load_image(f"{other_path}/锁.png", mode="RGBA", size=(45, 45))
+        constellation_urls = data.get("命座图标链接", [])
         t = 0
         for talent in data["命座"]:
             bg.alpha_composite(base_icon.resize((83, 90)), (510 + t * 84, 790 + 45))
             talent_icon = f"{talent_path}/{talent}.png"
-            talent_icon = await get_img(url=talent_url.format(talent), size=(45, 45), save_path=talent_icon, mode="RGBA")
+            source = constellation_urls[t] if t < len(constellation_urls) else ""
+            talent_icon = await get_img(url=get_icon_url(talent, source, talent_url), size=(45, 45), save_path=talent_icon, mode="RGBA")
             bg.alpha_composite(talent_icon, (529 + t * 84, 813 + 45))
             t += 1
         for t2 in range(t, 6):
@@ -152,7 +161,16 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         weapon_bg = load_image(f"{other_path}/star{data['武器']['星级']}.png", size=(150, 150))
         bg.alpha_composite(weapon_bg, (91, 760))
         weapon_icon = f"{weapon_path}/{data['武器']['图标']}.png"
-        weapon_icon = await get_img(url=weapon_url.format(data["武器"]["图标"]), size=(150, 150), save_path=weapon_icon, mode="RGBA")
+        weapon_icon = await get_img(
+            url=get_icon_url(
+                data["武器"]["图标"],
+                data["武器"].get("图标链接", ""),
+                weapon_url,
+            ),
+            size=(150, 150),
+            save_path=weapon_icon,
+            mode="RGBA",
+        )
         bg.alpha_composite(weapon_icon, (91, 760))
         bg_draw.text((268, 758), data["武器"]["名称"], fill="white", font=get_font(34, "hywh.ttf"))
         star = load_image(f"{other_path}/star.png")
@@ -197,6 +215,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
 
         artifact_pk_info["星级"] = artifact["星级"]
         artifact_pk_info["图标"] = artifact["图标"]
+        artifact_pk_info["图标链接"] = artifact.get("图标链接", "")
         artifact_pk_info["名称"] = artifact["名称"]
         artifact_pk_info["所属套装"] = artifact["所属套装"]
         artifact_pk_info["评分"] = grade
@@ -211,7 +230,7 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
             artifact_bg = load_image(f"{other_path}/star{artifact['星级']}.png", size=(100, 100))
             bg.alpha_composite(artifact_bg, (270 + offset_x + 317 * i, 1002 + offset_y))
             reli_icon = f"{reli_path}/{artifact['图标']}.png"
-            reli_icon = await get_img(url=artifact_url.format(artifact["图标"]), size=(100, 100), save_path=reli_icon, mode="RGBA")
+            reli_icon = await get_img(url=get_icon_url(artifact["图标"], artifact.get("图标链接", ""), artifact_url), size=(100, 100), save_path=reli_icon, mode="RGBA")
             bg.alpha_composite(reli_icon, (270 + offset_x + 317 * i, 1002 + offset_y))
             bg_draw.text((94 + offset_x + 317 * i, 951 + offset_y), artifact["名称"], fill="white", font=get_font(40))
             bg_draw.text((95 + offset_x + 317 * i, 998 + offset_y), f"{artifact_score}-{round(grade, 1)}", fill="#ffde6b", font=get_font(28, "number.ttf"))
@@ -285,13 +304,17 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
 
         # 圣遗物套装
         suit = get_artifact_suit(data["圣遗物"])
+        artifact_sources = {
+            artifact["图标"]: artifact.get("图标链接", "")
+            for artifact in data["圣遗物"]
+        }
         if not suit:
             bg_draw.text((184, 1168), "未激活套装", fill="white", font=get_font(36))
             bg_draw.text((184, 1292), "未激活套装", fill="white", font=get_font(36))
             no_list = "*"
         elif len(suit) == 1:
             artifact_path = f"{reli_path}/{suit[0][1]}.png"
-            artifact_path = await get_img(url=artifact_url.format(suit[0][1]), size=(110, 110), save_path=artifact_path, mode="RGBA")
+            artifact_path = await get_img(url=get_icon_url(suit[0][1], artifact_sources.get(suit[0][1], ""), artifact_url), size=(110, 110), save_path=artifact_path, mode="RGBA")
             bg.alpha_composite(artifact_path, (76, 1130))
             bg_draw.text((184, 1168), f"{suit[0][0][:2]}二件套", fill="white", font=get_font(36))
             bg_draw.text((184, 1292), "未激活套装", fill="white", font=get_font(36))
@@ -299,14 +322,14 @@ async def draw_role_card(uid, data, player_info, plugin_version, only_cal, title
         else:
             if suit[0][0] == suit[1][0]:
                 artifact_path1 = f"{reli_path}/{suit[0][1]}.png"
-                artifact_path1 = artifact_path2 = await get_img(url=artifact_url.format(suit[0][1]), size=(110, 110), save_path=artifact_path1, mode="RGBA")
+                artifact_path1 = artifact_path2 = await get_img(url=get_icon_url(suit[0][1], artifact_sources.get(suit[0][1], ""), artifact_url), size=(110, 110), save_path=artifact_path1, mode="RGBA")
                 bg_draw.text((184, 1168), f"{suit[0][0][:2]}四件套", fill="white", font=get_font(36))
                 bg_draw.text((184, 1292), f"{suit[0][0][:2]}四件套", fill="white", font=get_font(36))
             else:
                 artifact_path1 = f"{reli_path}/{suit[0][1]}.png"
-                artifact_path1 = await get_img(url=artifact_url.format(suit[0][1]), size=(110, 110), save_path=artifact_path1, mode="RGBA")
+                artifact_path1 = await get_img(url=get_icon_url(suit[0][1], artifact_sources.get(suit[0][1], ""), artifact_url), size=(110, 110), save_path=artifact_path1, mode="RGBA")
                 artifact_path2 = f"{reli_path}/{suit[1][1]}.png"
-                artifact_path2 = await get_img(url=artifact_url.format(suit[1][1]), size=(110, 110), save_path=artifact_path2, mode="RGBA")
+                artifact_path2 = await get_img(url=get_icon_url(suit[1][1], artifact_sources.get(suit[1][1], ""), artifact_url), size=(110, 110), save_path=artifact_path2, mode="RGBA")
                 bg_draw.text((184, 1168), f"{suit[0][0][:2]}两件套", fill="white", font=get_font(36))
                 bg_draw.text((184, 1292), f"{suit[1][0][:2]}两件套", fill="white", font=get_font(36))
             bg.alpha_composite(artifact_path1, (76, 1130))

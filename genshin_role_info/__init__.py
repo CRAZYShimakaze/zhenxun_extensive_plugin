@@ -59,6 +59,7 @@ __plugin_meta__ = PluginMetadata(
     指令：
         原神绑定UID/uidXXX
         原神解绑
+        米游社更新原神面板
         角色面板 (例:刻晴面板、刻晴面板@XXX、刻晴面板+uid)
         更新原神面板 (uid)
         圣遗物导入
@@ -75,7 +76,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="CRAZYSHIMAKAZE",
-        version="4.3.0",
+        version="4.3.1",
         plugin_type=PluginType.NORMAL,
     ).to_dict(),
 )
@@ -109,8 +110,83 @@ import_artifact = on_message(permission=PRIVATE, priority=1, block=False)
 # import_artifact = on_notice(priority=1, block=False)
 import_artifact_hint = on_command("圣遗物导入", priority=4, block=True)
 check = on_command("gsck", permission=SUPERUSER, priority=4, block=True)
+mys_update_panel = on_command("米游社更新原神面板", priority=3, block=True)
 
 client = httpx.AsyncClient(timeout=120)
+
+
+def _mys_role_error(user: dict | None) -> str:
+    if not user:
+        return "请先发送「扫码登录」绑定米游社账号"
+    roles = user.get("game_roles", {}).get("genshin", [])
+    if not isinstance(roles, list) or not roles:
+        return "当前米游社账号没有原神角色"
+    if len(roles) > 1:
+        return "检测到多个原神 UID，无法更新面板"
+    return ""
+
+
+async def _update_panel_from_mys(event: MessageEvent) -> str | Message:
+    try:
+        from ..mys_sign.data_store import load_user
+        from ..mys_sign.mys_api import MysAPI
+        from .mys_sync import sync_single_genshin_uid
+    except Exception as error:
+        return f"加载米游社面板更新服务失败: {error}"
+
+    user = load_user(event.user_id)
+    if error := _mys_role_error(user):
+        return error
+
+    async def notify_captcha(link: str) -> None:
+        await mys_update_panel.send(
+            MessageSegment.reply(event.message_id)
+            + "更新原神面板需要完成验证码，请在 3 分钟内打开链接：\n"
+            + link
+            + "\n验证完成后将自动继续更新"
+        )
+
+    api = MysAPI()
+    try:
+        result = await sync_single_genshin_uid(
+            event.user_id,
+            user,
+            api,
+            notify_captcha,
+        )
+    finally:
+        await api.close()
+
+    if result.status == "synced":
+        player_info = PlayerInfo(result.uid)
+        roles_list = player_info.get_roles_list()
+        try:
+            await check_artifact(event, player_info, roles_list, result.uid, True)
+        except Exception as error:
+            return (
+                f"原神角色信息已更新，共更新 {result.role_count} 个角色；"
+                f"圣遗物列表和榜单更新失败: {error}"
+            )
+        try:
+            update_image = await draw_role_pic(result.uid, roles_list, player_info)
+        except Exception as error:
+            return (
+                f"原神面板数据更新完成，共更新 {result.role_count} 个角色，"
+                f"但更新图生成失败: {error}"
+            )
+        return update_image + (
+            f"\n原神面板更新完成，共更新 {result.role_count} 个角色，"
+            "已同步角色装备圣遗物及榜单"
+        )
+    if result.status == "failed":
+        return f"原神面板更新失败: {result.error}"
+    return "当前米游社账号无法确定唯一原神 UID"
+
+
+@mys_update_panel.handle()
+async def _(event: MessageEvent):
+    message = await _update_panel_from_mys(event)
+    await mys_update_panel.finish(MessageSegment.reply(event.message_id) + message)
 
 
 @check.handle()
