@@ -1,6 +1,5 @@
 import datetime
 import os
-import re
 
 from PIL import ImageFont
 
@@ -64,7 +63,6 @@ prop_list = {
 }
 artifact_list = load_json(path=f"{json_path}/artifact.json")
 role_ori = load_json(path=f"{json_path}/score.json")
-role_skill = load_json(path=f"{json_path}/roles_skill.json")
 role_info_json = load_json(path=f"{json_path}/role_info.json")
 convert = {
     "hp": "百分比生命值",
@@ -84,6 +82,14 @@ for item in role_ori.keys():
     for info in role_ori.get(item).keys():
         if role_ori.get(item).get(info) != 0:
             role_score[item][convert.get(info)] = role_ori.get(item).get(info)
+
+
+def resolve_traveler_role(skill_level_map: dict) -> str:
+    skill_ids = set(skill_level_map)
+    for role_name, metadata in role_info_json.items():
+        if role_name.endswith("主") and skill_ids.intersection(metadata.get("技能", {})):
+            return role_name
+    raise ValueError("无法根据技能数据识别旅行者元素")
 
 
 class PlayerInfo:
@@ -119,10 +125,8 @@ class PlayerInfo:
             role_info["名称"] = role_name
             role_info["等级"] = int(data["propMap"]["4001"]["val"])
             if role_name in ["荧", "空", "女奇偶", "男奇偶"]:
-                traveler_skill = role_skill["Name"][list(data["skillLevelMap"].keys())[-2]]
-                find_element = re.search(r"([风雷岩草水火冰])", traveler_skill).group(1)
-                role_info["元素"] = find_element
-                role_name = find_element + "主"
+                role_name = resolve_traveler_role(data["skillLevelMap"])
+                role_info["元素"] = role_info_json[role_name]["元素"]
             else:
                 role_info["元素"] = role_info_json[role_name]["元素"]
 
