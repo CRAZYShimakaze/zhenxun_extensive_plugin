@@ -35,6 +35,10 @@ def test_role_avatar_url_uses_enka_resource_when_mapping_is_missing() -> None:
     assert get_role_avatar_url("希格莉德", {"立绘": "/ui/zzz/IconRole66.png"}) == (
         "https://enka.network/ui/zzz/IconRole66.png"
     )
+    assert get_role_avatar_url(
+        "菲欧妮",
+        {"头像": "/ui/zzz/IconRoleCircle1641.png", "立绘": "/ui/zzz/IconRole1641.png"},
+    ) == "https://enka.network/ui/zzz/IconRoleCircle1641.png"
 
 
 def test_role_sort_supports_new_and_unknown_specialties() -> None:
